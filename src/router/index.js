@@ -37,7 +37,6 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   //Редирект для неавторизованных пользователей
   Router.beforeEach((to, from, next) => {
     const userStore = useUserStore()
-
     if (!userStore.isAuthenticated && to.name !== 'auth') {
       next({ name: 'auth' })
     } else {
