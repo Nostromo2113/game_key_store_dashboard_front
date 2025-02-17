@@ -1,1 +1,20 @@
-// app global css in SCSS form
+/* Подключаем шрифт через @font-face */
+@font-face {
+  font-family: 'customfont'; /* Имя шрифта */
+  src: url('/fonts/OpenSans-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+body {
+  font-family: 'customfont', sans-serif;
+  background-color: #f1f5f9;
+}
+
+.routerlink-unset {
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+@import './style.scss';

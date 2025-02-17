@@ -1,102 +1,71 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="text-blue-grey-1 bg-dark">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-toolbar-title> Game Key Shop </q-toolbar-title>
+        <SearchForm />
+        <q-btn flat rounded dense icon="dark_mode" class="q-ml-md" @click="toggleMode(darkMode)">
+          <q-tooltip class="bg-red" :offset="[10, 10]"> Темная тема не настроена </q-tooltip></q-btn
+        >
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+    <q-drawer v-model="leftDrawerOpen" :width="230" :breakpoint="700" class="bg-dark">
+      <AdminPreview />
+      <NavList />
     </q-drawer>
 
     <q-page-container>
+      <TheBreadcrumbs class="q-mt-md" />
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref, onMounted } from 'vue'
+import NavList from 'src/components/blocks/NavList.vue'
+import AdminPreview from 'src/components/blocks/AdminPreview.vue'
+import SearchForm from 'src/components/forms/SearchForm.vue'
+import TheBreadcrumbs from 'src/components/blocks/TheBreadcrumbs.vue'
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import { useUserStore } from 'src/stores/userStore'
+const userStore = useUserStore()
+import { api } from 'src/boot/axios'
 
-const leftDrawerOpen = ref(false)
+import { useQuasar } from 'quasar'
 
-function toggleLeftDrawer () {
+const darkMode = ref(false)
+
+const $q = useQuasar()
+
+function toggleMode(mode) {
+  darkMode.value = !mode
+  $q.dark.set(darkMode.value)
+}
+
+const leftDrawerOpen = ref(true)
+
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+const getMe = async () => {
+  try {
+    const response = await api.post('auth/me')
+    if (response.data) {
+      userStore.setUser(response.data)
+    }
+    console.log('Пользователь загружен')
+  } catch (error) {
+    console.error('Ошибка при загрузке пользователя:', error)
+  }
+}
+
+// Загружаем пользователя при монтировании
+onMounted(() => {
+  getMe()
+})
 </script>
+<style scoped></style>
