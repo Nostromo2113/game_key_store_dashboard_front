@@ -11,67 +11,7 @@ const api = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/admin',
 })
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      config.headers = config.headers || {}
-      config.headers.Authorization = `Bearer ${token}`
-    } else {
-      console.error('Токен не найден, авторизуйтесь снова')
-    }
-    return config
-  },
-  (error) => Promise.reject(error),
-)
-
-api.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  async (error) => {
-    const originalRequest = error.config
-
-    if (error.response && error.response.status === 401) {
-      console.error('Токен истек, либо пользователь неавторизован.')
-      console.error(' Проверяю токен...')
-      console.error('Сохраненный токен: ', localStorage.getItem('access_token'))
-
-      try {
-        const refreshResponse = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-            },
-          },
-        )
-
-        const newToken = refreshResponse.data.access_token
-        localStorage.setItem('access_token', newToken)
-
-        originalRequest.headers.Authorization = `Bearer ${newToken}`
-        console.error('Токен успешно обновлен')
-      } catch (refreshError) {
-        console.error('Не удалось обновить токен, авторизуйтесь снова.')
-        return Promise.reject(refreshError)
-      }
-    } else {
-      if (error.response) {
-        console.error('Ошибка сервера:', error.response.status)
-      } else if (error.request) {
-        console.error('Нет ответа от сервера:', error.request)
-      } else {
-        console.error('Ошибка настройки запроса:', error.message)
-      }
-    }
-
-    return Promise.reject(error)
-  },
-)
-
-//INTERCEPTORS SETUP
+// Интерсептор запроса
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token')
@@ -82,36 +22,41 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 )
-
+// Интерсептор ответа
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-    const token = localStorage.getItem('access_token')
 
-    if (error.response?.status === 401 && token) {
+    if (error.response?.status === 401) {
       try {
-        const { data } = await axios.post(
+        const refreshResponse = await axios.post(
           `${api.defaults.baseURL}/auth/refresh`,
           {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
+          { headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` } },
         )
-
-        localStorage.setItem('access_token', data.access_token)
-        originalRequest.headers.Authorization = `Bearer ${data.access_token}`
-        return api.request(originalRequest)
+        const newToken = refreshResponse.data.access_token
+        localStorage.setItem('access_token', newToken)
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return axios(originalRequest)
       } catch (refreshError) {
-        console.error('Ошибка обновления токена', refreshError)
+        console.error('Не удалось обновить токен, авторизуйтесь снова.')
         return Promise.reject(refreshError)
       }
+    }
+
+    // Обработка других ошибок
+    if (error.response) {
+      console.error('Ошибка сервера:', error.response.status)
+    } else if (error.request) {
+      console.error('Нет ответа от сервера:', error.request)
+    } else {
+      console.error('Ошибка настройки запроса:', error.message)
     }
 
     return Promise.reject(error)
   },
 )
-///^^^^^^^^^^^^^^^^INTERCEPTORS SETUP^^^^^^^^^^^^^^^^^^^^^^//////
 
 export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
