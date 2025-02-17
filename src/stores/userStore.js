@@ -4,16 +4,7 @@ import { ref, computed } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   // Состояние для хранения данных пользователя
-  const user = ref({
-    name: 'Иванов',
-    surname: 'Иван',
-    patronymic: 'Иванович',
-    age: 30,
-    email: 'ivanov@example.com',
-    address: 'г. Москва, ул. Ленина, д. 10, кв. 5',
-    phone: '+7 (999) 123-45-67',
-    role: 'Администратор',
-  })
+  const user = ref()
 
   // Геттер для получения информации о пользователе
   const isAuthenticated = computed(() => !!user.value)
@@ -21,7 +12,6 @@ export const useUserStore = defineStore('user', () => {
   // Экшн для установки пользователя
   const setUser = (userData) => {
     user.value = userData
-    console.log('USER VALUE', user.value)
   }
 
   // Экшн для удаления пользователя (выход из системы)
