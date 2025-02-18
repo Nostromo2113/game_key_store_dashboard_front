@@ -37,11 +37,11 @@
           <div class="right-column">
             <q-input v-model="userData.email" type="email" label="Email" filled />
             <q-input v-model="userData.address" label="Адрес" filled />
-            <q-input v-model="phoneNumber" label="Телефон" filled />
+            <q-input v-model="userData.phone_number" label="Телефон" filled />
             <q-input label="Администратор" filled></q-input>
           </div>
         </q-card-section>
-        <!-- Кнопки действий -->
+
         <q-card-actions align="right" class="q-pb-md q-pr-md">
           <template v-if="!readonly">
             <q-btn label="Применить" color="primary" unelevated no-caps class="q-mr-sm" />
@@ -108,18 +108,7 @@ const userPath = 'users'
 const orderPath = 'orders'
 const tab = ref('orders')
 
-const phoneNumber = ref('89066052746')
-
-const userData = ref({
-  name: 'Ярослав',
-  surname: 'Юрьев',
-  patronymic: 'Юрьевич',
-  age: 30,
-  avatar: '',
-  email: 'mail@mail.ru',
-  address: 'г. Санкт-Петербург',
-  phoneNumber: '89999999999',
-})
+const userData = ref({})
 
 const orderData = ref([])
 

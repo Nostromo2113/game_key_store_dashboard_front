@@ -40,7 +40,7 @@
             <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense />
             <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense />
             <q-input
-              value="7999999999"
+              v-model="user.phone_number"
               label="Телефон"
               mask="+7 (###) ###-##-##"
               class="q-mb-sm"

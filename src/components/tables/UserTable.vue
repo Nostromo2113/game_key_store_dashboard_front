@@ -61,11 +61,11 @@
           <q-td key="age" :props="props">
             {{ props.row.age }}
           </q-td>
-          <q-td key="gender" :props="props">
-            {{ props.row.gender }}
-          </q-td>
           <q-td key="address" :props="props">
             {{ props.row.address }}
+          </q-td>
+          <q-td key="phoneNumber" :props="props">
+            {{ props.row.phone_number }}
           </q-td>
           <q-td key="destroy" :props="props">
             <q-btn
