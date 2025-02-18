@@ -177,17 +177,17 @@ const getCategories = async () => {
 }
 
 const updateData = async (path, productData, selectedFile, productId) => {
+  console.log('111', path, productData, selectedFile, productId, '111')
   try {
     const data = productData
     delete data.activation_keys
     data.category = data.category.id
     data.genres = data.genres.map((genre) => genre.id)
-    console.log(productId)
     if (selectedFile) {
       data.file = selectedFile
       await patchFormData(path, productId, data)
     } else {
-      await patchData(path, data)
+      await patchData(path, productId, data)
     }
   } catch (e) {
     console.error(e)
