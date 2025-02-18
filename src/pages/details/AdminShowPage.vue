@@ -17,7 +17,7 @@
                 title="Аватар"
                 height="290px"
                 width="260px"
-                :imageLink="user?.avatar"
+                :imageLink="user.avatar"
                 @onFileChange="onFileChange"
                 :showAlt="false"
                 :disabledUpload="!edit"
@@ -79,7 +79,7 @@
           <div class="text-subtitle2 text-grey">Сменить пароль:</div>
         </q-card-section>
         <q-input
-          v-model="oldPassword"
+          v-model="password.current_password"
           label="Старый пароль"
           type="password"
           class="q-mb-sm"
@@ -94,7 +94,7 @@
             ></q-icon> </template
         ></q-input>
         <q-input
-          v-model="newPassword"
+          v-model="password.new_password"
           label="Новый пароль"
           type="password"
           class="q-mb-sm"
@@ -108,7 +108,7 @@
             ></q-icon> </template
         ></q-input>
         <q-input
-          v-model="newPassword"
+          v-model="password.new_password_confirmation"
           label="Подтвердите пароль"
           type="password"
           class="q-mb-sm"
@@ -141,7 +141,7 @@
       <div>
         <q-card class="q-pa-md shadow-sm" style="min-width: 320px">
           <p class="text-grey-8 text-center">Будет выслан новый пароль</p>
-          <ResetPasswordForm class="full-width" />
+          <ResetPasswordForm class="full-width" @sendMail="resetPassword" :userEmail="user.email" />
         </q-card>
       </div>
     </q-dialog>
@@ -153,6 +153,7 @@ import { ref, computed } from 'vue'
 import { useUserStore } from 'src/stores/userStore'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
+import { postData } from 'src/utils/http/post'
 
 const userStore = useUserStore()
 
@@ -162,11 +163,30 @@ const isPwd = ref(false)
 
 const user = computed(() => (userStore.user ? userStore.user : {}))
 
-const oldPassword = ref('')
-const newPassword = ref('')
+const password = ref({
+  current_password: '',
+  new_password: '',
+  new_password_confirmation: '',
+})
 
-const changePassword = () => {
-  console.log('change')
+const changePassword = async () => {
+  try {
+    await postData('password/change', password.value)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    for (let key in password.value) {
+      password.value[key] = ''
+    }
+  }
+}
+
+const resetPassword = async (email) => {
+  try {
+    await postData('password/reset', { email: email })
+  } catch (e) {
+    console.error(e)
+  }
 }
 </script>
 
