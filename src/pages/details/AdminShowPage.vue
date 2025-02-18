@@ -141,7 +141,7 @@
       <div>
         <q-card class="q-pa-md shadow-sm" style="min-width: 320px">
           <p class="text-grey-8 text-center">Будет выслан новый пароль</p>
-          <ResetPasswordForm class="full-width" @sendMail="resetPassword" :userEmail="user.email" />
+          <ResetPasswordForm class="full-width" :userEmail="user.email" />
         </q-card>
       </div>
     </q-dialog>
@@ -178,14 +178,6 @@ const changePassword = async () => {
     for (let key in password.value) {
       password.value[key] = ''
     }
-  }
-}
-
-const resetPassword = async (email) => {
-  try {
-    await postData('password/reset', { email: email })
-  } catch (e) {
-    console.error(e)
   }
 }
 </script>

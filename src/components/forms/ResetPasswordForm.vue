@@ -1,5 +1,5 @@
 <template>
-  <q-form class="row full-width reset-form" @submit="sendEmail">
+  <q-form class="row full-width reset-form" @submit="resetPassword(email)">
     <q-input
       v-model="email"
       filled
@@ -17,21 +17,23 @@
 </template>
 
 <script setup>
-import { defineProps, ref, defineEmits } from 'vue'
-
-const emit = defineEmits(['sendMail'])
+import { defineProps, ref } from 'vue'
+import { postData } from 'src/utils/http/post'
 
 const props = defineProps({
   userEmail: {
     type: String,
-    required: true,
   },
 })
 
-const email = ref(props.userEmail)
+const email = ref(props.userEmail || '')
 
-const sendEmail = () => {
-  emit('sendMail', email.value)
+const resetPassword = async (email) => {
+  try {
+    await postData('password/reset', { email: email })
+  } catch (e) {
+    console.error(e)
+  }
 }
 </script>
 
