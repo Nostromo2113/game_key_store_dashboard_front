@@ -1,38 +1,38 @@
-// src/stores/userStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { api } from 'src/boot/axios'
 
 export const useUserStore = defineStore('user', () => {
-  // Состояние для хранения данных пользователя
-  const user = ref({
-    name: 'Иванов',
-    surname: 'Иван',
-    patronymic: 'Иванович',
-    age: 30,
-    email: 'ivanov@example.com',
-    address: 'г. Москва, ул. Ленина, д. 10, кв. 5',
-    phone: '+7 (999) 123-45-67',
-    role: 'Администратор',
-  })
+  const user = ref(null)
 
-  // Геттер для получения информации о пользователе
   const isAuthenticated = computed(() => !!user.value)
-
-  // Экшн для установки пользователя
-  const setUser = (userData) => {
-    user.value = userData
-    console.log('USER VALUE', user.value)
+  const fetchUser = async () => {
+    try {
+      const response = await api.post('/auth/me')
+      user.value = response.data
+      console.log('fetch user', user.value)
+      setUser(user.value)
+    } catch (error) {
+      console.error('Ошибка загрузки пользователя', error)
+      clearUser()
+    }
   }
 
-  // Экшн для удаления пользователя (выход из системы)
+  const setUser = (userData) => {
+    user.value = userData
+    localStorage.setItem('user', JSON.stringify(userData))
+  }
+
   const clearUser = () => {
     user.value = null
-    localStorage.removeItem('access_token') // Очистить токен при выходе
+    localStorage.removeItem('user')
+    localStorage.removeItem('access_token')
   }
 
   return {
     user,
     isAuthenticated,
+    fetchUser,
     setUser,
     clearUser,
   }

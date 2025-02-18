@@ -17,7 +17,7 @@
                 title="Аватар"
                 height="290px"
                 width="260px"
-                :imageLink="user.avatar"
+                :imageLink="user?.avatar"
                 @onFileChange="onFileChange"
                 :showAlt="false"
                 :disabledUpload="!edit"
@@ -160,7 +160,7 @@ const edit = ref(false)
 const modalRestore = ref(false)
 const isPwd = ref(false)
 
-const user = computed(() => userStore.user)
+const user = computed(() => (userStore.user ? userStore.user : {}))
 
 const oldPassword = ref('')
 const newPassword = ref('')

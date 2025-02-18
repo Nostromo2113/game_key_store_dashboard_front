@@ -54,7 +54,7 @@ const path = 'auth/login'
 const performLogin = async (path, data) => {
   const response = await postData(path, data)
   saveToken(response.access_token)
-  getMe()
+  await getMe()
   router.push({ name: 'admin' })
 }
 

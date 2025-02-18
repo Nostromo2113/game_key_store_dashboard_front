@@ -39,9 +39,6 @@
             {{ props.row.id }}
           </q-td>
           <q-td key="avatar" :props="props">
-            <!-- <q-avatar size="70px">
-              <img :src="getAvatarUrl(props.row.avatar)" />
-            </q-avatar> -->
             <q-img
               width="75px"
               height="75px"
@@ -105,15 +102,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="createModal" persistent full-width>
-      <user-form title="Добавить пользователя" @store-item="store"></user-form>
-    </q-dialog>
-    <q-dialog v-model="editModal" persistent full-width>
-      <user-form
-        title="Редактировать пользователя"
-        :data="editRow"
-        operation="update"
-        @update-item="update"
-      ></user-form>
+      <user-form title="Добавить пользователя"></user-form>
     </q-dialog>
   </div>
 </template>
@@ -123,8 +112,6 @@ import UserForm from '../forms/UserForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
 
-const editModal = ref(false)
-const editRow = ref({})
 const createModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})

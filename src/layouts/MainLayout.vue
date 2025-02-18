@@ -32,7 +32,6 @@ import TheBreadcrumbs from 'src/components/blocks/TheBreadcrumbs.vue'
 
 import { useUserStore } from 'src/stores/userStore'
 const userStore = useUserStore()
-import { api } from 'src/boot/axios'
 
 import { useQuasar } from 'quasar'
 
@@ -51,21 +50,8 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-const getMe = async () => {
-  try {
-    const response = await api.post('auth/me')
-    if (response.data) {
-      userStore.setUser(response.data)
-    }
-    console.log('Пользователь загружен')
-  } catch (error) {
-    console.error('Ошибка при загрузке пользователя:', error)
-  }
-}
-
-// Загружаем пользователя при монтировании
-onMounted(() => {
-  getMe()
+onMounted(async () => {
+  await userStore.fetchUser()
 })
 </script>
 <style scoped></style>
