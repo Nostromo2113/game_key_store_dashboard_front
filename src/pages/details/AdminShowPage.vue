@@ -1,14 +1,14 @@
 <template>
   <div class="bg-gradient" style="height: 100vh">
     <div class="container">
-      <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9"
+      <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
         >Добро пожаловать {{ user.name }}!</q-toolbar
       >
       <!-- Основной блок с аватаром и информацией о пользователе -->
       <div class="grid-container">
         <!-- Аватар -->
         <div class="avatar-section full-height">
-          <q-card class="q-pa-md custom-rounded full-height" flat>
+          <q-card class="q-pa-md custom-rounded full-height shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваш аватар:</div>
             </q-card-section>
@@ -29,7 +29,7 @@
 
         <!-- Информация о пользователе -->
         <div class="user-info-section">
-          <q-card class="q-pa-md custom-rounded" flat>
+          <q-card class="q-pa-md custom-rounded shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваши данные:</div>
             </q-card-section>
@@ -74,7 +74,7 @@
       </div>
 
       <!-- Блок смены пароля -->
-      <q-card class="q-mt-md q-pa-md custom-rounded" flat>
+      <q-card class="q-mt-md q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-pa-none q-mb-md">
           <div class="text-subtitle2 text-grey">Сменить пароль:</div>
         </q-card-section>
@@ -139,7 +139,7 @@
     </div>
     <q-dialog v-model="modalRestore">
       <div>
-        <q-card class="q-pa-md" style="min-width: 320px">
+        <q-card class="q-pa-md shadow-sm" style="min-width: 320px">
           <p class="text-grey-8 text-center">Будет выслан новый пароль</p>
           <ResetPasswordForm class="full-width" />
         </q-card>

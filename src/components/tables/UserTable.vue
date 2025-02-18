@@ -7,7 +7,7 @@
       :pagination="tablePagination"
       row-key="title"
       flat
-      class="custom-rounded q-pa-md text-blue-grey-9"
+      class="custom-rounded q-pa-md text-blue-grey-9 shadow-sm"
       dense
     >
       <template v-slot:top-right>

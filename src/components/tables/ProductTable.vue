@@ -5,7 +5,7 @@
       :columns="filteredColumns"
       :pagination="tablePagination"
       row-key="title"
-      class="q-pa-sm custom-rounded border-shadow text-blue-grey-9"
+      class="q-pa-sm custom-rounded text-blue-grey-9 shadow-sm"
       flat
       dense
       ><template v-slot:top-left>

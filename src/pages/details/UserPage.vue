@@ -2,7 +2,7 @@
   <div class="q-pa-md custom-rounded">
     <!-- Блок с аватаром и данными пользователя -->
     <div class="grid-container">
-      <q-card class="avatar-section q-pa-md custom-rounded" flat>
+      <q-card class="avatar-section q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Аватар</div>
         </q-card-section>
@@ -18,27 +18,27 @@
         />
       </q-card>
 
-      <q-card class="user-data-section q-pa-md full-height custom-rounded" flat>
+      <q-card class="user-data-section q-pa-md full-height custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Данные пользователя</div>
         </q-card-section>
         <q-card-section class="user-data-grid">
           <!-- Левая колонка -->
           <div class="left-column">
-            <q-input v-model="userData.surname" label="Фамилия" filled />
-            <q-input v-model="userData.name" label="Имя" filled />
-            <q-input v-model="userData.patronymic" label="Отчество" filled />
-            <q-input v-model="userData.age" type="number" label="Возраст" filled />
+            <q-input v-model="userData.surname" label="Фамилия" />
+            <q-input v-model="userData.name" label="Имя" />
+            <q-input v-model="userData.patronymic" label="Отчество" />
+            <q-input v-model="userData.age" type="number" label="Возраст" />
           </div>
 
           <q-separator vertical class="separator" />
 
           <!-- Правая колонка -->
           <div class="right-column">
-            <q-input v-model="userData.email" type="email" label="Email" filled />
-            <q-input v-model="userData.address" label="Адрес" filled />
-            <q-input v-model="userData.phone_number" label="Телефон" filled />
-            <q-input label="Администратор" filled></q-input>
+            <q-input v-model="userData.email" type="email" label="Email" />
+            <q-input v-model="userData.address" label="Адрес" />
+            <q-input v-model="userData.phone_number" label="Телефон" />
+            <q-input label="Администратор"></q-input>
           </div>
         </q-card-section>
 
@@ -68,7 +68,7 @@
     </div>
 
     <!-- Панель с заказами и корзиной -->
-    <q-card flat class="q-pa-sm custom-rounded q-mt-md">
+    <q-card flat class="q-pa-sm custom-rounded q-mt-md shadow-sm">
       <q-toolbar>
         <q-toolbar-title>{{ tab === 'orders' ? 'Заказы' : 'Корзина' }}</q-toolbar-title>
         <q-tabs
