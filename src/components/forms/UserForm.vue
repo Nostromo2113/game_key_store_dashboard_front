@@ -2,7 +2,7 @@
   <div>
     <q-card
       class="no-shadow rounded-borders q-pa-md q-mx-auto text-center"
-      style="width: 700px; max-width: 80vw"
+      style="width: 700px; max-width: 85vw"
     >
       <q-card-section class="row items-center q-pa-none q-pb-sm">
         <span class="text-h6 text-grey">Создать пользователя</span>
@@ -54,27 +54,14 @@
             filled
             :rules="requiredRule"
           />
-        </div>
-
-        <div class="row items-center justify-between gap-md">
           <q-input
             v-model="formData.age"
             type="number"
             label="Возраст"
             filled
-            style="flex: 1"
             lazy-rules
             :rules="requiredRule"
           ></q-input>
-          <q-select
-            v-model="formData.gender"
-            :options="genderOptions"
-            filled
-            label="Пол"
-            lazy-rules
-            :rules="requiredRule"
-            style="flex: 1"
-          ></q-select>
         </div>
 
         <span>Пользователю будет отправлено письмо с паролем и ссылкой для верификации</span>
@@ -104,18 +91,16 @@ const path = 'users'
 
 const formData = ref({
   email: '',
+  phone: '',
   name: '',
   surname: '',
   patronymic: '',
   age: null,
   gender: '',
   address: '',
-  phone: '',
 })
 
 const accept = ref(false)
-
-const genderOptions = ['Мужской', 'Женский']
 
 const requiredRule = [(val) => (val && val.length > 0) || 'Поле обязательно для заполнения']
 
@@ -124,19 +109,7 @@ const submit = async () => {
     console.warn('Подтвердите добавление в БД')
     return
   }
-
-  const data = {
-    email: formData.value.email,
-    name: formData.value.name,
-    surname: formData.value.surname,
-    patronymic: formData.value.patronymic,
-    age: formData.value.age,
-    gender: formData.value.gender === 'Мужской' ? 1 : 2,
-    address: formData.value.address,
-  }
-
-  console.log('user data:', data)
-  await postUser(path, data)
+  await postUser(path, formData.value)
 }
 
 const postUser = async (path, data) => {
