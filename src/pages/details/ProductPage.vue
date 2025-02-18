@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <q-card flat class="custom-rounded shadow-sm" bordered>
+    <q-card flat class="custom-rounded shadow-sm">
       <q-card-section horizontal vertical>
         <q-card-section class="col-3">
           <div class="text-subtitle1 q-mb-sm">Превью изображение</div>
