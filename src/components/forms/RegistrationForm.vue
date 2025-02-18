@@ -26,7 +26,7 @@
         <q-input v-model="form.email" label="Email" type="email" required>
           <template v-slot:prepend><q-icon name="email" /></template>
         </q-input>
-        <q-input v-model="form.phone" label="Телефон" required mask="+7 (###) ###-##-##">
+        <q-input v-model="form.phone" label="Телефон" required mask="+7##########">
           <template v-slot:prepend><q-icon name="call_end" /></template>
         </q-input>
         <q-input

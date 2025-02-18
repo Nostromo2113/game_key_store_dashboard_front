@@ -50,7 +50,7 @@
           <q-input
             v-model="formData.phone"
             label="Телефон"
-            mask="+7 (###) ###-##-##"
+            mask="+7##########"
             filled
             :rules="requiredRule"
           />
