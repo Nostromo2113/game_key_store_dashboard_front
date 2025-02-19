@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-sm">
-    <q-card flat class="custom-rounded">
+    <q-card flat class="custom-rounded shadow-sm">
       <div class="text-h6 q-px-md q-pt-md">Все заказы</div>
       <OrderTable />
     </q-card>

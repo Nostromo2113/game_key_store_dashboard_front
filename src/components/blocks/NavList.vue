@@ -21,9 +21,9 @@ const route = useRoute()
 
 const menuList = [
   {
-    icon: 'person',
-    label: 'Авторизация',
-    path: { name: 'auth' },
+    icon: 'store',
+    label: 'Магазин',
+    path: { name: 'shop' },
   },
   {
     icon: 'home',
@@ -54,6 +54,11 @@ const menuList = [
     icon: 'style',
     label: 'Жанры',
     path: { name: 'genres' },
+  },
+  {
+    icon: 'login',
+    label: 'Авторизация',
+    path: { name: 'auth' },
   },
 ]
 </script>

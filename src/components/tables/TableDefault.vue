@@ -8,7 +8,7 @@
       row-key="title"
       dense
       flat
-      class="q-pa-sm custom-rounded text-blue-grey-9"
+      class="q-pa-sm custom-rounded text-blue-grey-9 shadow-sm"
     >
       <template v-slot:top-right>
         <q-btn

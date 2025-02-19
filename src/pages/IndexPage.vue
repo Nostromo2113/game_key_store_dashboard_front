@@ -5,7 +5,10 @@
       src="~assets/quasar-logo-vertical.svg"
       style="width: 200px; height: 200px"
     /> -->
+    <CardForm />
   </q-page>
 </template>
 
-<script setup></script>
+<script setup>
+import CardForm from 'src/components/forms/CardForm.vue'
+</script>

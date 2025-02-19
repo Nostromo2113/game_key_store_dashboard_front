@@ -30,14 +30,14 @@
   display: none;
 }
 
-.border-shadow {
-  box-shadow: 0px 0px 1px 1px rgba(148, 148, 148, 0.356) !important;
-}
-
 .bg-gradient {
   background: linear-gradient(135deg, #2851e4a4 0%, #6ee5c196 100%);
 }
 
 .width-fit {
   width: fit-content !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 0px 2px 0 rgba(0, 0, 0, 0.164) !important;
 }

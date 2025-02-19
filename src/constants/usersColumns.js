@@ -30,21 +30,18 @@ export const usersColumns = [
     label: 'Имя',
     align: 'center',
     field: 'name',
-    sortable: true,
   },
   {
     name: 'surname',
     label: 'Фамилия',
     align: 'center',
     field: 'surname',
-    sortable: true,
   },
   {
     name: 'patronymic',
     label: 'Отчество',
     align: 'center',
     field: 'patronymic',
-    sortable: true,
   },
   {
     name: 'age',
@@ -54,18 +51,16 @@ export const usersColumns = [
     sortable: true,
   },
   {
-    name: 'gender',
-    label: 'Пол',
-    align: 'center',
-    field: 'gender',
-    sortable: true,
-  },
-  {
     name: 'address',
     label: 'Адрес',
     align: 'center',
     field: 'address',
-    sortable: true,
+  },
+  {
+    name: 'phoneNumber',
+    label: 'Телефон',
+    align: 'center',
+    field: 'phoneNumber',
   },
   {
     name: 'destroy',
