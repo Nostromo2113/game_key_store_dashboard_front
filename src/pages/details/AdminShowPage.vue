@@ -50,7 +50,7 @@
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
                 <q-btn
-                  @click="updateUser(userPath, userData, selectedFile, user.id)"
+                  @click="updateUser(userPath, user, selectedFile, user.id)"
                   label="Применить"
                   color="primary"
                   unelevated
