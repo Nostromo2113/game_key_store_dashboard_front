@@ -177,7 +177,6 @@ const getCategories = async () => {
 }
 
 const updateData = async (path, productData, selectedFile, productId) => {
-  console.log('111', path, productData, selectedFile, productId, '111')
   try {
     const data = productData
     delete data.activation_keys

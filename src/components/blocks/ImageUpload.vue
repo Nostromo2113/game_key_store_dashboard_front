@@ -49,7 +49,7 @@ const onFileChange = (file) => {
 watch(
   () => props.imageLink,
   (newVal) => {
-    console.log('imageLink')
+    console.log(newVal)
     previewUrl.value = `${import.meta.env.VITE_APP_API_URL}/storage/${newVal}`
   },
   { immediate: true },

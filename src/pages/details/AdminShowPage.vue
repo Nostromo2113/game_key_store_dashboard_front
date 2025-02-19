@@ -49,7 +49,14 @@
             <q-input value="Админ" label="Роль" class="q-mb-sm" dense />
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
-                <q-btn label="Применить" color="primary" unelevated no-caps class="q-mr-sm" />
+                <q-btn
+                  @click="updateUser(userPath, userData, selectedFile, user.id)"
+                  label="Применить"
+                  color="primary"
+                  unelevated
+                  no-caps
+                  class="q-mr-sm"
+                />
                 <q-btn
                   label="Отменить"
                   color="warning"
@@ -154,14 +161,17 @@ import { useUserStore } from 'src/stores/userStore'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
 import { postData } from 'src/utils/http/post'
-
+import { patchData } from 'src/utils/http/patch'
+import { patchFormData } from 'src/utils/http/patchFormData'
 const userStore = useUserStore()
 
 const edit = ref(false)
 const modalRestore = ref(false)
 const isPwd = ref(false)
+const userPath = 'users'
 
 const user = computed(() => (userStore.user ? userStore.user : {}))
+const selectedFile = ref()
 
 const password = ref({
   current_password: '',
@@ -178,6 +188,26 @@ const changePassword = async () => {
     for (let key in password.value) {
       password.value[key] = ''
     }
+  }
+}
+
+const onFileChange = (file) => {
+  selectedFile.value = file
+  console.log('selected', file)
+}
+
+const updateUser = async (userPath, userData, selectedFile, userId) => {
+  console.log(userPath, userData, selectedFile, userId)
+  try {
+    const data = userData
+    if (selectedFile) {
+      data.file = selectedFile
+      await patchFormData(userPath, userId, data)
+    } else {
+      await patchData(userPath, userId, data)
+    }
+  } catch (e) {
+    console.error(e)
   }
 }
 </script>

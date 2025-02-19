@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md custom-rounded">
-    <!-- Блок с аватаром и данными пользователя -->
+    <!-- Блок с аватаром -->
     <div class="grid-container">
       <q-card class="avatar-section q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
@@ -17,7 +17,7 @@
           class="full-width"
         />
       </q-card>
-
+      <!-- Блок с Данными пользователя -->
       <q-card class="user-data-section q-pa-md full-height custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Данные пользователя</div>
@@ -37,14 +37,21 @@
           <div class="right-column">
             <q-input v-model="userData.email" type="email" label="Email" />
             <q-input v-model="userData.address" label="Адрес" />
-            <q-input v-model="userData.phone_number" label="Телефон" />
+            <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" />
             <q-input label="Администратор"></q-input>
           </div>
         </q-card-section>
 
         <q-card-actions align="right" class="q-pb-md q-pr-md">
           <template v-if="!readonly">
-            <q-btn label="Применить" color="primary" unelevated no-caps class="q-mr-sm" />
+            <q-btn
+              @click="updateUser(userPath, userData, selectedFile, userId)"
+              label="Применить"
+              color="primary"
+              unelevated
+              no-caps
+              class="q-mr-sm"
+            />
             <q-btn
               label="Отменить"
               color="warning"
@@ -99,8 +106,10 @@ import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import OrderTable from 'src/components/tables/OrderTable.vue'
 import CartProductsTable from 'src/components/tables/CartProductsTable.vue'
 import { getData } from 'src/utils/http/get'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { patchData } from 'src/utils/http/patch'
+import { patchFormData } from 'src/utils/http/patchFormData'
 
 const route = useRoute()
 const userId = route.params.userId
@@ -109,6 +118,7 @@ const orderPath = 'orders'
 const tab = ref('orders')
 
 const userData = ref({})
+const selectedFile = ref()
 
 const orderData = ref([])
 
@@ -135,8 +145,30 @@ const getOrderData = async (path, userId) => {
   }
 }
 
-getUserData(userPath, userId)
-getOrderData(orderPath, userId)
+const onFileChange = (file) => {
+  selectedFile.value = file
+  console.log('selected', file)
+}
+
+const updateUser = async (userPath, userData, selectedFile, userId) => {
+  console.log(userPath, userData, selectedFile, userId)
+  try {
+    const data = userData
+    if (selectedFile) {
+      data.file = selectedFile
+      await patchFormData(userPath, userId, data)
+    } else {
+      await patchData(userPath, userId, data)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+onMounted(() => {
+  getUserData(userPath, userId)
+  getOrderData(orderPath, userId)
+})
 
 const readonly = ref(true)
 </script>
