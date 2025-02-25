@@ -110,11 +110,14 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { patchData } from 'src/utils/http/patch'
 import { patchFormData } from 'src/utils/http/patchFormData'
+import { useCartStore } from 'src/stores/cartStore'
 
 const route = useRoute()
 const userId = route.params.userId
+const cartStore = useCartStore()
 const userPath = 'users'
 const orderPath = 'orders'
+
 const tab = ref('orders')
 
 const userData = ref({})
@@ -126,7 +129,7 @@ const getUserData = async (path, userId) => {
   try {
     const response = await getData(path, userId)
     userData.value = response
-    console.log(userData.value)
+    cartStore.fetchCart(userId)
   } catch (e) {
     console.error(e)
   }
