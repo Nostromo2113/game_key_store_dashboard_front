@@ -11,7 +11,7 @@
             height="250px"
           />
           <div class="column">
-            <div class="text-subtitle1 q-mt-sm">Данные в магазине</div>
+            <div class="text-subtitle1 q-mt-md">Данные в магазине</div>
             <div class="q-gutter-md col row q-mb-md">
               <q-input
                 v-model="productData.price"
@@ -30,6 +30,13 @@
                 dense
                 class="col"
               />
+            </div>
+          </div>
+          <div class="q-mt-md">
+            <div class="text-subtitle1 q-mb-sm">Опубликовать?</div>
+            <div class="row justify-start full-width gap-sm">
+              <q-radio v-model="productData.is_published" :val="1" label="Опубликовть"></q-radio>
+              <q-radio v-model="productData.is_published" :val="0" label="Не публиковать"></q-radio>
             </div>
           </div>
         </q-card-section>
@@ -91,8 +98,17 @@
       <q-card-actions align="right" class="q-pa-md">
         <div class="q-gutter-md">
           <q-btn
+            v-if="productId"
             @click="updateProduct(productData, selectedFile, productId)"
             label="Применить"
+            color="primary"
+            unelevated
+            no-caps
+          ></q-btn>
+          <q-btn
+            v-else
+            @click="storeProduct(productData, selectedFile)"
+            label="Отправить"
             color="primary"
             unelevated
             no-caps
@@ -127,6 +143,7 @@ import { getData } from 'src/utils/http/get'
 import { patchFormData } from 'src/utils/http/patchFormData'
 import { patchData } from 'src/utils/http/patch'
 import { deleteData } from 'src/utils/http/delete'
+import { postData } from 'src/utils/http/post'
 
 const route = useRoute()
 const productId = route.params.productId
@@ -139,6 +156,7 @@ const productData = ref({
   description: 'Придумайте описание для игры',
   price: '',
   amount: '',
+  is_published: 0,
 })
 
 const technicalRequirements = ref({
@@ -193,12 +211,8 @@ const getCategories = async () => {
 const updateProduct = async (productData, selectedFile, productId) => {
   const path = `products/${productId}`
   try {
-    const data = productData
-    delete data.activation_keys
-    data.category = data.category.id
-    data.genres = data.genres.map((genre) => genre.id)
+    const data = prepareProductData(productData, selectedFile)
     if (selectedFile) {
-      data.file = selectedFile
       await patchFormData(path, data)
     } else {
       await patchData(path, data)
@@ -210,11 +224,37 @@ const updateProduct = async (productData, selectedFile, productId) => {
   }
 }
 
+const storeProduct = async (product, selectedFile) => {
+  const path = 'products'
+  try {
+    const data = prepareProductData(product, selectedFile)
+    await postData(path, data)
+    router.push({ name: 'products' })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const prepareProductData = (product, selectedFile) => {
+  const data = { ...product }
+  delete data.activation_keys
+
+  data.category = selectedCategory.value.id
+  data.genres = selectedGenres.value.map((genre) => genre.id)
+
+  if (selectedFile) {
+    data.file = selectedFile
+  }
+  data.technical_requirements = technicalRequirements.value
+
+  return data
+}
+
 const removeProduct = async (productId) => {
   const path = `products/${productId}`
   try {
     await deleteData(path)
-    router.push({ name: 'products.list' })
+    router.push({ name: 'products' })
   } catch (e) {
     console.error(e)
     getProduct(productId)

@@ -86,28 +86,11 @@
         </q-tr>
       </template>
     </q-table>
-    <q-dialog v-model="createModal" persistent full-width>
-      <user-form
-        :preloader="preloadersTable.store"
-        title="Добавить пользователя"
-        @store-item="store"
-      ></user-form>
-    </q-dialog>
-    <q-dialog v-model="editModal" persistent full-width>
-      <user-form
-        :preloader="preloadersTable.update"
-        title="Редактировать пользователя"
-        :data="editRow"
-        operation="update"
-        @update-item="update"
-      ></user-form>
-    </q-dialog>
   </div>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import UserForm from '../forms/UserForm.vue'
 import SearchForm from '../forms/SearchForm.vue'
 import { productsColumns } from 'src/constants/productsColumns'
 import { defineEmits } from 'vue'
@@ -120,9 +103,6 @@ const props = defineProps({
   tableTitle: {
     type: String,
     default: 'Title',
-  },
-  tablePagination: {
-    type: Object,
   },
   preloadersTable: {
     type: Object,
@@ -152,10 +132,6 @@ const rows = ref([])
 const filteredColumns = ref([])
 const selectedProducts = ref([])
 
-const editModal = ref(false)
-const editRow = ref({})
-const createModal = ref(false)
-
 const navigateToCreateProduct = () => {
   if (!props.checkboxes) {
     router.push({ name: 'product.create' })
@@ -166,6 +142,7 @@ const getProducts = async (path) => {
   try {
     const response = await getData(path)
     rows.value = response
+    console.log('products', rows.value)
   } catch (e) {
     console.error(e)
   }
@@ -198,5 +175,10 @@ const defineColumnStructure = (productsColumns, checkboxes) => {
     filteredColumns.value = productsColumns.filter((el) => el.name !== 'showProduct')
   }
 }
+
+const tablePagination = ref({
+  page: 1,
+  rowsPerPage: 20,
+})
 </script>
 <style lang="css"></style>
