@@ -47,4 +47,10 @@ export const cartProductsColumns = [
     align: 'center',
     field: 'quantity',
   },
+  {
+    name: 'destroy',
+    label: 'удалить',
+    align: 'center',
+    field: 'destroy',
+  },
 ]

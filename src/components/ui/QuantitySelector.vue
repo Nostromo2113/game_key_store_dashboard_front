@@ -7,6 +7,7 @@
       @click="decreaseQuantity"
       :disable="quantityCart <= 1"
       color="primary"
+      unelevated
     />
 
     <span class="text-subtitle2 text-bold" style="width: 14px">
@@ -20,6 +21,7 @@
       @click="increaseQuantity"
       color="primary"
       :disable="quantityCart >= quantityStore"
+      unelevated
     />
   </div>
 </template>

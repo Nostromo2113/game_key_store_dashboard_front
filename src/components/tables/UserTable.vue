@@ -92,7 +92,7 @@
         <q-card-actions align="right">
           <q-btn flat label="Нет" color="primary" v-close-popup></q-btn>
           <q-btn
-            @click="destroy(itemToRemove)"
+            @click="removeUser(itemToRemove.id)"
             flat
             label="Да"
             color="negative"
@@ -111,6 +111,7 @@ import { ref } from 'vue'
 import UserForm from '../forms/UserForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
+import { deleteData } from 'src/utils/http/delete'
 
 const createModal = ref(false)
 const modalRemove = ref(false)
@@ -120,6 +121,17 @@ const rows = ref([])
 const prepareForRemove = (item) => {
   itemToRemove.value = item
   modalRemove.value = true
+}
+
+const removeUser = async (userId) => {
+  const path = `users/${userId}`
+  try {
+    await deleteData(path)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    getUsers('users')
+  }
 }
 
 const getUsers = async (path) => {

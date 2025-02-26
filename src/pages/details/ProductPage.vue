@@ -91,14 +91,26 @@
       <q-card-actions align="right" class="q-pa-md">
         <div class="q-gutter-md">
           <q-btn
-            @click="updateData(path, productData, selectedFile, productId)"
+            @click="updateProduct(productData, selectedFile, productId)"
             label="Применить"
             color="primary"
             unelevated
             no-caps
           ></q-btn>
-          <q-btn label="Отменить" color="warning" unelevated no-caps></q-btn>
-          <q-btn label="Удалить продукт" color="negative" unelevated no-caps></q-btn>
+          <q-btn
+            @click="getProduct(productId)"
+            label="Отменить"
+            color="warning"
+            unelevated
+            no-caps
+          ></q-btn>
+          <q-btn
+            @click="removeProduct(productId)"
+            label="Удалить продукт"
+            color="negative"
+            unelevated
+            no-caps
+          ></q-btn>
         </div>
       </q-card-actions>
     </q-card>
@@ -109,14 +121,16 @@ import TechnicalForm from 'src/components/forms/TechnicalForm.vue'
 import InputCalendar from 'src/components/ui/InputCalendar.vue'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { patchFormData } from 'src/utils/http/patchFormData'
 import { patchData } from 'src/utils/http/patch'
+import { deleteData } from 'src/utils/http/delete'
+
 const route = useRoute()
 const productId = route.params.productId
-
-const path = 'products'
+const router = useRouter()
 
 const productData = ref({
   title: '',
@@ -143,10 +157,10 @@ const categoriesOptions = ref([])
 const selectedGenres = ref([])
 const selectedCategory = ref([])
 
-const getProduct = async (path) => {
-  const productPath = `${path}/${productId}`
+const getProduct = async (productId) => {
+  const path = `products/${productId}`
   try {
-    const response = await getData(productPath)
+    const response = await getData(path)
     console.log(response)
     productData.value = response
     productData.value.amount = response.activation_keys.length
@@ -176,7 +190,8 @@ const getCategories = async () => {
   }
 }
 
-const updateData = async (path, productData, selectedFile, productId) => {
+const updateProduct = async (productData, selectedFile, productId) => {
+  const path = `products/${productId}`
   try {
     const data = productData
     delete data.activation_keys
@@ -184,14 +199,25 @@ const updateData = async (path, productData, selectedFile, productId) => {
     data.genres = data.genres.map((genre) => genre.id)
     if (selectedFile) {
       data.file = selectedFile
-      await patchFormData(path, productId, data)
+      await patchFormData(path, data)
     } else {
-      await patchData(path, productId, data)
+      await patchData(path, data)
     }
   } catch (e) {
     console.error(e)
   } finally {
-    getProduct(path)
+    getProduct(productId)
+  }
+}
+
+const removeProduct = async (productId) => {
+  const path = `products/${productId}`
+  try {
+    await deleteData(path)
+    router.push({ name: 'products.list' })
+  } catch (e) {
+    console.error(e)
+    getProduct(productId)
   }
 }
 
@@ -204,7 +230,7 @@ onMounted(() => {
   getGenres()
   getCategories()
   if (productId) {
-    getProduct(path)
+    getProduct(productId)
   }
 })
 </script>

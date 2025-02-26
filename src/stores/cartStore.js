@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { postData } from 'src/utils/http/post'
+import { patchData } from 'src/utils/http/patch'
 import { deleteData } from 'src/utils/http/delete'
 
 export const useCartStore = defineStore('cart', () => {
@@ -49,11 +50,23 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  const updateProductFromCart = async (cartId, product) => {
+    const path = `cart/${cartId}/products/${product.product_id}`
+    try {
+      await patchData(path, product)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      fetchCart(cartId)
+    }
+  }
+
   return {
     cartDetails,
     cartProducts,
     fetchCart,
     storeProductToCart,
     removeProductFromCart,
+    updateProductFromCart,
   }
 })

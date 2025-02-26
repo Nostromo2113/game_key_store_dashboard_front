@@ -15,13 +15,7 @@
           <div class="text-h6">{{ product.title }}</div>
           <!-- Издатель -->
           <div class="text-subtitle2">{{ product.publisher }}</div>
-          <!-- Описание -->
-          <div
-            class="text-body2"
-            style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-          >
-            <span v-html="product.description"></span>
-          </div>
+
           <!-- Цена и количество -->
           <div class="q-mt-md">
             <div class="text-subtitle1">Цена: {{ product.price }} ₽</div>
@@ -38,8 +32,30 @@
               icon="visibility"
               @click="viewProduct(product.id)"
               label="Посмотреть"
+              no-caps
             />
-            <q-btn @click="addSelectedProduct(product)" flat rounded icon="shopping_cart"> </q-btn>
+            <!-- Кнопка добавления в корзину -->
+            <q-btn
+              v-if="!isInCart(product.id)"
+              @click="addSelectedProduct(product)"
+              color="primary"
+              flat
+              rounded
+              icon="shopping_cart"
+              no-caps
+            >
+              <q-tooltip v-if="isInCart(product.id)">В корзине</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="isInCart(product.id)"
+              @click="removeProductFromCart(product.id)"
+              color="negative"
+              icon="remove_shopping_cart"
+              flat
+              rounded
+              no-caps
+            >
+            </q-btn>
           </div>
         </q-card-actions>
       </q-card>
@@ -48,12 +64,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref, defineEmits } from 'vue'
+import { onMounted, ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
+import { useCartStore } from 'src/stores/cartStore'
 
 const emit = defineEmits(['addSelectedProduct'])
+
+const cartStore = useCartStore()
+
+const cartProducts = computed(() => cartStore.cartProducts)
 
 const router = useRouter()
 
@@ -76,6 +97,16 @@ const viewProduct = (productId) => {
   router.push({ name: 'product.show', params: { productId } })
 }
 
+const isInCart = (productId) => {
+  if (cartProducts.value) {
+    return cartProducts.value.some((p) => p.id === productId)
+  }
+}
+
+const removeProductFromCart = (productId) => {
+  cartStore.removeProductFromCart(cartStore.cartDetails.id, productId)
+}
+
 onMounted(() => {
   getProducts('products')
 })
@@ -84,7 +115,7 @@ onMounted(() => {
 <style lang="css" scoped>
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 22px;
 }
 

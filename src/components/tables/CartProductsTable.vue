@@ -39,20 +39,20 @@
           </q-td>
           <q-td key="quantity" :props="props">
             <QuantitySelector
+              v-if="props.row.quantity_store"
               :quantity_cart="props.row.quantity_cart"
               :quantity_store="props.row.quantity_store"
               class="q-pl-xl"
-              @increase="(quantity) => updateProductQuantity(props.row.id, quantity)"
-              @decrease="(quantity) => updateProductQuantity(props.row.id, quantity)"
+              @update:quantity="(quantity) => updateProductQuantity(props.row.id, quantity)"
             />
+            <q-badge v-else color="warning" class="q-pa-sm text-black">Товар закончился</q-badge>
           </q-td>
           <q-td key="destroy" :props="props">
             <q-btn
               @click="removeProductFromCart(props.row.id)"
               icon="close"
-              size="12px"
+              size="14px"
               color="negative"
-              round
               dense
               unelevated
             ></q-btn>
@@ -84,8 +84,8 @@ const props = defineProps({
 
 const cartId = computed(() => props.cartId)
 
-const cartItems = computed(() => cartStore.cartProducts)
-const cartDetails = computed(() => cartStore.cartDetails)
+const cartItems = computed(() => cartStore.cartProducts || [])
+const cartDetails = computed(() => cartStore.cartDetails || {})
 
 const fetchCart = async (path, id) => {
   if (!id) {
@@ -102,11 +102,10 @@ const fetchCart = async (path, id) => {
 }
 
 const updateProductQuantity = (productId, quantity) => {
-  const productIndex = cartItems.value.findIndex((product) => product.id === productId)
-  if (productIndex !== -1) {
-    cartItems.value[productIndex].quantity = quantity
-    emit('updateQuantity', cartItems.value[productIndex])
-  }
+  cartStore.updateProductFromCart(cartId.value, {
+    product_id: productId,
+    quantity: quantity,
+  })
 }
 
 const removeProductFromCart = async (productId) => {

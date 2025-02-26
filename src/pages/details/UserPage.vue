@@ -45,7 +45,7 @@
         <q-card-actions align="right" class="q-pb-md q-pr-md">
           <template v-if="!readonly">
             <q-btn
-              @click="updateUser(userPath, userData, selectedFile, userId)"
+              @click="updateUser(userData, selectedFile, userId)"
               label="Применить"
               color="primary"
               unelevated
@@ -115,7 +115,6 @@ import { useCartStore } from 'src/stores/cartStore'
 const route = useRoute()
 const userId = route.params.userId
 const cartStore = useCartStore()
-const userPath = 'users'
 const orderPath = 'orders'
 
 const tab = ref('orders')
@@ -125,9 +124,9 @@ const selectedFile = ref()
 
 const orderData = ref([])
 
-const getUserData = async (path, userId) => {
+const getUserData = async (userId) => {
   try {
-    const response = await getData(path, userId)
+    const response = await getData('users', userId)
     userData.value = response
     cartStore.fetchCart(userId)
   } catch (e) {
@@ -153,23 +152,26 @@ const onFileChange = (file) => {
   console.log('selected', file)
 }
 
-const updateUser = async (userPath, userData, selectedFile, userId) => {
-  console.log(userPath, userData, selectedFile, userId)
+const updateUser = async (userData, selectedFile, userId) => {
+  const path = `users/${userId}`
   try {
     const data = userData
+    console.log(data)
     if (selectedFile) {
       data.file = selectedFile
-      await patchFormData(userPath, userId, data)
+      await patchFormData(path, data)
     } else {
-      await patchData(userPath, userId, data)
+      await patchData(path, data)
     }
   } catch (e) {
     console.error(e)
+  } finally {
+    getUserData(userId)
   }
 }
 
 onMounted(() => {
-  getUserData(userPath, userId)
+  getUserData(userId)
   getOrderData(orderPath, userId)
 })
 
