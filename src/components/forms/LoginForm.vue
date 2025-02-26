@@ -63,10 +63,15 @@ const path = 'auth/login'
 const modalRestore = ref(false)
 
 const performLogin = async (path, data) => {
-  const response = await postData(path, data)
-  saveToken(response.access_token)
-  await getMe()
-  router.push({ name: 'admin' })
+  try {
+    const response = await postData(path, data)
+    console.log(response)
+    saveToken(response.data.access_token)
+    await getMe()
+    router.push({ name: 'admin' })
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const saveToken = (token) => {
