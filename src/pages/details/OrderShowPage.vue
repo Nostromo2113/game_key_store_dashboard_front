@@ -140,12 +140,16 @@ const applyChanges = async (products) => {
       activation_key_id: product.activation_key_id || null,
     }
   })
+  const path = `orders/${orderId}`
   try {
-    await patchData(orderPath, orderId, { order_products: applyProducts })
+    const response = await patchData(path, { order_products: applyProducts })
+    orderProducts.value = response.data.order.products.map((product) => ({
+      ...product,
+      quantity: product.activation_keys.length,
+    }))
+    console.log(orderProducts.value)
   } catch (e) {
     console.error('Ошибка при отправке данных:', e)
-  } finally {
-    getOrderProducts(orderPath, orderId)
   }
 }
 
