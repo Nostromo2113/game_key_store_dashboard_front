@@ -5,7 +5,6 @@ import {
   createWebHistory,
   createWebHashHistory,
 } from 'vue-router'
-import { useUserStore } from 'src/stores/userStore'
 import routes from './routes'
 
 /*
@@ -36,9 +35,8 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
   //Редирект для неавторизованных пользователей
   Router.beforeEach((to, from, next) => {
-    const userStore = useUserStore()
-
-    if (!userStore.isAuthenticated && to.name !== 'auth') {
+    const localUser = localStorage.getItem('user')
+    if (!localUser && to.name !== 'auth') {
       next({ name: 'auth' })
     } else {
       next()

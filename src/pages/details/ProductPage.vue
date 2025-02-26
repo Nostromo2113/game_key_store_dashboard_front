@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <q-card flat class="custom-rounded">
+    <q-card flat class="custom-rounded shadow-sm">
       <q-card-section horizontal vertical>
         <q-card-section class="col-3">
           <div class="text-subtitle1 q-mb-sm">Превью изображение</div>
@@ -11,7 +11,7 @@
             height="250px"
           />
           <div class="column">
-            <div class="text-subtitle1 q-mt-sm">Данные в магазине</div>
+            <div class="text-subtitle1 q-mt-md">Данные в магазине</div>
             <div class="q-gutter-md col row q-mb-md">
               <q-input
                 v-model="productData.price"
@@ -30,6 +30,13 @@
                 dense
                 class="col"
               />
+            </div>
+          </div>
+          <div class="q-mt-md">
+            <div class="text-subtitle1 q-mb-sm">Опубликовать?</div>
+            <div class="row justify-start full-width gap-sm">
+              <q-radio v-model="productData.is_published" :val="1" label="Опубликовть"></q-radio>
+              <q-radio v-model="productData.is_published" :val="0" label="Не публиковать"></q-radio>
             </div>
           </div>
         </q-card-section>
@@ -91,14 +98,35 @@
       <q-card-actions align="right" class="q-pa-md">
         <div class="q-gutter-md">
           <q-btn
-            @click="updateData(path, productData, selectedFile, productId)"
+            v-if="productId"
+            @click="updateProduct(productData, selectedFile, productId)"
             label="Применить"
             color="primary"
             unelevated
             no-caps
           ></q-btn>
-          <q-btn label="Отменить" color="warning" unelevated no-caps></q-btn>
-          <q-btn label="Удалить продукт" color="negative" unelevated no-caps></q-btn>
+          <q-btn
+            v-else
+            @click="storeProduct(productData, selectedFile)"
+            label="Отправить"
+            color="primary"
+            unelevated
+            no-caps
+          ></q-btn>
+          <q-btn
+            @click="getProduct(productId)"
+            label="Отменить"
+            color="warning"
+            unelevated
+            no-caps
+          ></q-btn>
+          <q-btn
+            @click="removeProduct(productId)"
+            label="Удалить продукт"
+            color="negative"
+            unelevated
+            no-caps
+          ></q-btn>
         </div>
       </q-card-actions>
     </q-card>
@@ -109,14 +137,17 @@ import TechnicalForm from 'src/components/forms/TechnicalForm.vue'
 import InputCalendar from 'src/components/ui/InputCalendar.vue'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { patchFormData } from 'src/utils/http/patchFormData'
 import { patchData } from 'src/utils/http/patch'
+import { deleteData } from 'src/utils/http/delete'
+import { postData } from 'src/utils/http/post'
+
 const route = useRoute()
 const productId = route.params.productId
-
-const path = 'products'
+const router = useRouter()
 
 const productData = ref({
   title: '',
@@ -125,6 +156,7 @@ const productData = ref({
   description: 'Придумайте описание для игры',
   price: '',
   amount: '',
+  is_published: 0,
 })
 
 const technicalRequirements = ref({
@@ -143,10 +175,10 @@ const categoriesOptions = ref([])
 const selectedGenres = ref([])
 const selectedCategory = ref([])
 
-const getProduct = async (path) => {
-  const productPath = `${path}/${productId}`
+const getProduct = async (productId) => {
+  const path = `products/${productId}`
   try {
-    const response = await getData(productPath)
+    const response = await getData(path)
     console.log(response)
     productData.value = response
     productData.value.amount = response.activation_keys.length
@@ -176,23 +208,56 @@ const getCategories = async () => {
   }
 }
 
-const updateData = async (path, productData, selectedFile, productId) => {
+const updateProduct = async (productData, selectedFile, productId) => {
+  const path = `products/${productId}`
   try {
-    const data = productData
-    delete data.activation_keys
-    data.category = data.category.id
-    data.genres = data.genres.map((genre) => genre.id)
-    console.log(productId)
+    const data = prepareProductData(productData, selectedFile)
     if (selectedFile) {
-      data.file = selectedFile
-      await patchFormData(path, productId, data)
+      await patchFormData(path, data)
     } else {
       await patchData(path, data)
     }
   } catch (e) {
     console.error(e)
   } finally {
-    getProduct(path)
+    getProduct(productId)
+  }
+}
+
+const storeProduct = async (product, selectedFile) => {
+  const path = 'products'
+  try {
+    const data = prepareProductData(product, selectedFile)
+    await postData(path, data)
+    router.push({ name: 'products' })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const prepareProductData = (product, selectedFile) => {
+  const data = { ...product }
+  delete data.activation_keys
+
+  data.category = selectedCategory.value.id
+  data.genres = selectedGenres.value.map((genre) => genre.id)
+
+  if (selectedFile) {
+    data.file = selectedFile
+  }
+  data.technical_requirements = technicalRequirements.value
+
+  return data
+}
+
+const removeProduct = async (productId) => {
+  const path = `products/${productId}`
+  try {
+    await deleteData(path)
+    router.push({ name: 'products' })
+  } catch (e) {
+    console.error(e)
+    getProduct(productId)
   }
 }
 
@@ -205,7 +270,7 @@ onMounted(() => {
   getGenres()
   getCategories()
   if (productId) {
-    getProduct(path)
+    getProduct(productId)
   }
 })
 </script>

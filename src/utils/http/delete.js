@@ -1,8 +1,6 @@
 import { api } from 'src/boot/axios'
 
-export const deleteData = async (path, id) => {
-  const deletePath = `${path}/${id}`
-  console.log(deletePath)
-  const response = await api.delete(deletePath)
+export const deleteData = async (path) => {
+  const response = await api.delete(path)
   return response
 }

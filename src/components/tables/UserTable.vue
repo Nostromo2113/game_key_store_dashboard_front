@@ -7,7 +7,7 @@
       :pagination="tablePagination"
       row-key="title"
       flat
-      class="custom-rounded q-pa-md text-blue-grey-9"
+      class="custom-rounded q-pa-md text-blue-grey-9 shadow-sm"
       dense
     >
       <template v-slot:top-right>
@@ -39,9 +39,6 @@
             {{ props.row.id }}
           </q-td>
           <q-td key="avatar" :props="props">
-            <!-- <q-avatar size="70px">
-              <img :src="getAvatarUrl(props.row.avatar)" />
-            </q-avatar> -->
             <q-img
               width="75px"
               height="75px"
@@ -64,11 +61,11 @@
           <q-td key="age" :props="props">
             {{ props.row.age }}
           </q-td>
-          <q-td key="gender" :props="props">
-            {{ props.row.gender }}
-          </q-td>
           <q-td key="address" :props="props">
             {{ props.row.address }}
+          </q-td>
+          <q-td key="phoneNumber" :props="props">
+            {{ props.row.phone_number }}
           </q-td>
           <q-td key="destroy" :props="props">
             <q-btn
@@ -95,7 +92,7 @@
         <q-card-actions align="right">
           <q-btn flat label="Нет" color="primary" v-close-popup></q-btn>
           <q-btn
-            @click="destroy(itemToRemove)"
+            @click="removeUser(itemToRemove.id)"
             flat
             label="Да"
             color="negative"
@@ -105,15 +102,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="createModal" persistent full-width>
-      <user-form title="Добавить пользователя" @store-item="store"></user-form>
-    </q-dialog>
-    <q-dialog v-model="editModal" persistent full-width>
-      <user-form
-        title="Редактировать пользователя"
-        :data="editRow"
-        operation="update"
-        @update-item="update"
-      ></user-form>
+      <user-form title="Добавить пользователя"></user-form>
     </q-dialog>
   </div>
 </template>
@@ -122,9 +111,8 @@ import { ref } from 'vue'
 import UserForm from '../forms/UserForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
+import { deleteData } from 'src/utils/http/delete'
 
-const editModal = ref(false)
-const editRow = ref({})
 const createModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})
@@ -133,6 +121,17 @@ const rows = ref([])
 const prepareForRemove = (item) => {
   itemToRemove.value = item
   modalRemove.value = true
+}
+
+const removeUser = async (userId) => {
+  const path = `users/${userId}`
+  try {
+    await deleteData(path)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    getUsers('users')
+  }
 }
 
 const getUsers = async (path) => {

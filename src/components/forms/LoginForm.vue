@@ -13,7 +13,7 @@
             <template v-slot:prepend> <q-icon name="lock" /> </template
           ></q-input>
           <q-btn
-            @click="$emit('isNotRegistered')"
+            @click="modalRestore = true"
             flat
             no-caps
             dense
@@ -32,9 +32,18 @@
         >Еще не зарегистрированы?</q-btn
       >
     </q-card-section>
+    <q-dialog v-model="modalRestore">
+      <div>
+        <q-card class="q-pa-md shadow-sm" style="min-width: 320px">
+          <p class="text-grey-8 text-center">Будет выслан новый пароль</p>
+          <ResetPasswordForm class="full-width" />
+        </q-card>
+      </div>
+    </q-dialog>
   </q-card>
 </template>
 <script setup>
+import ResetPasswordForm from './ResetPasswordForm.vue'
 import { api } from 'src/boot/axios'
 import { postData } from 'src/utils/http/post'
 import { ref } from 'vue'
@@ -51,11 +60,18 @@ const form = ref({
 
 const path = 'auth/login'
 
+const modalRestore = ref(false)
+
 const performLogin = async (path, data) => {
-  const response = await postData(path, data)
-  saveToken(response.access_token)
-  getMe()
-  router.push({ name: 'admin' })
+  try {
+    const response = await postData(path, data)
+    console.log(response)
+    saveToken(response.data.access_token)
+    await getMe()
+    router.push({ name: 'admin' })
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const saveToken = (token) => {

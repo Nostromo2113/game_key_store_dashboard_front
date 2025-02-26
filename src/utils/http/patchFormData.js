@@ -1,9 +1,8 @@
 import { api } from 'src/boot/axios'
 
-export const patchFormData = async (path, id, data) => {
+export const patchFormData = async (path, data) => {
   const formData = generateFormData(data)
-  const patchPath = `${path}/${id}`
-  const response = await api.post(patchPath, formData, {
+  const response = await api.post(path, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -27,7 +26,7 @@ const generateFormData = (data) => {
       formData.append(key, data[key])
     }
   }
-  showFormData(formData)
+  //  showFormData(formData)
   return formData
 }
 
@@ -36,8 +35,8 @@ const isObject = (el) =>
 
 // Просмотреть данные в formData
 
-const showFormData = (formData) => {
-  for (const [key, value] of formData.entries()) {
-    console.log(`formData el: '${key}: ${value}`)
-  }
-}
+// const showFormData = (formData) => {
+//   for (const [key, value] of formData.entries()) {
+//     console.log(`formData el: '${key}: ${value}`)
+//   }
+// }

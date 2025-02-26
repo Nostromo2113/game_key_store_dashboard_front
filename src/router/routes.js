@@ -10,6 +10,7 @@ import OrderShowPage from 'src/pages/details/OrderShowPage.vue'
 import AuthPage from 'src/pages/AuthPage.vue'
 import AuthLayout from 'src/layouts/AuthLayout.vue'
 import AdminShowPage from 'src/pages/details/AdminShowPage.vue'
+import ShopPage from 'src/pages/ShopPage.vue'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     meta: { breadCrumbName: 'Пользователи' },
     redirect: { name: 'index' },
     children: [
+      {
+        path: 'shop',
+        component: ShopPage,
+        name: 'shop',
+      },
       {
         path: 'admin',
         component: AdminShowPage,

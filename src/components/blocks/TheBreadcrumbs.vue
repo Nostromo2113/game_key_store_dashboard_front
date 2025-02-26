@@ -1,6 +1,6 @@
 <template>
   <div v-if="breadcrumbs.length > 1" class="q-px-md">
-    <q-breadcrumbs class="custom-breadcrumbs border-shadow">
+    <q-breadcrumbs class="custom-breadcrumbs shadow-sm">
       <q-breadcrumbs-el
         v-for="(breadcrumb, index) in breadcrumbs"
         :key="index"

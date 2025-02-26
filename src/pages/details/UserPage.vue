@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-md custom-rounded">
-    <!-- Блок с аватаром и данными пользователя -->
+    <!-- Блок с аватаром -->
     <div class="grid-container">
-      <q-card class="avatar-section q-pa-md custom-rounded" flat>
+      <q-card class="avatar-section q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Аватар</div>
         </q-card-section>
@@ -17,34 +17,41 @@
           class="full-width"
         />
       </q-card>
-
-      <q-card class="user-data-section q-pa-md full-height custom-rounded" flat>
+      <!-- Блок с Данными пользователя -->
+      <q-card class="user-data-section q-pa-md full-height custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Данные пользователя</div>
         </q-card-section>
         <q-card-section class="user-data-grid">
           <!-- Левая колонка -->
           <div class="left-column">
-            <q-input v-model="userData.surname" label="Фамилия" filled />
-            <q-input v-model="userData.name" label="Имя" filled />
-            <q-input v-model="userData.patronymic" label="Отчество" filled />
-            <q-input v-model="userData.age" type="number" label="Возраст" filled />
+            <q-input v-model="userData.surname" label="Фамилия" />
+            <q-input v-model="userData.name" label="Имя" />
+            <q-input v-model="userData.patronymic" label="Отчество" />
+            <q-input v-model="userData.age" type="number" label="Возраст" />
           </div>
 
           <q-separator vertical class="separator" />
 
           <!-- Правая колонка -->
           <div class="right-column">
-            <q-input v-model="userData.email" type="email" label="Email" filled />
-            <q-input v-model="userData.address" label="Адрес" filled />
-            <q-input v-model="phoneNumber" label="Телефон" filled />
-            <q-input label="Администратор" filled></q-input>
+            <q-input v-model="userData.email" type="email" label="Email" />
+            <q-input v-model="userData.address" label="Адрес" />
+            <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" />
+            <q-input label="Администратор"></q-input>
           </div>
         </q-card-section>
-        <!-- Кнопки действий -->
+
         <q-card-actions align="right" class="q-pb-md q-pr-md">
           <template v-if="!readonly">
-            <q-btn label="Применить" color="primary" unelevated no-caps class="q-mr-sm" />
+            <q-btn
+              @click="updateUser(userData, selectedFile, userId)"
+              label="Применить"
+              color="primary"
+              unelevated
+              no-caps
+              class="q-mr-sm"
+            />
             <q-btn
               label="Отменить"
               color="warning"
@@ -68,7 +75,7 @@
     </div>
 
     <!-- Панель с заказами и корзиной -->
-    <q-card flat class="q-pa-sm custom-rounded q-mt-md">
+    <q-card flat class="q-pa-sm custom-rounded q-mt-md shadow-sm">
       <q-toolbar>
         <q-toolbar-title>{{ tab === 'orders' ? 'Заказы' : 'Корзина' }}</q-toolbar-title>
         <q-tabs
@@ -99,35 +106,29 @@ import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import OrderTable from 'src/components/tables/OrderTable.vue'
 import CartProductsTable from 'src/components/tables/CartProductsTable.vue'
 import { getData } from 'src/utils/http/get'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { patchData } from 'src/utils/http/patch'
+import { patchFormData } from 'src/utils/http/patchFormData'
+import { useCartStore } from 'src/stores/cartStore'
 
 const route = useRoute()
 const userId = route.params.userId
-const userPath = 'users'
+const cartStore = useCartStore()
 const orderPath = 'orders'
+
 const tab = ref('orders')
 
-const phoneNumber = ref('89066052746')
-
-const userData = ref({
-  name: 'Ярослав',
-  surname: 'Юрьев',
-  patronymic: 'Юрьевич',
-  age: 30,
-  avatar: '',
-  email: 'mail@mail.ru',
-  address: 'г. Санкт-Петербург',
-  phoneNumber: '89999999999',
-})
+const userData = ref({})
+const selectedFile = ref()
 
 const orderData = ref([])
 
-const getUserData = async (path, userId) => {
+const getUserData = async (userId) => {
   try {
-    const response = await getData(path, userId)
+    const response = await getData('users', userId)
     userData.value = response
-    console.log(userData.value)
+    cartStore.fetchCart(userId)
   } catch (e) {
     console.error(e)
   }
@@ -146,8 +147,33 @@ const getOrderData = async (path, userId) => {
   }
 }
 
-getUserData(userPath, userId)
-getOrderData(orderPath, userId)
+const onFileChange = (file) => {
+  selectedFile.value = file
+  console.log('selected', file)
+}
+
+const updateUser = async (userData, selectedFile, userId) => {
+  const path = `users/${userId}`
+  try {
+    const data = userData
+    console.log(data)
+    if (selectedFile) {
+      data.file = selectedFile
+      await patchFormData(path, data)
+    } else {
+      await patchData(path, data)
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    getUserData(userId)
+  }
+}
+
+onMounted(() => {
+  getUserData(userId)
+  getOrderData(orderPath, userId)
+})
 
 const readonly = ref(true)
 </script>

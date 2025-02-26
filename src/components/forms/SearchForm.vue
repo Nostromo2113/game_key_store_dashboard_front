@@ -2,7 +2,7 @@
   <form class="flex q-gutter-md" @submit.prevent="getSearchItems(searchQuery)">
     <q-input
       v-model="searchQuery"
-      class="bg-white"
+      bg-color="white"
       placeholder="Поиск..."
       dense
       outlined

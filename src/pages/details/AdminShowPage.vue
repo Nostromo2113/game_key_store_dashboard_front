@@ -1,14 +1,14 @@
 <template>
   <div class="bg-gradient" style="height: 100vh">
     <div class="container">
-      <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9"
+      <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
         >Добро пожаловать {{ user.name }}!</q-toolbar
       >
       <!-- Основной блок с аватаром и информацией о пользователе -->
       <div class="grid-container">
         <!-- Аватар -->
         <div class="avatar-section full-height">
-          <q-card class="q-pa-md custom-rounded full-height" flat>
+          <q-card class="q-pa-md custom-rounded full-height shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваш аватар:</div>
             </q-card-section>
@@ -29,7 +29,7 @@
 
         <!-- Информация о пользователе -->
         <div class="user-info-section">
-          <q-card class="q-pa-md custom-rounded" flat>
+          <q-card class="q-pa-md custom-rounded shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваши данные:</div>
             </q-card-section>
@@ -40,7 +40,7 @@
             <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense />
             <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense />
             <q-input
-              value="7999999999"
+              v-model="user.phone_number"
               label="Телефон"
               mask="+7 (###) ###-##-##"
               class="q-mb-sm"
@@ -49,7 +49,14 @@
             <q-input value="Админ" label="Роль" class="q-mb-sm" dense />
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
-                <q-btn label="Применить" color="primary" unelevated no-caps class="q-mr-sm" />
+                <q-btn
+                  @click="updateUser(userPath, user, selectedFile, user.id)"
+                  label="Применить"
+                  color="primary"
+                  unelevated
+                  no-caps
+                  class="q-mr-sm"
+                />
                 <q-btn
                   label="Отменить"
                   color="warning"
@@ -74,12 +81,12 @@
       </div>
 
       <!-- Блок смены пароля -->
-      <q-card class="q-mt-md q-pa-md custom-rounded" flat>
+      <q-card class="q-mt-md q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-pa-none q-mb-md">
           <div class="text-subtitle2 text-grey">Сменить пароль:</div>
         </q-card-section>
         <q-input
-          v-model="oldPassword"
+          v-model="password.current_password"
           label="Старый пароль"
           type="password"
           class="q-mb-sm"
@@ -94,7 +101,7 @@
             ></q-icon> </template
         ></q-input>
         <q-input
-          v-model="newPassword"
+          v-model="password.new_password"
           label="Новый пароль"
           type="password"
           class="q-mb-sm"
@@ -108,7 +115,7 @@
             ></q-icon> </template
         ></q-input>
         <q-input
-          v-model="newPassword"
+          v-model="password.new_password_confirmation"
           label="Подтвердите пароль"
           type="password"
           class="q-mb-sm"
@@ -139,9 +146,9 @@
     </div>
     <q-dialog v-model="modalRestore">
       <div>
-        <q-card class="q-pa-md" style="min-width: 320px">
+        <q-card class="q-pa-md shadow-sm" style="min-width: 320px">
           <p class="text-grey-8 text-center">Будет выслан новый пароль</p>
-          <ResetPasswordForm class="full-width" />
+          <ResetPasswordForm class="full-width" :userEmail="user.email" />
         </q-card>
       </div>
     </q-dialog>
@@ -153,20 +160,55 @@ import { ref, computed } from 'vue'
 import { useUserStore } from 'src/stores/userStore'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
-
+import { postData } from 'src/utils/http/post'
+import { patchData } from 'src/utils/http/patch'
+import { patchFormData } from 'src/utils/http/patchFormData'
 const userStore = useUserStore()
 
 const edit = ref(false)
 const modalRestore = ref(false)
 const isPwd = ref(false)
+const userPath = 'users'
 
-const user = computed(() => userStore.user)
+const user = computed(() => (userStore.user ? userStore.user : {}))
+const selectedFile = ref()
 
-const oldPassword = ref('')
-const newPassword = ref('')
+const password = ref({
+  current_password: '',
+  new_password: '',
+  new_password_confirmation: '',
+})
 
-const changePassword = () => {
-  console.log('change')
+const changePassword = async () => {
+  try {
+    await postData('password/change', password.value)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    for (let key in password.value) {
+      password.value[key] = ''
+    }
+  }
+}
+
+const onFileChange = (file) => {
+  selectedFile.value = file
+  console.log('selected', file)
+}
+
+const updateUser = async (userPath, userData, selectedFile, userId) => {
+  console.log(userPath, userData, selectedFile, userId)
+  try {
+    const data = userData
+    if (selectedFile) {
+      data.file = selectedFile
+      await patchFormData(userPath, userId, data)
+    } else {
+      await patchData(userPath, userId, data)
+    }
+  } catch (e) {
+    console.error(e)
+  }
 }
 </script>
 
