@@ -78,22 +78,21 @@
   </div>
 </template>
 <script setup>
-import { ref, defineProps, watch, onMounted } from 'vue'
+import { ref, defineProps, watch } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import { ordersColumns } from 'src/constants/ordersColumns'
 import { getData } from 'src/utils/http/get'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const path = 'orders'
 
 const props = defineProps({
-  rowsData: {
-    type: Array,
-    default: () => [],
-  },
   userPage: {
     type: Boolean,
     default: false,
+  },
+  userId: {
+    type: Number,
+    default: null,
   },
 })
 
@@ -103,10 +102,17 @@ const routePushParams = ref({
 })
 
 const navigateToOrder = (orderId, userId) => {
-  router.push({
-    name: props.userPage ? 'user.order.show' : 'order.show',
-    params: { orderId, userId },
-  })
+  if (!props.userId) {
+    router.push({
+      name: props.userPage ? 'user.order.show' : 'order.show',
+      params: { orderId, userId },
+    })
+  } else {
+    router.push({
+      name: 'shop.order',
+      params: { orderId },
+    })
+  }
 }
 
 const addModal = ref(false)
@@ -114,8 +120,10 @@ const modalRemove = ref(false)
 const itemToRemove = ref({})
 const rows = ref(props.rowsData ?? [])
 
-const getOrders = async (path) => {
+const getOrders = async (userId) => {
   try {
+    const path = userId ? `orders/?user_id=${userId}` : 'orders'
+    console.log('path', path)
     const response = await getData(path)
     rows.value = response
   } catch (e) {
@@ -123,16 +131,10 @@ const getOrders = async (path) => {
   }
 }
 
-onMounted(() => {
-  if (!rows.value.length) {
-    getOrders(path)
-  }
-})
-
 watch(
-  () => props.rowsData,
-  (newVal) => {
-    rows.value = newVal
+  () => props.userId,
+  (userId) => {
+    getOrders(userId)
   },
   { immediate: true },
 )

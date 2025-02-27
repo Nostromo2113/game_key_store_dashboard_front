@@ -2,14 +2,14 @@
   <div>
     <q-table
       :rows="rows"
-      :columns="orderProductsColumns"
+      :columns="columns"
       :pagination="tablePagination"
       row-key="title"
       flat
       dense
       class="q-pa-sm text-blue-grey-9"
     >
-      <template v-slot:top-right>
+      <template v-if="!shop && status" v-slot:top-right>
         <div class="row gap-sm">
           <q-badge color="info" class="text-subtitle2 text-black"> Ключи зарезервированы </q-badge>
           <q-badge color="secondary" class="text-subtitle2 text-black">
@@ -47,6 +47,7 @@
 
           <q-td key="quantity" :props="props" class="cursor-pointer">
             <q-badge
+              v-if="!shop && status !== 'completed'"
               :color="
                 props.row.activation_keys.length > 0 &&
                 props.row.activation_keys.length === props.row.quantity
@@ -57,6 +58,8 @@
             >
               {{ props.row.quantity }}
             </q-badge>
+            <div v-if="shop && status !== 'completed'">{{ props.row.activation_keys.length }}</div>
+            <div v-if="status === 'comleted'">{{ props.row.quantity }}</div>
             <q-popup-edit v-model="props.row.quantity" title="Кол-во экземпляров" buttons>
               <q-input
                 v-model="props.row.quantity"
@@ -90,7 +93,7 @@
             ></q-btn>
           </q-td>
         </q-tr>
-        <q-tr v-show="props.expand" :props="props">
+        <q-tr v-if="!shop && status !== 'completed'" v-show="props.expand" :props="props">
           <q-td colspan="100%" class="bg-grey-1">
             <q-list
               dense
@@ -120,7 +123,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { orderProductsColumns } from 'src/constants/orderProductsColumns.js'
 import { defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
@@ -133,7 +136,17 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  shop: {
+    type: Boolean,
+    default: false,
+  },
+  status: {
+    type: String,
+    default: 'completed',
+  },
 })
+
+const columns = ref([])
 
 const rows = ref([])
 const removeItem = ref({})
@@ -155,6 +168,15 @@ watch(
   },
 )
 
+onMounted(() => {
+  if (props.shop) {
+    columns.value = orderProductsColumns.filter(
+      (column) => column.name !== 'remove' && column.name !== 'id' && column.name !== 'keys',
+    )
+  } else {
+    columns.value = orderProductsColumns
+  }
+})
 const tablePagination = ref({
   page: 1,
   rowsPerPage: 20,

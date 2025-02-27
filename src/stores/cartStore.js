@@ -61,6 +61,8 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  const clearCart = () => (cartProducts.value = [])
+
   return {
     cartDetails,
     cartProducts,
@@ -68,5 +70,6 @@ export const useCartStore = defineStore('cart', () => {
     storeProductToCart,
     removeProductFromCart,
     updateProductFromCart,
+    clearCart,
   }
 })

@@ -86,7 +86,11 @@
       </q-toolbar>
       <q-tab-panels v-model="tab" animated keep-alive>
         <q-tab-panel name="orderProducts">
-          <OrderProductsTable @removeFromOrder="removeFromOrder" :tableData="orderProducts" />
+          <OrderProductsTable
+            @removeFromOrder="removeFromOrder"
+            :tableData="orderProducts"
+            :status="status"
+          />
         </q-tab-panel>
         <q-tab-panel name="products">
           <ProductTable checkboxes @addSelectedProducts="addSelectedProducts" />
@@ -132,6 +136,8 @@ const user = ref({})
 const totalPrice = ref(0)
 const totalAmount = ref(0)
 
+const status = ref('')
+
 const applyChanges = async (products) => {
   const applyProducts = products.map((product) => {
     return {
@@ -156,13 +162,16 @@ const applyChanges = async (products) => {
 const getOrderProducts = async (orderPath, orderId) => {
   try {
     const response = await getData(orderPath, orderId)
+    status.value = response.status
     orderProducts.value = response.products.map((product) => ({
       ...product,
-      quantity: product.activation_keys.length,
+      quantity: product?.activation_keys ? product.activation_keys.length : product.quantity,
     }))
     user.value = response.user
-    totalPrice.value = calcTotalPrice(orderProducts.value)
-    totalAmount.value = calcTotalAmount(orderProducts.value)
+    if (status.value !== 'completed') {
+      totalPrice.value = calcTotalPrice(orderProducts.value)
+      totalAmount.value = calcTotalAmount(orderProducts.value)
+    }
   } catch (e) {
     console.error(e)
   }
