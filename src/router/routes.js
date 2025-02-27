@@ -10,7 +10,11 @@ import OrderShowPage from 'src/pages/details/OrderShowPage.vue'
 import AuthPage from 'src/pages/AuthPage.vue'
 import AuthLayout from 'src/layouts/AuthLayout.vue'
 import AdminShowPage from 'src/pages/details/AdminShowPage.vue'
+import ShopLayout from 'src/layouts/ShopLayout.vue'
 import ShopPage from 'src/pages/ShopPage.vue'
+import CartPage from 'src/pages/shop/ShopCartPage.vue'
+import ShopOrderPage from 'src/pages/shop/ShopOrderPage.vue'
+import ShopOrdersList from 'src/pages/shop/ShopOrdersList.vue'
 
 const routes = [
   {
@@ -26,8 +30,30 @@ const routes = [
     children: [
       {
         path: 'shop',
-        component: ShopPage,
-        name: 'shop',
+        component: ShopLayout,
+        redirect: { name: 'shop' },
+        children: [
+          {
+            path: '',
+            component: ShopPage,
+            name: 'shop',
+          },
+          {
+            path: ':cartId',
+            component: CartPage,
+            name: 'shop.cart',
+          },
+          {
+            path: 'ordersShop/:orderId',
+            component: ShopOrderPage,
+            name: 'shop.order',
+          },
+          {
+            path: 'ordersShop',
+            component: ShopOrdersList,
+            name: 'shop.orders',
+          },
+        ],
       },
       {
         path: 'admin',

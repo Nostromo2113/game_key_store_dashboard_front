@@ -55,11 +55,26 @@
               color="negative"
               dense
               unelevated
+              round
             ></q-btn>
           </q-td>
         </q-tr>
       </template>
     </q-table>
+    <q-dialog
+      v-model="modalOrder"
+      aria-labelledby="remove-dialog-title"
+      aria-describedby="remove-dialog-description"
+    >
+      <q-card class="custom-rounded">
+        <q-item class="bg-primary text-white">
+          <q-item-section>
+            <q-item-label>Ключи будут отправлены на электронную почту</q-item-label>
+          </q-item-section>
+        </q-item>
+        <CardForm />
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -68,8 +83,10 @@ import { ref, defineProps, computed, watch } from 'vue'
 import { cartProductsColumns } from 'src/constants/cartProductsColumns'
 import { defineEmits } from 'vue'
 import QuantitySelector from '../ui/QuantitySelector.vue'
+import CardForm from '../forms/CardForm.vue'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useCartStore } from 'src/stores/cartStore'
+// import { postData } from 'src/utils/http/post'
 
 const emit = defineEmits(['cartReceived', 'updateQuantity'])
 
@@ -80,7 +97,13 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  shop: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const modalOrder = ref(false)
 
 const cartId = computed(() => props.cartId)
 
@@ -111,6 +134,22 @@ const updateProductQuantity = (productId, quantity) => {
 const removeProductFromCart = async (productId) => {
   cartStore.removeProductFromCart(cartDetails.value.id, productId)
 }
+
+// const createOrder = async () => {
+//   const data = {
+//     user_id: cartDetails.value.user_id,
+//     order_products: cartItems.value.map((product) => ({
+//       id: product.id,
+//       quantity: product.quantity_cart,
+//     })),
+//   }
+//   try {
+//     const response = await postData('orders', data)
+//     console.log(response)
+//   } catch (e) {
+//     console.error('При оформлении заказа произошла ошибка', e)
+//   }
+// }
 
 watch(
   () => cartId.value,
