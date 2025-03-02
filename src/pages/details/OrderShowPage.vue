@@ -61,7 +61,9 @@
               </div>
               <div>Оплачен:</div>
               <div class="row">
-                <span class="text-grey"> Нет </span>
+                <span class="text-grey">
+                  {{ status === 'completed' ? 'Оплачен' : 'Ожидает оплаты' }}
+                </span>
               </div>
             </div>
           </q-card>
@@ -153,6 +155,7 @@ const applyChanges = async (products) => {
       ...product,
       quantity: product.activation_keys.length,
     }))
+    status.value = response.data.status
     console.log(orderProducts.value)
   } catch (e) {
     console.error('Ошибка при отправке данных:', e)

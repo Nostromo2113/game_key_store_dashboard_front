@@ -9,13 +9,16 @@
       dense
       class="q-pa-sm text-blue-grey-9"
     >
-      <template v-if="!shop && status" v-slot:top-right>
-        <div class="row gap-sm">
+      <template v-if="!shop" v-slot:top-right>
+        <div v-if="!completed" class="row gap-sm">
           <q-badge color="info" class="text-subtitle2 text-black"> Ключи зарезервированы </q-badge>
           <q-badge color="secondary" class="text-subtitle2 text-black">
             Примените изменения
           </q-badge>
         </div>
+        <q-badge v-else color="primary" class="text-subtitle2 text-white q-px-sm"
+          >Заказ выполнен. Редактирование отключено.</q-badge
+        >
       </template>
 
       <template v-slot:body="props">
@@ -45,22 +48,26 @@
             {{ props.row.price }}
           </q-td>
 
-          <q-td key="quantity" :props="props" class="cursor-pointer">
+          <q-td key="quantity" :props="props">
             <q-badge
-              v-if="!shop && status !== 'completed'"
+              v-if="!shop"
               :color="
                 props.row.activation_keys.length > 0 &&
                 props.row.activation_keys.length === props.row.quantity
                   ? 'info'
                   : 'secondary'
               "
-              class="text-subtitle2 text-black q-px-md"
+              class="text-subtitle2 text-black q-px-md cursor-pointer"
             >
               {{ props.row.quantity }}
             </q-badge>
-            <div v-if="shop && status !== 'completed'">{{ props.row.activation_keys.length }}</div>
-            <div v-if="status === 'comleted'">{{ props.row.quantity }}</div>
-            <q-popup-edit v-model="props.row.quantity" title="Кол-во экземпляров" buttons>
+            <div v-if="shop">{{ props.row.activation_keys.length }}</div>
+            <q-popup-edit
+              v-if="!shop && !completed"
+              v-model="props.row.quantity"
+              title="Кол-во экземпляров"
+              buttons
+            >
               <q-input
                 v-model="props.row.quantity"
                 :min="1"
@@ -87,13 +94,14 @@
               icon="close"
               size="12px"
               color="negative"
+              :disable="completed"
               round
               dense
               unelevated
             ></q-btn>
           </q-td>
         </q-tr>
-        <q-tr v-if="!shop && status !== 'completed'" v-show="props.expand" :props="props">
+        <q-tr v-if="!shop" v-show="props.expand" :props="props">
           <q-td colspan="100%" class="bg-grey-1">
             <q-list
               dense
@@ -123,7 +131,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { orderProductsColumns } from 'src/constants/orderProductsColumns.js'
 import { defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
@@ -150,6 +158,7 @@ const columns = ref([])
 
 const rows = ref([])
 const removeItem = ref({})
+const completed = computed(() => (props.status === 'completed' ? true : false))
 
 const modalRemove = ref(false)
 
