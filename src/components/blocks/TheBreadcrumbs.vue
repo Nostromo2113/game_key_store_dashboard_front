@@ -33,6 +33,7 @@ const breadcrumbDictionary = {
   products: 'Продукты',
   shop: 'Магазин',
   cart: 'Корзина',
+  ordersShop: 'Заказы',
 }
 
 function createBreadcrumbs() {
