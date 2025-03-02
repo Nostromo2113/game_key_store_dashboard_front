@@ -14,7 +14,6 @@
         filled
         rounded
       />
-      <!-- test commit -->
       <RouterLink v-if="!route.params.cartId" :to="cartLink">
         <q-btn @click="openCart = true" flat icon="shopping_cart"
           ><q-badge floating color="info">{{ cartStore.cartProducts?.length }}</q-badge></q-btn
