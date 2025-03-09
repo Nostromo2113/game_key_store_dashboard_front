@@ -106,7 +106,7 @@ const executeOrder = async (orderId) => {
   }
   try {
     const response = await patchData(path, data)
-    console.log('execute res', response)
+    order.value = response.data.order
   } catch (e) {
     console.error(e)
   }

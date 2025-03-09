@@ -1,12 +1,11 @@
-/* Подключаем шрифт через @font-face */
 @font-face {
-  font-family: 'customfont'; /* Имя шрифта */
+  font-family: 'OpenSans';
   src: url('/fonts/OpenSans-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 body {
-  font-family: 'customfont', sans-serif;
+  font-family: 'OpenSans', sans-serif;
   background-color: #f1f5f9;
 }
 
