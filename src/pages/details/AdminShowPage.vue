@@ -162,7 +162,7 @@ import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
 import { postData } from 'src/utils/http/post'
 import { patchData } from 'src/utils/http/patch'
-import { patchFormData } from 'src/utils/http/patchFormData'
+
 const userStore = useUserStore()
 
 const edit = ref(false)
@@ -197,15 +197,14 @@ const onFileChange = (file) => {
 }
 
 const updateUser = async (userPath, userData, selectedFile, userId) => {
-  console.log(userPath, userData, selectedFile, userId)
+  const path = `${userPath}/${userId}`
   try {
     const data = userData
     if (selectedFile) {
       data.file = selectedFile
-      await patchFormData(userPath, userId, data)
-    } else {
-      await patchData(userPath, userId, data)
     }
+    const response = await patchData(path, data)
+    console.log(response)
   } catch (e) {
     console.error(e)
   }
