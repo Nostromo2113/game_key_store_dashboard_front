@@ -41,6 +41,11 @@ const menuList = [
     path: { name: 'products' },
   },
   {
+    icon: 'key',
+    label: 'Ключи',
+    path: { name: 'keys' },
+  },
+  {
     icon: 'shopping_bag',
     label: 'Заказы',
     path: { name: 'orders' },

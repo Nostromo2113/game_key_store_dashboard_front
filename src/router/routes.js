@@ -15,6 +15,7 @@ import ShopPage from 'src/pages/ShopPage.vue'
 import CartPage from 'src/pages/shop/ShopCartPage.vue'
 import ShopOrderPage from 'src/pages/shop/ShopOrderPage.vue'
 import ShopOrdersList from 'src/pages/shop/ShopOrdersList.vue'
+import KeysListPage from 'src/pages/lists/KeysListPage.vue'
 
 const routes = [
   {
@@ -93,7 +94,11 @@ const routes = [
         component: ProductPage,
         name: 'product.create',
       },
-
+      {
+        path: 'keys',
+        component: KeysListPage,
+        name: 'keys',
+      },
       {
         path: 'orders',
         component: OrderListPage,

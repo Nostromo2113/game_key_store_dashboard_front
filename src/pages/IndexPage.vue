@@ -1,14 +1,11 @@
 <template>
-  <q-page class="flex flex-center">
-    <!-- <img
+  <q-page class="q-pa-md justify-center items-center">
+    <img
       alt="Quasar logo"
       src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    /> -->
-    <OrderProductsTable />
+      style="width: 200px; height: 200px; margin: auto"
+    />
   </q-page>
 </template>
 
-<script setup>
-import OrderProductsTable from 'src/components/tables/OrderProductsTable.vue'
-</script>
+<script setup></script>
