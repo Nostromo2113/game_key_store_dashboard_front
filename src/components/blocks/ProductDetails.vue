@@ -1,52 +1,46 @@
 <template>
-  <div>
+  <div class="grid-container">
     <q-card flat class="custom-rounded shadow-sm">
-      <q-card-section horizontal vertical>
-        <q-card-section class="col-3">
-          <div style="max-width: 370px">
-            <div class="text-subtitle1 q-mb-sm">Превью изображение</div>
-            <ImageUpload
-              :imageLink="productData.preview_image"
-              @onFileChange="onFileChange"
-              width="370px"
-              height="250px"
-            />
-            <div class="column">
-              <div class="text-subtitle1 q-mt-md">Данные в магазине</div>
-              <div class="q-gutter-md col row q-mb-md">
-                <q-input
-                  v-model="productData.price"
-                  placeholder="Цена"
-                  type="number"
-                  label="Цена в ₽"
-                  outlined
-                  dense
-                  class="col"
-                />
-                <q-input
-                  v-model="productData.amount"
-                  outlined
-                  readonly
-                  placeholder="Не редактируется"
-                  dense
-                  class="col"
-                />
-              </div>
-            </div>
-            <div class="q-mt-md">
-              <div class="text-subtitle1 q-mb-sm">Опубликовать?</div>
-              <div class="row justify-start full-width gap-sm">
-                <q-radio v-model="productData.is_published" :val="1" label="Опубликовть"></q-radio>
-                <q-radio
-                  v-model="productData.is_published"
-                  :val="0"
-                  label="Не публиковать"
-                ></q-radio>
-              </div>
+      <q-card-section class="grid-section">
+        <div class="preview-section">
+          <div class="text-subtitle1 q-mb-sm">Превью изображение</div>
+          <ImageUpload
+            :imageLink="productData.preview_image"
+            @onFileChange="onFileChange"
+            width="370px"
+            height="250px"
+          />
+          <div class="column" style="max-width: 370px">
+            <div class="text-subtitle1 q-mt-md">Данные в магазине</div>
+            <div class="q-gutter-md col row q-mb-md">
+              <q-input
+                v-model="productData.price"
+                placeholder="Цена"
+                type="number"
+                label="Цена в ₽"
+                outlined
+                dense
+                class="col"
+              />
+              <q-input
+                v-model="productData.amount"
+                outlined
+                readonly
+                placeholder="Не редактируется"
+                dense
+                class="col"
+              />
             </div>
           </div>
-        </q-card-section>
-        <q-card-section class="col-9">
+          <div class="q-mt-md">
+            <div class="text-subtitle1 q-mb-sm">Опубликовать?</div>
+            <div class="row justify-start full-width gap-sm">
+              <q-radio v-model="productData.is_published" :val="1" label="Опубликовть"></q-radio>
+              <q-radio v-model="productData.is_published" :val="0" label="Не публиковать"></q-radio>
+            </div>
+          </div>
+        </div>
+        <div class="main-section">
           <div class="text-subtitle1 q-mb-sm">Основные данные по продукту</div>
           <div class="q-gutter-md row q-mb-md">
             <q-input
@@ -98,7 +92,7 @@
             <q-editor v-model="productData.description" class="col" min-height="7rem"></q-editor>
           </div>
           <TechnicalForm class="q-mt-xl" :data="technicalRequirements" />
-        </q-card-section>
+        </div>
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
@@ -284,4 +278,43 @@ onMounted(() => {
   }
 })
 </script>
-<style lang=""></style>
+
+<style scoped>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.grid-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.preview-section {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-section {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1200px) {
+  .grid-section {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .preview-section {
+    grid-column: 1 / 2;
+    align-items: start;
+  }
+
+  .main-section {
+    grid-column: 2 / 3;
+  }
+}
+</style>

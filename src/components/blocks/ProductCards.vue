@@ -83,7 +83,7 @@ const rows = ref([])
 const getProducts = async (path) => {
   try {
     const response = await getData(path)
-    rows.value = response
+    rows.value = response.data
   } catch (e) {
     console.error(e)
   }

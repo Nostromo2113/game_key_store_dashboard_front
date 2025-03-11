@@ -145,17 +145,18 @@ const applyChanges = async (products) => {
     return {
       id: product.id,
       quantity: product.quantity,
-      activation_key_id: product.activation_key_id || null,
     }
   })
   const path = `orders/${orderId}`
+  console.log('AP: ', applyProducts)
   try {
     const response = await patchData(path, { order_products: applyProducts })
+    console.log('OP', response)
     orderProducts.value = response.data.order.products.map((product) => ({
       ...product,
       quantity: product.activation_keys.length,
     }))
-    status.value = response.data.status
+    status.value = response.data.data.status
     console.log(orderProducts.value)
   } catch (e) {
     console.error('Ошибка при отправке данных:', e)
@@ -164,7 +165,8 @@ const applyChanges = async (products) => {
 
 const getOrderProducts = async (orderPath, orderId) => {
   try {
-    const response = await getData(orderPath, orderId)
+    let response = await getData(orderPath, orderId)
+    response = response.data
     status.value = response.status
     orderProducts.value = response.products.map((product) => ({
       ...product,

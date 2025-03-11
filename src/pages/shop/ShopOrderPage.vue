@@ -83,7 +83,7 @@ const getOrder = async (orderId) => {
   try {
     const response = await getData(path)
     console.log('get order', response)
-    order.value = response
+    order.value = response.data
     totalPrice.value = calculateTotalPrice(order.value.products)
   } catch (e) {
     console.error(e)
