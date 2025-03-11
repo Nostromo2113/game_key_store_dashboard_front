@@ -138,7 +138,7 @@ const getUsers = async (path) => {
   try {
     const response = await getData(path)
     console.log('USERS', response)
-    rows.value = response
+    rows.value = response.data
   } catch (e) {
     console.error(e)
   }

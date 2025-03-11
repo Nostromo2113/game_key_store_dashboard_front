@@ -127,7 +127,7 @@ const orderData = ref([])
 const getUserData = async (userId) => {
   try {
     const response = await getData('users', userId)
-    userData.value = response
+    userData.value = response.data
     cartStore.fetchCart(userId)
   } catch (e) {
     console.error(e)

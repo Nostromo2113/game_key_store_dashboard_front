@@ -141,7 +141,7 @@ const navigateToCreateProduct = () => {
 const getProducts = async (path) => {
   try {
     const response = await getData(path)
-    rows.value = response
+    rows.value = response.data
     console.log('products', rows.value)
   } catch (e) {
     console.error(e)

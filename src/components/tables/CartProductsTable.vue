@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { cartProductsColumns } from 'src/constants/cartProductsColumns'
 import { defineEmits } from 'vue'
 import QuantitySelector from '../ui/QuantitySelector.vue'
@@ -92,20 +92,9 @@ const emit = defineEmits(['cartReceived', 'updateQuantity'])
 
 const cartStore = useCartStore()
 
-const props = defineProps({
-  cartId: {
-    type: Number,
-    required: true,
-  },
-  shop: {
-    type: Boolean,
-    default: false,
-  },
-})
-
 const modalOrder = ref(false)
 
-const cartId = computed(() => props.cartId)
+const cartId = computed(() => cartStore.cartDetails.id)
 
 const cartItems = computed(() => cartStore.cartProducts || [])
 const cartDetails = computed(() => cartStore.cartDetails || {})
@@ -134,22 +123,6 @@ const updateProductQuantity = (productId, quantity) => {
 const removeProductFromCart = async (productId) => {
   cartStore.removeProductFromCart(cartDetails.value.id, productId)
 }
-
-// const createOrder = async () => {
-//   const data = {
-//     user_id: cartDetails.value.user_id,
-//     order_products: cartItems.value.map((product) => ({
-//       id: product.id,
-//       quantity: product.quantity_cart,
-//     })),
-//   }
-//   try {
-//     const response = await postData('orders', data)
-//     console.log(response)
-//   } catch (e) {
-//     console.error('При оформлении заказа произошла ошибка', e)
-//   }
-// }
 
 watch(
   () => cartId.value,

@@ -5,6 +5,7 @@
       :rows="rows"
       :columns="activationKeysColumns"
       :pagination="tablePagination"
+      hide-bottom
       row-key="title"
       dense
       flat
@@ -21,9 +22,9 @@
           unelevated
           class="custom-rounded"
         ></q-btn>
-        <div class="text-subtitle-2 text-white q-pa-sm custom-rounded bg-primary" v-else>
+        <q-badge class="text-subtitle2 text-white q-pa-sm bg-primary" v-else>
           Добавление возможно только из меню продукта
-        </div>
+        </q-badge>
       </template>
 
       <template v-slot:body="props">
@@ -73,6 +74,16 @@
     <q-dialog v-model="addModal" persistent>
       <default-form @storeItem="(item) => postItem(item, props.productId)" />
     </q-dialog>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getItems(props.productId, page)"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -99,18 +110,32 @@ const addModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})
 
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
+
 const rows = ref([])
 
-const getItems = async (productId) => {
+const getItems = async (productId, page) => {
   const path = 'keys'
-  const params = productId
-    ? {
-        product_id: props.productId,
-      }
-    : null
-  const response = await getData(path, null, params)
-  rows.value = response
-  console.log(rows.value)
+  const params = {
+    product_id: productId,
+    page: page,
+  }
+
+  try {
+    const response = await getData(path, null, params)
+    rows.value = response.data
+    console.log(rows.value)
+    // Если в ответе есть информация о пагинации
+    if (response.current_page && response.last_page) {
+      pagination.value.currentPage = response.current_page
+      pagination.value.lastPage = response.last_page
+    }
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const postItem = async (item, productId) => {
@@ -146,7 +171,7 @@ onMounted(() => {
 
 const tablePagination = ref({
   page: 1,
-  rowsPerPage: 20,
+  rowsPerPage: 100,
 })
 </script>
 <style lang="css"></style>

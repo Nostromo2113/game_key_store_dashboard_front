@@ -188,12 +188,12 @@ const getProduct = async (productId) => {
   try {
     const response = await getData(path)
     console.log(response)
-    productData.value = response
-    productData.value.amount = response.activation_keys.length
-    technicalRequirements.value = response.technical_requirements
+    productData.value = response.data
+    productData.value.amount = response.data.activation_keys.length
+    technicalRequirements.value = response.data.technical_requirements
 
-    selectedCategory.value = response.category
-    selectedGenres.value = response.genres
+    selectedCategory.value = response.data.category
+    selectedGenres.value = response.data.genres
 
     emit('getProductId', productData.value.id)
   } catch (e) {
