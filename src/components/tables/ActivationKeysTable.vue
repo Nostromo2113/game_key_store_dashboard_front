@@ -10,7 +10,6 @@
       dense
       flat
       class="q-pa-sm custom-rounded text-blue-grey-9 shadow-sm"
-      @click="console.log(props.productId)"
     >
       <template v-slot:top-right>
         <q-btn

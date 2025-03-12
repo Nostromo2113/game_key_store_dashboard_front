@@ -60,6 +60,11 @@
         </q-card-actions>
       </q-card>
     </div>
+    <div class="full-width flex justify-center">
+      <q-btn @click="showMore('products', page + 1)" class="q-my-xl custom-rounded" color="info"
+        >Показать еще</q-btn
+      >
+    </div>
   </div>
 </template>
 
@@ -80,12 +85,31 @@ const router = useRouter()
 
 const rows = ref([])
 
+const page = ref(1)
+
 const getProducts = async (path) => {
   try {
     const response = await getData(path)
+    page.value = response.current_page
     rows.value = response.data
   } catch (e) {
     console.error(e)
+  }
+}
+
+const showMore = async (path) => {
+  page.value += 1
+  const params = {
+    page: page.value,
+  }
+  try {
+    const response = await getData(path, null, params)
+    rows.value.push(...response.data)
+  } catch (e) {
+    console.error('Ошибка при запросе новых продуктов', e)
+    page.value = 1
+  } finally {
+    console.log(page.value)
   }
 }
 

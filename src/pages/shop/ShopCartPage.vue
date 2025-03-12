@@ -1,6 +1,10 @@
 <template>
   <div>
-    <q-card class="my-card custom-rounded shadow-sm" flat>
+    <q-card
+      class="my-card custom-rounded shadow-sm"
+      flat
+      @click="console.log(cartDetails, cartItems)"
+    >
       <q-card-section>
         <div class="text-h6 text-grey">Вы можете оформить заказ:</div>
       </q-card-section>
@@ -11,11 +15,11 @@
         <div class="row q-col-gutter-md">
           <div class="col-6">
             <div class="text-subtitle1">Количество товаров:</div>
-            <div class="text-h5 text-info">3</div>
+            <div class="text-h5 text-info">{{ cartItems.length }}</div>
           </div>
           <div class="col-6">
             <div class="text-subtitle1">Товаров на сумму:</div>
-            <div class="text-h5 text-info">$150.00</div>
+            <div class="text-h5 text-info">{{ cartDetails.total_price }} ₽</div>
           </div>
         </div>
       </q-card-section>
@@ -23,14 +27,6 @@
       <q-card-actions align="right">
         <q-btn @click="createOrder" color="warning">Оформить заказ</q-btn>
       </q-card-actions>
-
-      <!-- <q-card-section>
-        <div class="text-subtitle1">Ваша корзина очистится, будет оформлен заказ</div>
-        <div class="row q-gutter-sm items-center">
-          <div class="text-subtitle1">Ключи будут отправлены на:</div>
-          <div class="text-h6 text-info">example@example.com</div>
-        </div>
-      </q-card-section> -->
     </q-card>
     <CartProductsTable :cartId="cartId" shop class="shadow-sm custom-rounded" />
   </div>
