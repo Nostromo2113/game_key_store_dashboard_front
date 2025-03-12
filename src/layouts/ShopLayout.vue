@@ -4,16 +4,6 @@
       <q-toolbar-title class="fit text-grey-8"
         ><q-icon name="sports_esports" style="font-size: 30px"></q-icon> Shop for administrator
       </q-toolbar-title>
-      <q-input
-        v-model="searchQuery"
-        label="Search"
-        dense
-        debounce="300"
-        class="q-mx-md"
-        style="width: 400px"
-        filled
-        rounded
-      />
       <RouterLink v-if="!route.params.cartId" :to="cartLink">
         <q-btn @click="openCart = true" flat icon="shopping_cart"
           ><q-badge floating color="info">{{ cartStore.cartProducts?.length }}</q-badge></q-btn

@@ -161,9 +161,9 @@ const getQueryProducts = async (queryParams = {}) => {
     console.log(response)
     rows.value = response.data
 
-    if (response.current_page && response.last_page) {
-      pagination.value.currentPage = response.current_page
-      pagination.value.lastPage = response.last_page
+    if (response.meta.current_page && response.meta.last_page) {
+      pagination.value.currentPage = response.meta.current_page
+      pagination.value.lastPage = response.meta.last_page
     }
   } catch (e) {
     console.error(e)

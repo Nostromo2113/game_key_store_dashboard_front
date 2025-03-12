@@ -127,10 +127,11 @@ const getItems = async (productId, page) => {
     const response = await getData(path, null, params)
     rows.value = response.data
     console.log(rows.value)
+    console.log('RES', response)
     // Если в ответе есть информация о пагинации
-    if (response.current_page && response.last_page) {
-      pagination.value.currentPage = response.current_page
-      pagination.value.lastPage = response.last_page
+    if (response.meta.current_page && response.meta.last_page[0]) {
+      pagination.value.currentPage = response.meta.current_page[0]
+      pagination.value.lastPage = response.meta.last_page[0]
     }
   } catch (e) {
     console.error(e)

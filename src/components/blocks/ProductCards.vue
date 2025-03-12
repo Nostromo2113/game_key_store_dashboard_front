@@ -3,7 +3,7 @@
     <q-btn-dropdown icon="filter_list" unelevated class="custom-rounded q-mb-md" label="Фильтры">
       <FilterGroup @getQueryData="getQueryProducts" />
     </q-btn-dropdown>
-    <!-- Сетка карточек продуктов -->
+
     <div v-if="rows.length" class="product-grid">
       <q-card v-for="product in rows" :key="product.id" class="custom-rounded shadow-sm" flat>
         <q-img
@@ -14,12 +14,10 @@
         />
 
         <q-card-section>
-          <!-- Название продукта -->
           <div class="text-h6">{{ product.title }}</div>
-          <!-- Издатель -->
+
           <div class="text-subtitle2">{{ product.publisher }}</div>
 
-          <!-- Цена и количество -->
           <div class="q-mt-md">
             <div class="text-subtitle1">Цена: {{ product.price }} ₽</div>
             <div class="text-subtitle2">Количество: {{ product.amount }}</div>
@@ -27,7 +25,6 @@
         </q-card-section>
 
         <q-card-actions align="center">
-          <!-- Кнопка для просмотра товара -->
           <div class="row justify-between full-width">
             <q-btn
               flat
@@ -37,7 +34,7 @@
               label="Посмотреть"
               no-caps
             />
-            <!-- Кнопка добавления в корзину -->
+
             <q-btn
               v-if="!isInCart(product.id)"
               @click="addSelectedProduct(product)"
@@ -63,10 +60,10 @@
         </q-card-actions>
       </q-card>
     </div>
-    <div class="full-width flex justify-center">
-      <q-btn @click="showMore('products', page + 1)" class="q-my-xl custom-rounded" color="info"
-        >Показать еще</q-btn
-      >
+    <div v-if="hasMore" class="full-width flex justify-center">
+      <q-btn @click="showMore" class="q-my-xl custom-rounded" color="info" :disable="!hasMore">
+        Показать еще
+      </q-btn>
     </div>
   </div>
 </template>
@@ -90,31 +87,52 @@ const router = useRouter()
 const rows = ref([])
 
 const page = ref(1)
+const hasMore = ref(true)
 
-const getQueryProducts = async (queryParams = null) => {
+const getQueryProducts = async (queryParams = {}) => {
   const path = 'products'
+  const params = {
+    ...queryParams,
+  }
+  if (queryParams.page) {
+    params.page = queryParams.page
+  }
   try {
-    const response = queryParams ? await getData(path, null, queryParams) : await getData(path)
+    const response = await getData(path, null, params)
     console.log(response)
     rows.value = response.data
+
+    page.value = response.meta.current_page
+
+    existNextPage(response.meta.current_page, response.meta.last_page)
   } catch (e) {
     console.error(e)
   }
 }
 
-const showMore = async (path) => {
-  page.value += 1
+const showMore = async () => {
   const params = {
-    page: page.value,
+    page: page.value + 1,
   }
+
   try {
-    const response = await getData(path, null, params)
-    rows.value.push(...response.data)
+    const response = await getData('products', null, params)
+    if (response.data.length > 0) {
+      rows.value.push(...response.data)
+    }
+    existNextPage(response.meta.current_page, response.meta.last_page)
+    page.value = response.meta.current_page
   } catch (e) {
     console.error('Ошибка при запросе новых продуктов', e)
-    page.value = 1
-  } finally {
-    console.log(page.value)
+    page.value -= 1
+  }
+}
+
+const existNextPage = (currentPage, lastPage) => {
+  if (currentPage >= lastPage) {
+    hasMore.value = false
+  } else {
+    hasMore.value = true
   }
 }
 

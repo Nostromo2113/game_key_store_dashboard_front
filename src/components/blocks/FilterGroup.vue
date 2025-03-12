@@ -71,6 +71,7 @@ const getQueryData = () => {
 const clearQueryData = () => {
   queryParams.value.title = ''
   queryParams.value.category = null
+  queryParams.value.is_published = true
   getQueryData()
 }
 
