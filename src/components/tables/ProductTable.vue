@@ -4,6 +4,7 @@
       :rows="rows"
       :columns="filteredColumns"
       :pagination="tablePagination"
+      hide-bottom
       row-key="title"
       class="q-pa-sm custom-rounded text-blue-grey-9 shadow-sm"
       flat
@@ -94,6 +95,16 @@
         </q-tr>
       </template>
     </q-table>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getQueryProducts({ page: page })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -125,20 +136,17 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  'getItem',
-  'storeItem',
-  'updateItem',
-  'destroyItem',
-  'addSelectedProducts',
-])
-
-// const path = 'products'
+const emit = defineEmits(['addSelectedProducts'])
 
 const rows = ref([])
 
 const filteredColumns = ref([])
 const selectedProducts = ref([])
+
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
 
 const navigateToCreateProduct = () => {
   if (!props.checkboxes) {
@@ -146,31 +154,26 @@ const navigateToCreateProduct = () => {
   }
 }
 
-// const getProducts = async (path) => {
-//   try {
-//     const response = await getData(path)
-//     rows.value = response.data
-//     console.log('products', rows.value)
-//   } catch (e) {
-//     console.error(e)
-//   }
-// }
-
-const getQueryProducts = async (queryParams = null) => {
+const getQueryProducts = async (queryParams = {}) => {
   const path = 'products'
   try {
-    const response = queryParams ? await getData(path, null, queryParams) : await getData(path)
+    const response = await getData(path, null, queryParams)
     console.log(response)
     rows.value = response.data
+
+    if (response.current_page && response.last_page) {
+      pagination.value.currentPage = response.current_page
+      pagination.value.lastPage = response.last_page
+    }
   } catch (e) {
     console.error(e)
   }
 }
 
 const addSelectedProducts = (products) => {
-  selectedProducts.value = []
   const preparedSelectedProducts = prepareSelectedProducts(products)
   emit('addSelectedProducts', preparedSelectedProducts)
+  selectedProducts.value = []
 }
 
 const prepareSelectedProducts = (products) => {
@@ -197,7 +200,7 @@ const defineColumnStructure = (productsColumns, checkboxes) => {
 
 const tablePagination = ref({
   page: 1,
-  rowsPerPage: 20,
+  rowsPerPage: 100,
 })
 </script>
 <style lang="css"></style>
