@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-card class="q-mb-md custom-rounded shadow-sm" flat>
+    <q-card class="q-my-md custom-rounded shadow-sm" flat>
       <q-item class="text-h6 q-px-md q-py-sm text-blue-grey-8">Детали заказа</q-item>
       <q-separator />
       <q-card-section>

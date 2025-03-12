@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-card
-      class="my-card custom-rounded shadow-sm"
+      class="my-card custom-rounded shadow-sm q-mt-md"
       flat
       @click="console.log(cartDetails, cartItems)"
     >
