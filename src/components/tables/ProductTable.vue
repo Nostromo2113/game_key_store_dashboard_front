@@ -9,7 +9,15 @@
       flat
       dense
       ><template v-slot:top-left>
-        <search-form />
+        <q-btn-dropdown
+          icon="filter_list"
+          color="primary"
+          unelevated
+          class="custom-rounded"
+          label="Фильтры"
+        >
+          <FilterGroup @getQueryData="getQueryProducts" />
+        </q-btn-dropdown>
       </template>
       <template v-slot:top-right>
         <q-btn
@@ -91,11 +99,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import SearchForm from '../forms/SearchForm.vue'
 import { productsColumns } from 'src/constants/productsColumns'
 import { defineEmits } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
+import FilterGroup from '../blocks/FilterGroup.vue'
 
 const router = useRouter()
 
@@ -125,7 +133,7 @@ const emit = defineEmits([
   'addSelectedProducts',
 ])
 
-const path = 'products'
+// const path = 'products'
 
 const rows = ref([])
 
@@ -138,11 +146,22 @@ const navigateToCreateProduct = () => {
   }
 }
 
-const getProducts = async (path) => {
+// const getProducts = async (path) => {
+//   try {
+//     const response = await getData(path)
+//     rows.value = response.data
+//     console.log('products', rows.value)
+//   } catch (e) {
+//     console.error(e)
+//   }
+// }
+
+const getQueryProducts = async (queryParams = null) => {
+  const path = 'products'
   try {
-    const response = await getData(path)
+    const response = queryParams ? await getData(path, null, queryParams) : await getData(path)
+    console.log(response)
     rows.value = response.data
-    console.log('products', rows.value)
   } catch (e) {
     console.error(e)
   }
@@ -164,7 +183,7 @@ const prepareSelectedProducts = (products) => {
 }
 
 onMounted(() => {
-  getProducts(path)
+  getQueryProducts()
   defineColumnStructure(productsColumns, props.checkboxes)
 })
 

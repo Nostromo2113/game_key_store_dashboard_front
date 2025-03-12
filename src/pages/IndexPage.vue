@@ -6,6 +6,17 @@
       style="width: 200px; height: 200px; margin: auto"
     />
   </q-page>
+  <q-btn-dropdown
+    icon="filter_list"
+    color="primary"
+    unelevated
+    class="custom-rounded"
+    label="Фильтры"
+  >
+    <FilterGroup />
+  </q-btn-dropdown>
 </template>
 
-<script setup></script>
+<script setup>
+import FilterGroup from 'src/components/blocks/FilterGroup.vue'
+</script>
