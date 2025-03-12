@@ -1,6 +1,6 @@
 <template>
   <div style="width: 1200px; max-width: 100vw; margin: auto">
-    <q-toolbar class="custom-rounded bg-white shadow-sm q-px-md q-my-md">
+    <q-toolbar class="custom-rounded bg-white shadow-sm q-px-md q-mt-md">
       <q-toolbar-title class="fit text-grey-8"
         ><q-icon name="sports_esports" style="font-size: 30px"></q-icon> Shop for administrator
       </q-toolbar-title>

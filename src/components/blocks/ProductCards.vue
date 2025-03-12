@@ -1,5 +1,8 @@
 <template>
   <div>
+    <q-btn-dropdown icon="filter_list" unelevated class="custom-rounded q-mb-md" label="Фильтры">
+      <FilterGroup @getQueryData="getQueryProducts" />
+    </q-btn-dropdown>
     <!-- Сетка карточек продуктов -->
     <div v-if="rows.length" class="product-grid">
       <q-card v-for="product in rows" :key="product.id" class="custom-rounded shadow-sm" flat>
@@ -69,6 +72,7 @@
 </template>
 
 <script setup>
+import FilterGroup from './FilterGroup.vue'
 import { onMounted, ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { getData } from 'src/utils/http/get'
@@ -87,10 +91,11 @@ const rows = ref([])
 
 const page = ref(1)
 
-const getProducts = async (path) => {
+const getQueryProducts = async (queryParams = null) => {
+  const path = 'products'
   try {
-    const response = await getData(path)
-    page.value = response.current_page
+    const response = queryParams ? await getData(path, null, queryParams) : await getData(path)
+    console.log(response)
     rows.value = response.data
   } catch (e) {
     console.error(e)
@@ -132,7 +137,7 @@ const removeProductFromCart = (productId) => {
 }
 
 onMounted(() => {
-  getProducts('products')
+  getQueryProducts()
 })
 </script>
 
