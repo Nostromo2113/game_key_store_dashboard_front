@@ -3,7 +3,7 @@
     <q-input
       v-model="searchQuery"
       bg-color="white"
-      placeholder="Поиск..."
+      :placeholder="props.placeholder"
       dense
       outlined
       style="width: 200px"
@@ -18,8 +18,16 @@
   </form>
 </template>
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, defineProps } from 'vue'
+
 const emit = defineEmits(['getSearchItems'])
+
+const props = defineProps({
+  placeholder: {
+    type: String,
+    default: 'Поиск...',
+  },
+})
 
 const searchQuery = ref('')
 

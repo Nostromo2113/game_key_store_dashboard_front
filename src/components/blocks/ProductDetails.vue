@@ -217,9 +217,11 @@ const updateProduct = async (productData, selectedFile, productId) => {
   try {
     const data = prepareProductData(productData, selectedFile)
     if (selectedFile) {
-      await patchFormData(path, data)
+      const response = await patchFormData(path, data)
+      console.log('res', response)
     } else {
-      await patchData(path, data)
+      const response = await patchData(path, data)
+      console.log('res', response)
     }
   } catch (e) {
     console.error(e)

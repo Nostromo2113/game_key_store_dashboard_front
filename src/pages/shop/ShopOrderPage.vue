@@ -57,8 +57,8 @@
     <!-- Карточка с товарами -->
     <q-card class="shadow-sm custom-rounded" flat>
       <q-card-section>
-        <div class="text-h6 q-mb-md">Товары в заказе ({{ order.products?.length }})</div>
-        <OrderProductsTable :tableData="order.products" :shop="true" />
+        <div class="text-h6 q-mb-md">Товары в заказе ({{ order.order_products?.length }})</div>
+        <OrderProductsTable :tableData="order.order_products" :shop="true" />
       </q-card-section>
     </q-card>
   </div>
@@ -84,7 +84,7 @@ const getOrder = async (orderId) => {
     const response = await getData(path)
     console.log('get order', response)
     order.value = response.data
-    totalPrice.value = calculateTotalPrice(order.value.products)
+    totalPrice.value = calculateTotalPrice(order.value.order_products)
   } catch (e) {
     console.error(e)
   }
@@ -101,12 +101,13 @@ const calculateTotalPrice = (products) => {
 
 const executeOrder = async (orderId) => {
   const path = `orders/${orderId}`
-  const data = {
-    is_execute: true,
-  }
+
   try {
-    const response = await patchData(path, data)
-    order.value = response.data.order
+    const response = await patchData(path, {
+      is_execute: true,
+    })
+    console.log('res', response)
+    order.value = response.data.data
   } catch (e) {
     console.error(e)
   }

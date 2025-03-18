@@ -122,7 +122,7 @@ const rows = ref(props.rowsData ?? [])
 
 const getOrders = async (userId) => {
   try {
-    const path = userId ? `orders/?user_id=${userId}` : 'orders'
+    const path = userId ? `/users/${userId}/orders` : 'orders'
     console.log('path', path)
     const response = await getData(path)
     rows.value = response
