@@ -22,16 +22,14 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useUserStore } from 'src/stores/userStore'
 import { useCartStore } from 'src/stores/cartStore'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const userStore = useUserStore()
 const cartStore = useCartStore()
 
-const cartId = computed(() => userStore.user?.cart_id)
+const cartId = computed(() => cartStore.cartDetails.id)
 
 const cartLink = computed(() =>
   cartId.value ? { name: 'shop.cart', params: { cartId: cartId.value } } : { name: 'shop' },

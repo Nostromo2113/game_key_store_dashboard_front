@@ -17,7 +17,8 @@ import { useCartStore } from 'src/stores/cartStore'
 
 const userStore = useUserStore()
 const cartStore = useCartStore()
-const cartId = computed(() => userStore.user?.cart_id)
+const userId = computed(() => userStore.user?.id)
+const cartId = computed(() => cartStore.cartDetails?.id)
 
 const selectedProduct = ref()
 
@@ -33,9 +34,9 @@ const addSelectedProduct = (product) => {
   storeProductToCart(cartId.value)
 }
 
-const fetchCart = async (cartId) => {
+const fetchCart = async (userId) => {
   try {
-    await cartStore.fetchCart(cartId)
+    await cartStore.fetchCart(userId)
   } catch (e) {
     console.error(e)
   } finally {
@@ -45,9 +46,11 @@ const fetchCart = async (cartId) => {
 }
 
 watch(
-  () => cartId.value,
+  () => userId.value,
   (newValue) => {
-    fetchCart(newValue)
+    if (newValue) {
+      fetchCart(newValue)
+    }
   },
   { immediate: true },
 )

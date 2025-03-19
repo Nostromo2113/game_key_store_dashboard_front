@@ -29,11 +29,11 @@ function toggleMode(mode) {
 }
 
 const navigateToQueryOrder = async (query) => {
-  const path = 'orders'
+  const path = 'orders/by-number'
 
   if (query) {
     try {
-      const response = await getData(path, null, { order_number: query })
+      const response = await getData(path, { order_number: +query })
       const orderId = response[0].id
       const userId = response[0].user_id
       if (orderId) {

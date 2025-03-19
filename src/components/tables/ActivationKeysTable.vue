@@ -68,7 +68,10 @@
       aria-labelledby="remove-dialog-title"
       aria-describedby="remove-dialog-description"
     >
-      <ConfirmationCard :itemTitle="itemToRemove.title" @confirm="deleteItem(itemToRemove.id)" />
+      <ConfirmationCard
+        :itemTitle="itemToRemove.title"
+        @confirm="deleteItem(props.productId, itemToRemove.id)"
+      />
     </q-dialog>
     <q-dialog v-model="addModal" persistent>
       <default-form @storeItem="(item) => postItem(item, props.productId)" />
@@ -117,14 +120,13 @@ const pagination = ref({
 const rows = ref([])
 
 const getItems = async (productId, page) => {
-  const path = 'keys'
+  const path = !productId ? 'keys' : `products/${productId}/activation-keys`
   const params = {
-    product_id: productId,
     page: page,
   }
-
+  console.log('params', params)
   try {
-    const response = await getData(path, null, params)
+    const response = await getData(path, params)
     rows.value = response.data
     console.log(rows.value)
     console.log('RES', response)
@@ -139,7 +141,7 @@ const getItems = async (productId, page) => {
 }
 
 const postItem = async (item, productId) => {
-  const path = 'keys'
+  const path = `products/${productId}/activation-keys`
   const data = {
     activation_key: { product_id: productId, key: item.title },
   }
@@ -149,19 +151,19 @@ const postItem = async (item, productId) => {
   } catch (e) {
     console.error(e)
   } finally {
-    getItems(path)
+    getItems(props.productId, 1)
   }
 }
 
-const deleteItem = async (id) => {
-  const path = `keys/${id}`
+const deleteItem = async (productId, keyId) => {
+  const path = `products/${productId}/activation-keys/${keyId}`
   try {
-    const response = await deleteData(path, id)
+    const response = await deleteData(path)
     console.log(response)
   } catch (e) {
     console.error(e)
   } finally {
-    getItems(path)
+    getItems(props.productId, 1)
   }
 }
 

@@ -45,12 +45,12 @@ const routes = [
             name: 'shop.cart',
           },
           {
-            path: 'ordersShop/:orderId',
+            path: 'orders/:orderId',
             component: ShopOrderPage,
             name: 'shop.order',
           },
           {
-            path: 'ordersShop',
+            path: 'orders',
             component: ShopOrdersList,
             name: 'shop.orders',
           },

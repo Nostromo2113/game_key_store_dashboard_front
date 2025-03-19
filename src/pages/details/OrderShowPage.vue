@@ -123,15 +123,13 @@ import ProductTable from 'src/components/tables/ProductTable.vue'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { patchData } from 'src/utils/http/patch'
 
 const tab = ref('orderProducts')
 
 const route = useRoute()
 const orderId = route.params.orderId
-
-const orderPath = 'orders'
 
 const orderProducts = ref([])
 const user = ref({})
@@ -163,9 +161,11 @@ const applyChanges = async (products) => {
   }
 }
 
-const getOrder = async (orderPath, orderId) => {
+const getOrder = async (orderId) => {
+  const path = `orders/${orderId}`
   try {
-    let response = await getData(orderPath, orderId)
+    let response = await getData(path)
+    console.log('RES', response)
     response = response.data
     status.value = response.status
     orderProducts.value = response.order_products.map((product) => ({
@@ -203,8 +203,6 @@ const calcTotalAmount = (products) => {
   return totalAmount
 }
 
-getOrder(orderPath, orderId)
-
 const addSelectedProducts = (selectedProducts) => {
   selectedProducts.forEach((selectedProduct) => {
     const exists = orderProducts.value.some(
@@ -216,6 +214,10 @@ const addSelectedProducts = (selectedProducts) => {
   })
   tab.value = 'orderProducts'
 }
+
+onMounted(() => {
+  getOrder(orderId)
+})
 </script>
 
 <style lang="css">

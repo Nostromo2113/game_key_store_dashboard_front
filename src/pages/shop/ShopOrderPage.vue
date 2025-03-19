@@ -55,7 +55,7 @@
     </q-card>
 
     <!-- Карточка с товарами -->
-    <q-card class="shadow-sm custom-rounded" flat>
+    <q-card class="shadow-sm custom-rounded" flat @click="console.log(order)">
       <q-card-section>
         <div class="text-h6 q-mb-md">Товары в заказе ({{ order.order_products?.length }})</div>
         <OrderProductsTable :tableData="order.order_products" :shop="true" />

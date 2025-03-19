@@ -140,7 +140,6 @@ import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, defineEmits } from 'vue'
 import { getData } from 'src/utils/http/get'
-import { patchFormData } from 'src/utils/http/patchFormData'
 import { patchData } from 'src/utils/http/patch'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
@@ -214,15 +213,12 @@ const getCategories = async () => {
 
 const updateProduct = async (productData, selectedFile, productId) => {
   const path = `products/${productId}`
+  console.log('PATCH 1')
   try {
     const data = prepareProductData(productData, selectedFile)
-    if (selectedFile) {
-      const response = await patchFormData(path, data)
-      console.log('res', response)
-    } else {
-      const response = await patchData(path, data)
-      console.log('res', response)
-    }
+    console.log('data', data)
+    const response = await patchData(path, data)
+    console.log('res', response)
   } catch (e) {
     console.error(e)
   } finally {
@@ -234,6 +230,7 @@ const storeProduct = async (product, selectedFile) => {
   const path = 'products'
   try {
     const data = prepareProductData(product, selectedFile)
+    console.log('DATA: ', data)
     await postData(path, data)
     router.push({ name: 'products' })
   } catch (e) {
@@ -242,16 +239,20 @@ const storeProduct = async (product, selectedFile) => {
 }
 
 const prepareProductData = (product, selectedFile) => {
-  const data = { ...product }
-  delete data.activation_keys
+  const data = {
+    product: {
+      ...product,
+    },
+  }
+  delete data.product.activation_keys
 
-  data.category = selectedCategory.value.id
-  data.genres = selectedGenres.value.map((genre) => genre.id)
+  data.product.category = selectedCategory.value.id
+  data.product.genres = selectedGenres.value.map((genre) => genre.id)
 
   if (selectedFile) {
-    data.file = selectedFile
+    data.product.file = selectedFile
   }
-  data.technical_requirements = technicalRequirements.value
+  data.product.technical_requirements = technicalRequirements.value
 
   return data
 }

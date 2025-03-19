@@ -13,7 +13,6 @@
           :imageLink="userData.avatar"
           @onFileChange="onFileChange"
           :showAlt="false"
-          :disabledUpload="!edit"
           class="full-width"
         />
       </q-card>
@@ -92,10 +91,10 @@
       </q-toolbar>
       <q-tab-panels v-model="tab" animated keep-alive>
         <q-tab-panel name="orders">
-          <OrderTable :rowsData="orderData" :userPage="true" />
+          <OrderTable :rowsData="orderData" :userPage="true" :userId="+userId" />
         </q-tab-panel>
         <q-tab-panel name="cart">
-          <CartProductsTable :userId="userId" />
+          <CartProductsTable :propsUserId="+userId" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -109,13 +108,11 @@ import { getData } from 'src/utils/http/get'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { patchData } from 'src/utils/http/patch'
-import { patchFormData } from 'src/utils/http/patchFormData'
 import { useCartStore } from 'src/stores/cartStore'
 
 const route = useRoute()
 const userId = route.params.userId
 const cartStore = useCartStore()
-const orderPath = 'orders'
 
 const tab = ref('orders')
 
@@ -125,23 +122,11 @@ const selectedFile = ref()
 const orderData = ref([])
 
 const getUserData = async (userId) => {
+  const path = `users/${userId}`
   try {
-    const response = await getData('users', userId)
+    const response = await getData(path)
     userData.value = response.data
     cartStore.fetchCart(userId)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-const getOrderData = async (path, userId) => {
-  const queryParams = {
-    id: userId,
-  }
-  try {
-    const response = await getData(path, null, queryParams)
-    orderData.value = response
-    console.log(orderData.value)
   } catch (e) {
     console.error(e)
   }
@@ -159,10 +144,8 @@ const updateUser = async (userData, selectedFile, userId) => {
     console.log(data)
     if (selectedFile) {
       data.file = selectedFile
-      await patchFormData(path, data)
-    } else {
-      await patchData(path, data)
     }
+    await patchData(path, data)
   } catch (e) {
     console.error(e)
   } finally {
@@ -172,7 +155,6 @@ const updateUser = async (userData, selectedFile, userId) => {
 
 onMounted(() => {
   getUserData(userId)
-  getOrderData(orderPath, userId)
 })
 
 const readonly = ref(true)

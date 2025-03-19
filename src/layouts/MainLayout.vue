@@ -8,7 +8,7 @@
 
     <q-page-container>
       <TheBreadcrumbs class="q-mt-md" />
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </q-page-container>
   </q-layout>
 </template>

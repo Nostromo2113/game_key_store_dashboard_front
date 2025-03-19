@@ -35,30 +35,31 @@
 <script setup>
 import CartProductsTable from 'src/components/tables/CartProductsTable.vue'
 import { computed } from 'vue'
-import { useUserStore } from 'src/stores/userStore'
 import { useCartStore } from 'src/stores/cartStore'
 import { postData } from 'src/utils/http/post'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const userStore = useUserStore()
 const cartStore = useCartStore()
-const cartId = computed(() => userStore.user?.cart_id)
+const cartId = computed(() => cartStore.cartDetails?.id)
 
 const cartItems = computed(() => cartStore.cartProducts || [])
 const cartDetails = computed(() => cartStore.cartDetails || {})
 
 const createOrder = async () => {
   const data = {
-    user_id: cartDetails.value.user_id,
-    order_products: cartItems.value.map((product) => ({
-      id: product.id,
-      quantity: product.quantity_cart,
-    })),
+    order: {
+      user_id: cartDetails.value.user_id,
+      order_products: cartItems.value.map((product) => ({
+        id: product.id,
+        quantity: product.quantity_cart,
+      })),
+    },
   }
   try {
-    const response = await postData('orders', data)
+    const path = `users/${cartDetails.value.user_id}/orders`
+    const response = await postData(path, data)
     cartStore.clearCart
     router.push({ name: 'shop.order', params: { orderId: response.data.data.id } })
   } catch (e) {
