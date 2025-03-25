@@ -3,7 +3,6 @@ import { shouldUseFormData, generateFormData } from '../generateFormData'
 
 export const patchData = async (path, data) => {
   try {
-    console.log('PATCH')
     const isFormDataRequired = shouldUseFormData(data)
     return isFormDataRequired ? await patchFormData(path, data) : await api.patch(path, data)
   } catch (error) {

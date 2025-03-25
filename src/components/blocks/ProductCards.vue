@@ -116,7 +116,7 @@ const showMore = async () => {
   }
 
   try {
-    const response = await getData('products', null, params)
+    const response = await getData('products', params)
     if (response.data.length > 0) {
       rows.value.push(...response.data)
     }

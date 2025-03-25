@@ -133,7 +133,8 @@ const submitForm = async () => {
 
   try {
     const response = await createUser(path, form.value)
-    localStorage.setItem('access_token', response.access_token)
+    console.log('TOKEN: ', response.data.access_token)
+    localStorage.setItem('access_token', response.data.access_token)
     await userStore.fetchUser()
     router.push({ name: 'admin' })
   } catch (e) {

@@ -157,7 +157,7 @@ const navigateToCreateProduct = () => {
 const getQueryProducts = async (queryParams = {}) => {
   const path = 'products'
   try {
-    const response = await getData(path, null, queryParams)
+    const response = await getData(path, queryParams)
     console.log(response)
     rows.value = response.data
 

@@ -33,20 +33,28 @@
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваши данные:</div>
             </q-card-section>
-            <q-input v-model="user.surname" label="Фамилия" class="q-mb-sm" dense />
-            <q-input v-model="user.name" label="Имя" class="q-mb-sm" dense />
-            <q-input v-model="user.patronymic" label="Отчество" class="q-mb-sm" dense />
-            <q-input v-model="user.age" label="Возраст" type="number" class="q-mb-sm" dense />
-            <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense />
-            <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense />
+            <q-input v-model="user.surname" label="Фамилия" class="q-mb-sm" dense filled />
+            <q-input v-model="user.name" label="Имя" class="q-mb-sm" dense filled />
+            <q-input v-model="user.patronymic" label="Отчество" class="q-mb-sm" dense filled />
+            <q-input
+              v-model="user.age"
+              label="Возраст"
+              type="number"
+              class="q-mb-sm"
+              dense
+              filled
+            />
+            <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense filled />
+            <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense filled />
             <q-input
               v-model="user.phone_number"
               label="Телефон"
               mask="+7 (###) ###-##-##"
               class="q-mb-sm"
               dense
+              filled
             />
-            <q-input value="Админ" label="Роль" class="q-mb-sm" dense />
+            <q-input value="Админ" label="Роль" class="q-mb-sm" dense filled />
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
                 <q-btn
@@ -198,12 +206,13 @@ const onFileChange = (file) => {
 
 const updateUser = async (userPath, userData, selectedFile, userId) => {
   const path = `${userPath}/${userId}`
+  const data = userData
+  if (selectedFile) {
+    data.file = selectedFile
+  }
+  console.log(data)
   try {
-    const data = userData
-    if (selectedFile) {
-      data.file = selectedFile
-    }
-    const response = await patchData(path, data)
+    const response = await patchData(path, { user: data })
     console.log(response)
   } catch (e) {
     console.error(e)

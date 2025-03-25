@@ -140,10 +140,11 @@ const onFileChange = (file) => {
 const updateUser = async (userData, selectedFile, userId) => {
   const path = `users/${userId}`
   try {
-    const data = userData
-    console.log(data)
+    const data = {
+      user: userData,
+    }
     if (selectedFile) {
-      data.file = selectedFile
+      data.user.file = selectedFile
     }
     await patchData(path, data)
   } catch (e) {

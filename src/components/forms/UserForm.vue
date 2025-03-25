@@ -113,8 +113,9 @@ const submit = async () => {
 }
 
 const postUser = async (path, data) => {
+  const userData = { user: { ...data } }
   try {
-    const response = await postData(path, data)
+    const response = await postData(path, userData)
     console.log(response)
   } catch (e) {
     console.error(e)
