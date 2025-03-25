@@ -18,7 +18,7 @@
       <q-separator></q-separator>
       <q-tab-panels v-model="tab" animated keep-alive>
         <q-tab-panel name="product">
-          <ProductDetails @getProductId="(productId) => (productId = productId)" />
+          <ProductShow @getProductId="(productId) => (productId = productId)" />
         </q-tab-panel>
         <q-tab-panel name="keys"> <ActivationKeysTable :productId="productId" /> </q-tab-panel>
       </q-tab-panels>
@@ -27,7 +27,7 @@
 </template>
 <script setup>
 import { ref } from 'vue'
-import ProductDetails from 'src/components/blocks/ProductDetails.vue'
+import ProductShow from 'src/components/blocks/ProductShow.vue'
 import ActivationKeysTable from 'src/components/tables/ActivationKeysTable.vue'
 import { useRoute } from 'vue-router'
 

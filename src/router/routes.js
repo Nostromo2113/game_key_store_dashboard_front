@@ -1,21 +1,36 @@
-import IndexPage from 'pages/IndexPage.vue'
-import ProductListPage from 'src/pages/lists/ProductListPage.vue'
-import UserListPage from 'src/pages/lists/UserListPage.vue'
-import OrderListPage from 'src/pages/lists/OrderListPage.vue'
-import GenreListPage from 'src/pages/lists/GenreListPage.vue'
-import CategoryListPage from 'src/pages/lists/CategoryListPage.vue'
-import ProductPage from 'src/pages/details/ProductPage.vue'
-import UserPage from 'src/pages/details/UserPage.vue'
-import OrderShowPage from 'src/pages/details/OrderShowPage.vue'
-import AuthPage from 'src/pages/AuthPage.vue'
-import AuthLayout from 'src/layouts/AuthLayout.vue'
-import AdminShowPage from 'src/pages/details/AdminShowPage.vue'
-import ShopLayout from 'src/layouts/ShopLayout.vue'
-import ShopPage from 'src/pages/ShopPage.vue'
-import CartPage from 'src/pages/shop/ShopCartPage.vue'
-import ShopOrderPage from 'src/pages/shop/ShopOrderPage.vue'
-import ShopOrdersList from 'src/pages/shop/ShopOrdersList.vue'
-import KeysListPage from 'src/pages/lists/KeysListPage.vue'
+// =============================================
+// 1. Базовые страницы (корневые и аутентификация)
+// =============================================
+import IndexPage from 'pages/IndexPage.vue' // Главная страница
+import AuthPage from 'src/pages/AuthPage.vue' // Страница авторизации
+import AuthLayout from 'src/layouts/AuthLayout.vue' // Лейаут для авторизации
+
+// =============================================
+// 2. Магазин и связанные страницы
+// =============================================
+import ShopLayout from 'src/layouts/ShopLayout.vue' // Лейаут магазина
+import ShopIndexPage from 'src/pages/shop/ShopIndexPage.vue' // Главная страница магазина
+import CartPage from 'src/pages/shop/ShopCartPage.vue' // Корзина покупок
+import ShopOrderPage from 'src/pages/shop/ShopOrderPage.vue' // Страница оформления заказа
+import ShopOrdersList from 'src/pages/shop/ShopOrdersList.vue' // Список заказов пользователя
+
+// =============================================
+// 3. Страницы списков (админка)
+// =============================================
+import ProductListPage from 'src/pages/lists/ProductListPage.vue' // Список товаров
+import UserListPage from 'src/pages/lists/UserListPage.vue' // Список пользователей
+import OrderListPage from 'src/pages/lists/OrderListPage.vue' // Список заказов
+import GenreListPage from 'src/pages/lists/GenreListPage.vue' // Список жанров
+import CategoryListPage from 'src/pages/lists/CategoryListPage.vue' // Список категорий
+import KeysListPage from 'src/pages/lists/KeysListPage.vue' // Список ключей активации
+
+// =============================================
+// 4. Страницы детального просмотра (админка)
+// =============================================
+import ProductPage from 'src/pages/shows/ProductShowPage.vue' // Детали товара
+import UserPage from 'src/pages/shows/UserShowPage.vue' // Профиль пользователя
+import OrderShowPage from 'src/pages/shows/OrderShowPage.vue' // Детали заказа
+import AdminShowPage from 'src/pages/shows/AdminShowPage.vue' // Админ-панель (детальный просмотр)
 
 const routes = [
   {
@@ -36,7 +51,7 @@ const routes = [
         children: [
           {
             path: '',
-            component: ShopPage,
+            component: ShopIndexPage,
             name: 'shop',
           },
           {

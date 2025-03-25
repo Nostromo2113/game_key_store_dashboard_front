@@ -1,5 +1,5 @@
 import { api } from 'src/boot/axios'
-import { generateFormData, shouldUseFormData } from '../generateFormData'
+import { generateFormData, shouldUseFormData } from './generateFormData'
 
 export const postData = async (path, data) => {
   try {

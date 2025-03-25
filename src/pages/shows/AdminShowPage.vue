@@ -73,7 +73,6 @@
                   class="q-mr-sm"
                   @click="edit = false"
                 />
-                <!-- <q-btn label="Удалить пользователя" color="negative" unelevated no-caps /> -->
               </template>
               <q-btn
                 v-else
@@ -210,10 +209,8 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   if (selectedFile) {
     data.file = selectedFile
   }
-  console.log(data)
   try {
-    const response = await patchData(path, { user: data })
-    console.log(response)
+    await patchData(path, { user: data })
   } catch (e) {
     console.error(e)
   }
@@ -227,7 +224,6 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   margin: auto;
 }
 
-/* Основная сетка для аватара и информации о пользователе */
 .grid-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -240,7 +236,6 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   }
 }
 
-/* Стили для карточек */
 .q-card {
   width: 100%;
 }
@@ -249,13 +244,11 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   border-radius: 8px;
 }
 
-/* Аватар */
 .avatar-section {
   display: flex;
   flex-direction: column;
 }
 
-/* Информация о пользователе */
 .user-info-section {
   display: flex;
   flex-direction: column;

@@ -1,5 +1,5 @@
 import { api } from 'src/boot/axios'
-import { shouldUseFormData, generateFormData } from '../generateFormData'
+import { shouldUseFormData, generateFormData } from './generateFormData'
 
 export const patchData = async (path, data) => {
   try {

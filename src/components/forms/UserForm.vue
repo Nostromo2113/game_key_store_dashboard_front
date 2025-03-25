@@ -123,15 +123,8 @@ const postUser = async (path, data) => {
 }
 
 const resetData = () => {
-  formData.value = {
-    email: '',
-    name: '',
-    surname: '',
-    patronymic: '',
-    age: null,
-    gender: '',
-    address: '',
-    phone: '',
+  for (let key in formData.value) {
+    key == 'age' ? (formData.value[key] = null) : (formData.value[key] = '')
   }
   accept.value = false
 }
