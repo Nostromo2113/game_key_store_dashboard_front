@@ -108,10 +108,9 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { productsColumns } from 'src/constants/productsColumns'
-import { defineEmits } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import FilterGroup from '../blocks/FilterGroup.vue'
@@ -136,7 +135,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['addSelectedProducts'])
+const emit = defineEmits(['addSelectedProducts', 'success'])
 
 const rows = ref([])
 
@@ -165,6 +164,7 @@ const getQueryProducts = async (queryParams = {}) => {
       pagination.value.currentPage = response.meta.current_page
       pagination.value.lastPage = response.meta.last_page
     }
+    emit('success')
   } catch (e) {
     console.error(e)
   }

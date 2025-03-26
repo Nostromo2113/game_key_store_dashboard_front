@@ -143,12 +143,12 @@ import { getData } from 'src/utils/http/get'
 import { patchData } from 'src/utils/http/patch'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
+import notify from 'src/plugins/notify'
 
 const route = useRoute()
 const productId = route.params.productId
 const router = useRouter()
-
-const emit = defineEmits(['getProductId'])
+const emit = defineEmits(['getProductId', 'success'])
 
 const productData = ref({
   title: '',
@@ -170,7 +170,6 @@ const technicalRequirements = ref({
 })
 
 const selectedFile = ref()
-
 const genresOptions = ref([])
 const categoriesOptions = ref([])
 const selectedGenres = ref([])
@@ -180,15 +179,9 @@ const getProduct = async (productId) => {
   const path = `products/${productId}`
   try {
     const response = await getData(path)
-    console.log(response)
-    productData.value = response.data
-    productData.value.amount = response.data.activation_keys.length
-    technicalRequirements.value = response.data.technical_requirements
-
-    selectedCategory.value = response.data.category
-    selectedGenres.value = response.data.genres
-
+    fillLocalProduct(response.data)
     emit('getProductId', productData.value.id)
+    emit('success')
   } catch (e) {
     console.error(e)
   }
@@ -202,6 +195,7 @@ const getGenres = async () => {
     console.error(e)
   }
 }
+
 const getCategories = async () => {
   try {
     const response = await getData('categories')
@@ -213,16 +207,18 @@ const getCategories = async () => {
 
 const updateProduct = async (productData, selectedFile, productId) => {
   const path = `products/${productId}`
-  console.log('PATCH 1')
+  const loading = notify.loading('Обработка')
   try {
     const data = prepareProductData(productData, selectedFile)
-    console.log('data', data)
     const response = await patchData(path, data)
-    console.log('res', response)
+    fillLocalProduct(response.data.data)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
-  } finally {
     getProduct(productId)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 
@@ -230,31 +226,11 @@ const storeProduct = async (product, selectedFile) => {
   const path = 'products'
   try {
     const data = prepareProductData(product, selectedFile)
-    console.log('DATA: ', data)
     await postData(path, data)
     router.push({ name: 'products' })
   } catch (e) {
     console.error(e)
   }
-}
-
-const prepareProductData = (product, selectedFile) => {
-  const data = {
-    product: {
-      ...product,
-    },
-  }
-  delete data.product.activation_keys
-
-  data.product.category = selectedCategory.value.id
-  data.product.genres = selectedGenres.value.map((genre) => genre.id)
-
-  if (selectedFile) {
-    data.product.file = selectedFile
-  }
-  data.product.technical_requirements = technicalRequirements.value
-
-  return data
 }
 
 const removeProduct = async (productId) => {
@@ -268,9 +244,32 @@ const removeProduct = async (productId) => {
   }
 }
 
+const fillLocalProduct = (data) => {
+  productData.value = data
+  productData.value.amount = data.activation_keys.length
+  technicalRequirements.value = data.technical_requirements
+  selectedCategory.value = data.category
+  selectedGenres.value = data.genres
+}
+
+const prepareProductData = (product, selectedFile) => {
+  const data = {
+    product: {
+      ...product,
+    },
+  }
+  delete data.product.activation_keys
+  data.product.category = selectedCategory.value.id
+  data.product.genres = selectedGenres.value.map((genre) => genre.id)
+  if (selectedFile) {
+    data.product.file = selectedFile
+  }
+  data.product.technical_requirements = technicalRequirements.value
+  return data
+}
+
 const onFileChange = (file) => {
   selectedFile.value = file
-  console.log('selected', file)
 }
 
 onMounted(() => {

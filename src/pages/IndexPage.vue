@@ -10,5 +10,5 @@
 </template>
 
 <script setup>
-import InnderLoading from 'src/components/ui/InnderLoading.vue'
+import InnderLoading from 'src/components/ui/InnerLoading.vue'
 </script>

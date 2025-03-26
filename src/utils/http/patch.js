@@ -6,8 +6,14 @@ export const patchData = async (path, data) => {
     const isFormDataRequired = shouldUseFormData(data)
     return isFormDataRequired ? await patchFormData(path, data) : await api.patch(path, data)
   } catch (error) {
-    console.error(error)
-    throw new Error(error)
+    const errorInfo = {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      isAxiosError: error.isAxiosError,
+    }
+
+    throw errorInfo
   }
 }
 

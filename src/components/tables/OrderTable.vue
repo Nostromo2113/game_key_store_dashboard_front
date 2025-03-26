@@ -92,7 +92,7 @@
   </div>
 </template>
 <script setup>
-import { ref, defineProps, watch } from 'vue'
+import { ref, defineProps, watch, defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import { ordersColumns } from 'src/constants/ordersColumns'
 import { getData } from 'src/utils/http/get'
@@ -101,6 +101,8 @@ import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
 
 const router = useRouter()
+
+const emit = defineEmits(['success'])
 
 const props = defineProps({
   shopPage: {
@@ -172,6 +174,7 @@ const getOrders = async (userId) => {
     console.log('path', path)
     const response = await getData(path)
     rows.value = response
+    emit('success')
   } catch (e) {
     console.error(e)
   }

@@ -5,6 +5,6 @@ export const deleteData = async (path) => {
     const response = await api.delete(path)
     return response
   } catch (e) {
-    console.error(e)
+    throw Error(e)
   }
 }

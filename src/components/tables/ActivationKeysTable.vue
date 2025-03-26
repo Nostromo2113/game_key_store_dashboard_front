@@ -18,11 +18,10 @@
           size="16px"
           color="primary"
           icon="add"
-          unelevated
           class="custom-rounded"
         ></q-btn>
-        <q-badge class="text-subtitle2 text-white q-pa-sm bg-primary" v-else>
-          Добавление возможно только из меню продукта
+        <q-badge class="text-subtitle2 text-white q-pa-sm bg-primary shadow-1" v-else>
+          Управление возможно только из меню продукта
         </q-badge>
       </template>
 
@@ -56,7 +55,7 @@
               color="negative"
               round
               dense
-              unelevated
+              :disable="!productId"
             ></q-btn>
           </q-td>
         </q-tr>
@@ -69,7 +68,7 @@
       aria-describedby="remove-dialog-description"
     >
       <ConfirmationCard
-        :itemTitle="itemToRemove.title"
+        :itemTitle="itemToRemove.key"
         @confirm="deleteItem(props.productId, itemToRemove.id)"
       />
     </q-dialog>
@@ -89,13 +88,16 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import DefaultForm from 'src/components/forms/DefaultForm.vue'
 import { activationKeysColumns } from 'src/constants/activationKeysColumns'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
+import notify from 'src/plugins/notify'
+
+const emit = defineEmits(['success'])
 
 const props = defineProps({
   title: {
@@ -112,29 +114,27 @@ const addModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})
 
+const rows = ref([])
+
 const pagination = ref({
   currentPage: 1,
   lastPage: 1,
 })
-
-const rows = ref([])
 
 const getItems = async (productId, page) => {
   const path = !productId ? 'keys' : `products/${productId}/activation-keys`
   const params = {
     page: page,
   }
-  console.log('params', params)
   try {
     const response = await getData(path, params)
     rows.value = response.data
-    console.log(rows.value)
-    console.log('RES', response)
     // Если в ответе есть информация о пагинации
     if (response.meta.current_page && response.meta.last_page[0]) {
       pagination.value.currentPage = response.meta.current_page[0]
       pagination.value.lastPage = response.meta.last_page[0]
     }
+    emit('success')
   } catch (e) {
     console.error(e)
   }
@@ -145,26 +145,37 @@ const postItem = async (item, productId) => {
   const data = {
     activation_key: { product_id: productId, key: item.title },
   }
+  const loading = notify.loading('Обработка')
   try {
     const response = await postData(path, data)
-    console.log(response)
+    rows.value.push(response.data.data)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
-    getItems(props.productId, 1)
+    loading()
   }
 }
 
 const deleteItem = async (productId, keyId) => {
   const path = `products/${productId}/activation-keys/${keyId}`
+  const loading = notify.loading('Обработка')
   try {
-    const response = await deleteData(path)
-    console.log(response)
+    await deleteData(path)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
-    getItems(props.productId, 1)
+    removeLocalData(keyId)
+    loading()
   }
+}
+
+const removeLocalData = (id) => {
+  const index = rows.value.findIndex((el) => el.id === id)
+  rows.value.splice(index, 1)
 }
 
 onMounted(() => {
