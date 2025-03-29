@@ -30,6 +30,9 @@
               icon="visibility"
             />
           </q-td>
+          <q-td key="orderNumber" :props="props">
+            {{ props.row.order_number }}
+          </q-td>
           <q-td key="id" :props="props">
             {{ props.row.id }}
           </q-td>
@@ -37,10 +40,9 @@
             {{ props.row.user_id }}
           </q-td>
           <q-td key="status" :props="props">
-            {{ props.row.status }}
-          </q-td>
-          <q-td key="total_price" :props="props">
-            {{ props.row.total_price }}
+            <q-badge :color="props.row.status === 'completed' ? 'info' : 'warning'">
+              {{ props.row.status }}
+            </q-badge>
           </q-td>
           <q-td key="destroy" :props="props">
             <q-btn
@@ -65,7 +67,7 @@
       <q-card>
         <q-card-section class="row items-center">
           <span class="text-h6"
-            >Удалить заказ: <strong>{{ itemToRemove.id }}</strong
+            >Удалить заказ: <strong>{{ itemToRemove.order_number }}</strong
             >?</span
           >
         </q-card-section>

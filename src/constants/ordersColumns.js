@@ -6,6 +6,12 @@ export const ordersColumns = [
     fiels: 'show',
   },
   {
+    name: 'orderNumber',
+    label: 'номер заказа',
+    field: 'orderNumber',
+    align: 'center',
+  },
+  {
     name: 'id',
     label: 'id в БД',
     align: 'left',
@@ -23,11 +29,5 @@ export const ordersColumns = [
     label: 'статус заказа',
     align: 'center',
     field: 'status',
-  },
-  {
-    name: 'total_price',
-    label: 'Сумма заказа',
-    align: 'center',
-    field: 'total_price',
   },
 ]

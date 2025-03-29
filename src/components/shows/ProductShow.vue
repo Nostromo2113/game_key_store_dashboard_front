@@ -224,12 +224,17 @@ const updateProduct = async (productData, selectedFile, productId) => {
 
 const storeProduct = async (product, selectedFile) => {
   const path = 'products'
+  const loading = notify.loading('Обработка')
   try {
     const data = prepareProductData(product, selectedFile)
     await postData(path, data)
+    notify.success('Успешно')
     router.push({ name: 'products' })
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 

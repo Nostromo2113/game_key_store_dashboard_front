@@ -5,7 +5,7 @@
       @click="$router.push({ name: 'admin' })"
     >
       <q-avatar size="62px" class="q-mb-sm">
-        <img src="https://radiovera.ru/wp-content/uploads/2018/03/Andrey-Tarasov_.jpg" />
+        <img :src="getImageUrl(userStore.user?.avatar)" />
       </q-avatar>
       <div class="text-subtitle1 text-center">{{ userStore.user?.name }}</div>
       <div class="text-subtitle2">{{ userStore.user?.email }}</div>
@@ -15,6 +15,7 @@
 
 <script setup>
 import { useUserStore } from 'src/stores/userStore'
+import { getImageUrl } from 'src/utils/getImageUrl'
 const userStore = useUserStore()
 </script>
 

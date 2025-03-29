@@ -1,5 +1,5 @@
 <template>
-  <q-inner-loading :showing="loading">
+  <q-inner-loading :showing="loading" style="background: transparent">
     <q-spinner-cube :size="size" :color="color" />
   </q-inner-loading>
 </template>
@@ -20,7 +20,7 @@ defineProps({
   },
   background: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 })
 </script>

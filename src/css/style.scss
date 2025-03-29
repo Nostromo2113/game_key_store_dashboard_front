@@ -3,6 +3,10 @@ a {
   color: inherit;
 }
 
+body {
+  color: $blue-grey-9;
+}
+
 .gap-sm {
   gap: 10px;
 }
@@ -49,4 +53,8 @@ a {
 
 .page-height {
   min-height: calc(100vh - 66px);
+}
+
+.page-shop-height {
+  min-height: calc(100vh - 172px);
 }

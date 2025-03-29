@@ -25,20 +25,20 @@
           <q-card-section class="user-data-grid">
             <!-- Левая колонка -->
             <div class="left-column">
-              <q-input v-model="userData.surname" label="Фамилия" />
-              <q-input v-model="userData.name" label="Имя" />
-              <q-input v-model="userData.patronymic" label="Отчество" />
-              <q-input v-model="userData.age" type="number" label="Возраст" />
+              <q-input v-model="userData.surname" label="Фамилия" filled />
+              <q-input v-model="userData.name" label="Имя" filled />
+              <q-input v-model="userData.patronymic" label="Отчество" filled />
+              <q-input v-model="userData.age" type="number" label="Возраст" filled />
             </div>
 
             <q-separator vertical class="separator" />
 
             <!-- Правая колонка -->
             <div class="right-column">
-              <q-input v-model="userData.email" type="email" label="Email" />
-              <q-input v-model="userData.address" label="Адрес" />
-              <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" />
-              <q-input label="Администратор"></q-input>
+              <q-input v-model="userData.email" type="email" label="Email" filled />
+              <q-input v-model="userData.address" label="Адрес" filled />
+              <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" filled />
+              <q-input label="Администратор" filled></q-input>
             </div>
           </q-card-section>
 

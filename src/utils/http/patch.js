@@ -12,7 +12,7 @@ export const patchData = async (path, data) => {
       data: error.response?.data,
       isAxiosError: error.isAxiosError,
     }
-
+    console.error(error)
     throw errorInfo
   }
 }

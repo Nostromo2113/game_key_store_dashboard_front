@@ -13,6 +13,7 @@ import ShopIndexPage from 'src/pages/shop/ShopIndexPage.vue' // Главная �
 import CartPage from 'src/pages/shop/ShopCartPage.vue' // Корзина покупок
 import ShopOrderPage from 'src/pages/shop/ShopOrderPage.vue' // Страница оформления заказа
 import ShopOrdersList from 'src/pages/shop/ShopOrdersList.vue' // Список заказов пользователя
+import ShopProductPage from 'src/pages/shop/ShopProductPage.vue' // Просмотр продукта в магазине
 
 // =============================================
 // 3. Страницы списков (админка)
@@ -41,13 +42,13 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    meta: { breadCrumbName: 'Пользователи' },
     redirect: { name: 'index' },
     children: [
       {
         path: 'shop',
         component: ShopLayout,
         redirect: { name: 'shop' },
+        meta: { breadCrumbName: 'shop' },
         children: [
           {
             path: '',
@@ -55,12 +56,12 @@ const routes = [
             name: 'shop',
           },
           {
-            path: ':cartId',
+            path: 'cart/:cartId',
             component: CartPage,
             name: 'shop.cart',
           },
           {
-            path: 'orders/:orderId',
+            path: 'orders/order/:orderId',
             component: ShopOrderPage,
             name: 'shop.order',
           },
@@ -68,6 +69,11 @@ const routes = [
             path: 'orders',
             component: ShopOrdersList,
             name: 'shop.orders',
+          },
+          {
+            path: 'product/:productId',
+            component: ShopProductPage,
+            name: 'shop.product',
           },
         ],
       },
@@ -83,12 +89,12 @@ const routes = [
         name: 'users',
       },
       {
-        path: 'users/:userId',
+        path: 'users/user/:userId',
         component: UserPage,
         name: 'user.show',
       },
       {
-        path: 'users/:userId/:orderId',
+        path: 'users/user/:userId/order/:orderId',
         component: OrderShowPage,
         name: 'user.order.show',
       },
@@ -100,12 +106,12 @@ const routes = [
       },
 
       {
-        path: 'products/:productId',
+        path: 'products/product/:productId',
         component: ProductPage,
         name: 'product.show',
       },
       {
-        path: 'products/create',
+        path: 'products/product/create',
         component: ProductPage,
         name: 'product.create',
       },
@@ -120,7 +126,7 @@ const routes = [
         name: 'orders',
       },
       {
-        path: 'orders/:orderId',
+        path: 'orders/order/:orderId',
         component: OrderShowPage,
         name: 'order.show',
       },

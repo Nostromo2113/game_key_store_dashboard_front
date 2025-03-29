@@ -6,7 +6,7 @@
       <NavList />
     </q-drawer>
 
-    <q-page-container style="min-height: 100vh">
+    <q-page-container>
       <TheBreadcrumbs class="q-mt-md" />
       <router-view :key="$route.fullPath" />
     </q-page-container>

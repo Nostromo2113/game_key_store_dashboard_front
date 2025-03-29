@@ -169,6 +169,7 @@ import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
 import { postData } from 'src/utils/http/post'
 import { patchData } from 'src/utils/http/patch'
+import notify from 'src/plugins/notify'
 
 const userStore = useUserStore()
 
@@ -206,13 +207,20 @@ const onFileChange = (file) => {
 const updateUser = async (userPath, userData, selectedFile, userId) => {
   const path = `${userPath}/${userId}`
   const data = userData
+  const loading = notify.loading('Обработка')
   if (selectedFile) {
     data.file = selectedFile
   }
   try {
     await patchData(path, { user: data })
+    notify.success('Успешно')
+    loading()
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    userStore.fetchUser
+    selectedFile.value = null
   }
 }
 </script>

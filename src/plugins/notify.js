@@ -7,7 +7,7 @@ const notify = (options) => {
   // Всегда используем Notify.create (правильный вызов)
   return Notify.create({
     position: 'center',
-    timeout: 400,
+    timeout: 600,
     color: 'primary',
     textColor: 'white',
     ...settings,

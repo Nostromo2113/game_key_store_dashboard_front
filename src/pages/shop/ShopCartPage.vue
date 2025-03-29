@@ -38,6 +38,7 @@ import { computed } from 'vue'
 import { useCartStore } from 'src/stores/cartStore'
 import { postData } from 'src/utils/http/post'
 import { useRouter } from 'vue-router'
+import notify from 'src/plugins/notify'
 
 const router = useRouter()
 
@@ -48,6 +49,7 @@ const cartItems = computed(() => cartStore.cartProducts || [])
 const cartDetails = computed(() => cartStore.cartDetails || {})
 
 const createOrder = async () => {
+  const loading = notify.loading('Обработка')
   const data = {
     order: {
       user_id: cartDetails.value.user_id,
@@ -61,9 +63,14 @@ const createOrder = async () => {
     const path = `users/${cartDetails.value.user_id}/orders`
     const response = await postData(path, data)
     cartStore.clearCart
+    loading()
+    notify.success('Успешно')
     router.push({ name: 'shop.order', params: { orderId: response.data.data.id } })
   } catch (e) {
+    notify.error('Ошибка')
     console.error('При оформлении заказа произошла ошибка', e)
+  } finally {
+    loading()
   }
 }
 </script>
