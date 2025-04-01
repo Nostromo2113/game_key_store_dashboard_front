@@ -27,11 +27,11 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from 'src/stores/userStore'
 
 const route = useRoute()
-
 const cartStore = useCartStore()
+const userStore = useUserStore()
 
 const cartId = computed(() => cartStore.cartDetails.id)
-const userId = computed(() => useUserStore.user?.id)
+const userId = computed(() => userStore.user?.id)
 
 const cartLink = computed(() =>
   cartId.value ? { name: 'shop.cart', params: { cartId: cartId.value } } : { name: 'shop' },

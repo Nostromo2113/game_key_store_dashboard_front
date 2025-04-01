@@ -3,7 +3,11 @@
     <q-card-section class="row q-col-gutter-md">
       <!-- Preview Section -->
       <div class="col-12 col-md-4">
-        <q-card class="q-pa-md custom-rounded shadow-sm" flat>
+        <q-card
+          class="q-pa-md custom-rounded shadow-sm"
+          flat
+          @click="console.log(cartStore.cartDetails)"
+        >
           <div class="text-h6 text-weight-medium q-mb-md text-accent">Изображение</div>
           <q-img
             :src="getImageUrl(productData.preview_image)"
