@@ -2,7 +2,7 @@
   <div class="bg-gradient" style="height: 100vh">
     <div class="container">
       <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
-        >Добро пожаловать {{ user.name }}!</q-toolbar
+        >Добро пожаловать, {{ user.name }}!</q-toolbar
       >
       <!-- Основной блок с аватаром и информацией о пользователе -->
       <div class="grid-container">
@@ -54,7 +54,6 @@
               dense
               filled
             />
-            <q-input value="Админ" label="Роль" class="q-mb-sm" dense filled />
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
                 <q-btn

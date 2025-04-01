@@ -25,7 +25,9 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn @click="createOrder" color="warning">Оформить заказ</q-btn>
+        <q-btn @click="createOrder" color="warning" class="custom-rounded shadow-sm"
+          >Оформить заказ</q-btn
+        >
       </q-card-actions>
     </q-card>
     <CartProductsTable :cartId="cartId" shop class="shadow-sm custom-rounded" />
@@ -50,15 +52,13 @@ const cartDetails = computed(() => cartStore.cartDetails || {})
 
 const createOrder = async () => {
   const loading = notify.loading('Обработка')
-  const data = {
-    order: {
-      user_id: cartDetails.value.user_id,
-      order_products: cartItems.value.map((product) => ({
-        id: product.id,
-        quantity: product.quantity_cart,
-      })),
-    },
-  }
+  const data = generateData()
+  // if (data.order.order_products.length < 1) {
+  //   loading()
+  //   notify.warning('Проверьте корзину')
+  //   return
+  // }
+
   try {
     const path = `users/${cartDetails.value.user_id}/orders`
     const response = await postData(path, data)
@@ -72,6 +72,20 @@ const createOrder = async () => {
   } finally {
     loading()
   }
+}
+
+const generateData = () => {
+  const data = {
+    order: {
+      user_id: cartDetails.value.user_id,
+      order_products: cartItems.value.map((product) => ({
+        id: product.id,
+        quantity: product.quantity_cart <= product.quantity_store ? product.quantity_cart : 0,
+      })),
+    },
+  }
+  data.order.order_products = data.order.order_products.filter((product) => product.quantity != 0)
+  return data
 }
 </script>
 

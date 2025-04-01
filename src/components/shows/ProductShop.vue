@@ -1,5 +1,5 @@
 <template>
-  <q-card flat class="custom-rounded glossy-card shadow-sm">
+  <q-card flat class="custom-rounded shadow-sm">
     <q-card-section class="row q-col-gutter-md">
       <!-- Preview Section -->
       <div class="col-12 col-md-4">
@@ -217,11 +217,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.glossy-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-}
-
 .placeholder-image {
   height: 200px;
   display: flex;

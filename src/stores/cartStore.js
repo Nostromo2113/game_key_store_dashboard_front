@@ -11,6 +11,7 @@ export const useCartStore = defineStore('cart', () => {
 
   const fetchCart = async (userId) => {
     const path = `users/${userId}/cart`
+    console.log('UDAOIWHDUOI', path)
     try {
       const response = await getData(path)
       cartDetails.value = response
@@ -34,10 +35,9 @@ export const useCartStore = defineStore('cart', () => {
     console.log('pc', data)
     const path = `cart/${cartId}/products`
     try {
-      const response = await postData(path, data)
-      console.log('ADD RES', response)
+      await postData(path, data)
     } catch (e) {
-      console.error('Продукт не добавлен в корзину', e)
+      throw new Error(e)
     } finally {
       fetchCart(cartDetails.value.user_id)
     }

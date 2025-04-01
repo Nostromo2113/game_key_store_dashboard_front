@@ -54,7 +54,6 @@
               size="14px"
               color="negative"
               dense
-              unelevated
               round
             ></q-btn>
           </q-td>

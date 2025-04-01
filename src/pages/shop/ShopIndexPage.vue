@@ -18,6 +18,7 @@ import { useCartStore } from 'src/stores/cartStore'
 
 const userStore = useUserStore()
 const cartStore = useCartStore()
+
 const userId = computed(() => userStore.user?.id)
 
 const loading = ref(true)

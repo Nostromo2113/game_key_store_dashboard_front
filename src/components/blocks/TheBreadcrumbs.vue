@@ -51,9 +51,12 @@ function createBreadcrumbs() {
     accumulatedPath += `/${item}`
     const matchedRoute = route.matched.find((r) => r.path === accumulatedPath)
     let label = matchedRoute?.meta?.breadcrumb || item
+
     Object.keys(route.params).forEach((key) => {
-      if (label.includes(route.params[key])) {
-        label = label.replace(route.params[key], `:${key}`)
+      const paramValue = route.params[key]
+      // Проверяем точное совпадение (целое число или строка)
+      if (label === paramValue || label.split('/').includes(paramValue)) {
+        label = label.replace(new RegExp(`\\b${paramValue}\\b`, 'g'), `:${key}`)
       }
     })
 
@@ -69,18 +72,20 @@ function createBreadcrumbs() {
 
     const breadcrumb = {
       label,
-      to: index < pathItems.length - 1 ? accumulatedPath : null, // Если не последняя крошка, то ссылаемся на путь
+      to: index < pathItems.length ? accumulatedPath : null, // Если не последняя крошка, то ссылаемся на путь
     }
     breadcrumbs.value.push(breadcrumb)
   })
-  breadcrumbs.value.forEach((crumb, index) => {
-    if (!crumb.to && index < breadcrumbs.value.length - 1) {
-      breadcrumbs.value.splice(index, 1)
-    }
-    if (breadcrumbs.value.length > 2 && crumb.label === breadcrumbs.value[index + 1].label) {
-      breadcrumbs.value.splice(index, 1)
-    }
-  })
+
+  if (breadcrumbs.value.length > 1) {
+    breadcrumbs.value.forEach((crumb, index) => {
+      if (crumb.label === breadcrumbs.value[index + 1]?.label) {
+        breadcrumbs.value.splice(index, 1)
+      }
+    })
+  }
+
+  console.log('BC2', breadcrumbs.value)
 }
 watchEffect(() => {
   createBreadcrumbs()
