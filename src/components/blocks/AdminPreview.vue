@@ -4,11 +4,12 @@
       class="admin-preview q-pa-sm custom-rounded cursor-pointer"
       @click="$router.push({ name: 'admin' })"
     >
-      <q-avatar size="62px" class="q-mb-sm">
+      <q-avatar size="62px">
         <img :src="getImageUrl(userStore.user?.avatar)" />
       </q-avatar>
-      <div class="text-subtitle1 text-center">{{ userStore.user?.name }}</div>
-      <div class="text-subtitle2">{{ userStore.user?.email }}</div>
+      <div class="flex column">
+        <div class="text-subtitle1">{{ userStore.user?.name }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -21,19 +22,20 @@ const userStore = useUserStore()
 
 <style lang="css">
 .admin-preview {
-  border: 1px solid rgba(70, 70, 70, 0.418);
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 12px;
   background-color: rgba(255, 255, 255, 0.027);
   backdrop-filter: blur(10px);
   transition: box-shadow background-color 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
 }
 
 .admin-preview:hover {
-  border: 1px solid rgba(70, 70, 70, 0.753);
+  box-shadow: 0px 0px 1px 2px rgba(70, 70, 70, 0.753);
   background-color: rgba(255, 255, 255, 0.089);
 }
 </style>

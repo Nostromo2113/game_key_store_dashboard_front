@@ -53,11 +53,11 @@ const cartDetails = computed(() => cartStore.cartDetails || {})
 const createOrder = async () => {
   const loading = notify.loading('Обработка')
   const data = generateData()
-  // if (data.order.order_products.length < 1) {
-  //   loading()
-  //   notify.warning('Проверьте корзину')
-  //   return
-  // }
+  if (data.order.order_products.length < 1) {
+    loading()
+    notify.warning('Проверьте корзину')
+    return
+  }
 
   try {
     const path = `users/${cartDetails.value.user_id}/orders`

@@ -11,7 +11,6 @@ export const useCartStore = defineStore('cart', () => {
 
   const fetchCart = async (userId) => {
     const path = `users/${userId}/cart`
-    console.log('UDAOIWHDUOI', path)
     try {
       const response = await getData(path)
       cartDetails.value = response
@@ -19,8 +18,6 @@ export const useCartStore = defineStore('cart', () => {
       delete cartDetails.value.products
     } catch (e) {
       console.error(e)
-    } finally {
-      console.log('Products In Cart: ', cartProducts.value)
     }
   }
 
@@ -32,7 +29,6 @@ export const useCartStore = defineStore('cart', () => {
         price: +product.price,
       },
     }
-    console.log('pc', data)
     const path = `cart/${cartId}/products`
     try {
       await postData(path, data)
@@ -47,8 +43,9 @@ export const useCartStore = defineStore('cart', () => {
     const path = `cart/${cartId}/products/${productId}`
     try {
       await deleteData(path)
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
+      console.error(e)
+      throw new Error(e)
     } finally {
       fetchCart(cartDetails.value.user_id)
     }
@@ -65,6 +62,7 @@ export const useCartStore = defineStore('cart', () => {
       await patchData(path, data)
     } catch (e) {
       console.error(e)
+      throw new Error(e)
     } finally {
       fetchCart(cartDetails.value.user_id)
     }

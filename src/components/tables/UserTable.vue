@@ -114,7 +114,7 @@ import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
 import { getImageUrl } from 'src/utils/getImageUrl'
 
-const emit = defineEmits('success')
+const emit = defineEmits(['success'])
 
 const createModal = ref(false)
 const modalRemove = ref(false)
