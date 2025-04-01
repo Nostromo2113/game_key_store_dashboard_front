@@ -113,8 +113,9 @@ const submit = async () => {
 }
 
 const postUser = async (path, data) => {
+  const userData = { user: { ...data } }
   try {
-    const response = await postData(path, data)
+    const response = await postData(path, userData)
     console.log(response)
   } catch (e) {
     console.error(e)
@@ -122,15 +123,8 @@ const postUser = async (path, data) => {
 }
 
 const resetData = () => {
-  formData.value = {
-    email: '',
-    name: '',
-    surname: '',
-    patronymic: '',
-    age: null,
-    gender: '',
-    address: '',
-    phone: '',
+  for (let key in formData.value) {
+    key == 'age' ? (formData.value[key] = null) : (formData.value[key] = '')
   }
   accept.value = false
 }

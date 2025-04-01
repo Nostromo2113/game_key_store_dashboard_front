@@ -26,7 +26,7 @@
         <q-input v-model="form.email" label="Email" type="email" required>
           <template v-slot:prepend><q-icon name="email" /></template>
         </q-input>
-        <q-input v-model="form.phone" label="Телефон" required mask="+7##########">
+        <q-input v-model="form.phone_number" label="Телефон" required mask="+7##########">
           <template v-slot:prepend><q-icon name="call_end" /></template>
         </q-input>
         <q-input
@@ -98,7 +98,7 @@ const form = ref({
   patronymic: '',
   address: '',
   email: '',
-  phone: '',
+  phone_number: '',
   age: '',
   password: '',
   password_confirmation: '',
@@ -116,6 +116,7 @@ const nextStep = () => {
 }
 
 const createUser = async (path, data) => {
+  console.log(data)
   try {
     return await postData(path, data)
   } catch (e) {
@@ -133,7 +134,7 @@ const submitForm = async () => {
 
   try {
     const response = await createUser(path, form.value)
-    localStorage.setItem('access_token', response.access_token)
+    localStorage.setItem('access_token', response.data.access_token)
     await userStore.fetchUser()
     router.push({ name: 'admin' })
   } catch (e) {

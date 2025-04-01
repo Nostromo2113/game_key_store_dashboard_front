@@ -1,8 +1,8 @@
 <template>
-  <div class="q-pa-md">
+  <div class="grid-container">
     <q-card flat class="custom-rounded shadow-sm">
-      <q-card-section horizontal vertical>
-        <q-card-section class="col-3">
+      <q-card-section class="grid-section">
+        <div class="preview-section">
           <div class="text-subtitle1 q-mb-sm">Превью изображение</div>
           <ImageUpload
             :imageLink="productData.preview_image"
@@ -10,7 +10,7 @@
             width="370px"
             height="250px"
           />
-          <div class="column">
+          <div class="column" style="max-width: 370px">
             <div class="text-subtitle1 q-mt-md">Данные в магазине</div>
             <div class="q-gutter-md col row q-mb-md">
               <q-input
@@ -39,8 +39,8 @@
               <q-radio v-model="productData.is_published" :val="0" label="Не публиковать"></q-radio>
             </div>
           </div>
-        </q-card-section>
-        <q-card-section class="col">
+        </div>
+        <div class="main-section">
           <div class="text-subtitle1 q-mb-sm">Основные данные по продукту</div>
           <div class="q-gutter-md row q-mb-md">
             <q-input
@@ -92,7 +92,7 @@
             <q-editor v-model="productData.description" class="col" min-height="7rem"></q-editor>
           </div>
           <TechnicalForm class="q-mt-xl" :data="technicalRequirements" />
-        </q-card-section>
+        </div>
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
@@ -138,16 +138,17 @@ import InputCalendar from 'src/components/ui/InputCalendar.vue'
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import { getData } from 'src/utils/http/get'
-import { patchFormData } from 'src/utils/http/patchFormData'
 import { patchData } from 'src/utils/http/patch'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
+import notify from 'src/plugins/notify'
 
 const route = useRoute()
 const productId = route.params.productId
 const router = useRouter()
+const emit = defineEmits(['getProductId', 'success'])
 
 const productData = ref({
   title: '',
@@ -169,7 +170,6 @@ const technicalRequirements = ref({
 })
 
 const selectedFile = ref()
-
 const genresOptions = ref([])
 const categoriesOptions = ref([])
 const selectedGenres = ref([])
@@ -179,13 +179,9 @@ const getProduct = async (productId) => {
   const path = `products/${productId}`
   try {
     const response = await getData(path)
-    console.log(response)
-    productData.value = response
-    productData.value.amount = response.activation_keys.length
-    technicalRequirements.value = response.technical_requirements
-
-    selectedCategory.value = response.category
-    selectedGenres.value = response.genres
+    fillLocalProduct(response.data)
+    emit('getProductId', productData.value.id)
+    emit('success')
   } catch (e) {
     console.error(e)
   }
@@ -199,6 +195,7 @@ const getGenres = async () => {
     console.error(e)
   }
 }
+
 const getCategories = async () => {
   try {
     const response = await getData('categories')
@@ -210,44 +207,35 @@ const getCategories = async () => {
 
 const updateProduct = async (productData, selectedFile, productId) => {
   const path = `products/${productId}`
+  const loading = notify.loading('Обработка')
   try {
     const data = prepareProductData(productData, selectedFile)
-    if (selectedFile) {
-      await patchFormData(path, data)
-    } else {
-      await patchData(path, data)
-    }
+    const response = await patchData(path, data)
+    fillLocalProduct(response.data.data)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
-  } finally {
     getProduct(productId)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 
 const storeProduct = async (product, selectedFile) => {
   const path = 'products'
+  const loading = notify.loading('Обработка')
   try {
     const data = prepareProductData(product, selectedFile)
     await postData(path, data)
+    notify.success('Успешно')
     router.push({ name: 'products' })
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
-}
-
-const prepareProductData = (product, selectedFile) => {
-  const data = { ...product }
-  delete data.activation_keys
-
-  data.category = selectedCategory.value.id
-  data.genres = selectedGenres.value.map((genre) => genre.id)
-
-  if (selectedFile) {
-    data.file = selectedFile
-  }
-  data.technical_requirements = technicalRequirements.value
-
-  return data
 }
 
 const removeProduct = async (productId) => {
@@ -261,9 +249,32 @@ const removeProduct = async (productId) => {
   }
 }
 
+const fillLocalProduct = (data) => {
+  productData.value = data
+  productData.value.amount = data.activation_keys.length
+  technicalRequirements.value = data.technical_requirements
+  selectedCategory.value = data.category
+  selectedGenres.value = data.genres
+}
+
+const prepareProductData = (product, selectedFile) => {
+  const data = {
+    product: {
+      ...product,
+    },
+  }
+  delete data.product.activation_keys
+  data.product.category = selectedCategory.value.id
+  data.product.genres = selectedGenres.value.map((genre) => genre.id)
+  if (selectedFile) {
+    data.product.file = selectedFile
+  }
+  data.product.technical_requirements = technicalRequirements.value
+  return data
+}
+
 const onFileChange = (file) => {
   selectedFile.value = file
-  console.log('selected', file)
 }
 
 onMounted(() => {
@@ -274,4 +285,43 @@ onMounted(() => {
   }
 })
 </script>
-<style lang=""></style>
+
+<style scoped>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.grid-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.preview-section {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-section {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1200px) {
+  .grid-section {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .preview-section {
+    grid-column: 1 / 2;
+    align-items: start;
+  }
+
+  .main-section {
+    grid-column: 2 / 3;
+  }
+}
+</style>

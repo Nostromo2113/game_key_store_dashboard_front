@@ -2,13 +2,13 @@
   <div>
     <q-table
       :rows="rows"
-      :columns="ordersColumns"
+      :columns="columns"
       row-key="title"
       dense
       flat
       class="custom-rounded q-pa-md text-blue-grey-9"
     >
-      <template v-slot:top-right>
+      <template v-if="props.userId" v-slot:top-right>
         <q-btn
           @click="addModal = !addModal"
           size="16px"
@@ -25,11 +25,13 @@
             <q-btn
               @click="navigateToOrder(props.row.id, props.row.userId)"
               flat
-              :to="routePushParams"
               rounded
               dense
               icon="visibility"
             />
+          </q-td>
+          <q-td key="orderNumber" :props="props">
+            {{ props.row.order_number }}
           </q-td>
           <q-td key="id" :props="props">
             {{ props.row.id }}
@@ -38,10 +40,20 @@
             {{ props.row.user_id }}
           </q-td>
           <q-td key="status" :props="props">
-            {{ props.row.status }}
+            <q-badge :color="props.row.status === 'completed' ? 'info' : 'warning'">
+              {{ props.row.status }}
+            </q-badge>
           </q-td>
-          <q-td key="total_price" :props="props">
-            {{ props.row.total_price }}
+          <q-td key="destroy" :props="props">
+            <q-btn
+              @click="((itemToRemove = props.row), (modalRemove = true))"
+              icon="close"
+              size="12px"
+              color="negative"
+              round
+              dense
+              unelevated
+            ></q-btn>
           </q-td>
         </q-tr>
       </template>
@@ -55,7 +67,7 @@
       <q-card>
         <q-card-section class="row items-center">
           <span class="text-h6"
-            >Удалить категорию: <strong>{{ itemToRemove.title }}</strong
+            >Удалить заказ: <strong>{{ itemToRemove.order_number }}</strong
             >?</span
           >
         </q-card-section>
@@ -63,7 +75,7 @@
         <q-card-actions align="right">
           <q-btn flat label="Нет" color="primary" v-close-popup></q-btn>
           <q-btn
-            @click="destroy(itemToRemove)"
+            @click="destroyOrder(itemToRemove.id, itemToRemove.user_id)"
             flat
             label="Да"
             color="negative"
@@ -73,19 +85,32 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="addModal" persistent>
-      <ConfirmationCard itemTitle="Создать заказ" destroy @confirm="store" />
+      <ConfirmationCard
+        itemTitle="Создать заказ"
+        destroy
+        @confirm="createAnEmptyOrder(props.userId)"
+      />
     </q-dialog>
   </div>
 </template>
 <script setup>
-import { ref, defineProps, watch } from 'vue'
+import { ref, defineProps, watch, defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import { ordersColumns } from 'src/constants/ordersColumns'
 import { getData } from 'src/utils/http/get'
 import { useRouter } from 'vue-router'
+import { deleteData } from 'src/utils/http/delete'
+import { postData } from 'src/utils/http/post'
+
 const router = useRouter()
 
+const emit = defineEmits(['success'])
+
 const props = defineProps({
+  shopPage: {
+    type: Boolean,
+    default: false,
+  },
   userPage: {
     type: Boolean,
     default: false,
@@ -96,13 +121,10 @@ const props = defineProps({
   },
 })
 
-const routePushParams = ref({
-  name: props.user ? 'user.order.show' : 'order.show',
-  params: { orderId: '', userId: '' },
-})
+const columns = ref([...ordersColumns])
 
 const navigateToOrder = (orderId, userId) => {
-  if (!props.userId) {
+  if (!props.shopPage) {
     router.push({
       name: props.userPage ? 'user.order.show' : 'order.show',
       params: { orderId, userId },
@@ -115,6 +137,34 @@ const navigateToOrder = (orderId, userId) => {
   }
 }
 
+const createAnEmptyOrder = async (userId) => {
+  const path = `/users/${userId}/orders`
+  try {
+    const response = await postData(path, {
+      order: {
+        user_id: userId,
+      },
+    })
+    console.log(response)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    getOrders(userId)
+  }
+}
+
+const destroyOrder = async (orderId, userId) => {
+  const path = `/users/${userId}/orders/${orderId}`
+  try {
+    const response = await deleteData(path)
+    console.log(response)
+  } catch (e) {
+    console.error(`Ошибка при удалении заказа: ${e}`)
+  } finally {
+    getOrders(userId)
+  }
+}
+
 const addModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})
@@ -122,10 +172,11 @@ const rows = ref(props.rowsData ?? [])
 
 const getOrders = async (userId) => {
   try {
-    const path = userId ? `orders/?user_id=${userId}` : 'orders'
+    const path = userId ? `/users/${userId}/orders` : 'orders'
     console.log('path', path)
     const response = await getData(path)
     rows.value = response
+    emit('success')
   } catch (e) {
     console.error(e)
   }
@@ -135,6 +186,17 @@ watch(
   () => props.userId,
   (userId) => {
     getOrders(userId)
+
+    columns.value = [...ordersColumns]
+
+    if (userId) {
+      columns.value.push({
+        name: 'destroy',
+        label: 'удалить',
+        align: 'right',
+        field: 'destroy',
+      })
+    }
   },
   { immediate: true },
 )

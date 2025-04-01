@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="q-pa-md">
+  <div>
     <q-card class="my-card q-mb-md custom-rounded" flat>
       <q-item class="bg-primary text-white">
         <q-item-section avatar>
@@ -23,21 +23,21 @@
             <div class="grid-container">
               <div>ФИО:</div>
               <div class="row">
-                <span class="text-grey"
+                <span class="bg-indigo-2 q-px-sm rounded-borders"
                   >{{ user.surname }} {{ user.name }} {{ user.patronymic }}</span
                 >
               </div>
               <div>Email:</div>
               <div class="row">
-                <span class="text-grey">{{ user.email }}</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ user.email }}</span>
               </div>
               <div>Телефон:</div>
               <div class="row">
-                <span class="text-grey">+79999999999</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">+79999999999</span>
               </div>
               <div>Адрес:</div>
               <div class="row">
-                <span class="text-grey">{{ user.address }}</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ user.address }}</span>
               </div>
             </div>
           </q-card>
@@ -49,19 +49,19 @@
             <div class="grid-container">
               <div>Игры:</div>
               <div class="row">
-                <span class="text-grey">{{ orderProducts.length }}</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ orderProducts.length }}</span>
               </div>
               <div>Копий:</div>
               <div class="row">
-                <span class="text-grey">{{ totalAmount }}</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ totalAmount }}</span>
               </div>
               <div>Сумма:</div>
               <div class="row">
-                <span class="text-grey">{{ totalPrice }} ₽</span>
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ totalPrice }} ₽</span>
               </div>
               <div>Оплачен:</div>
               <div class="row">
-                <span class="text-grey">
+                <span class="bg-indigo-2 q-px-sm rounded-borders">
                   {{ status === 'completed' ? 'Оплачен' : 'Ожидает оплаты' }}
                 </span>
               </div>
@@ -107,7 +107,7 @@
           no-caps
         ></q-btn>
         <q-btn
-          @click="getOrderProducts(orderPath, orderId)"
+          @click="getOrder(orderId)"
           label="Отменить"
           color="warning"
           unelevated
@@ -123,15 +123,16 @@ import ProductTable from 'src/components/tables/ProductTable.vue'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, ref, defineEmits } from 'vue'
 import { patchData } from 'src/utils/http/patch'
+import notify from 'src/plugins/notify'
+
+const emit = defineEmits(['success'])
 
 const tab = ref('orderProducts')
 
 const route = useRoute()
 const orderId = route.params.orderId
-
-const orderPath = 'orders'
 
 const orderProducts = ref([])
 const user = ref({})
@@ -145,38 +146,51 @@ const applyChanges = async (products) => {
     return {
       id: product.id,
       quantity: product.quantity,
-      activation_key_id: product.activation_key_id || null,
     }
   })
-  const path = `orders/${orderId}`
+  const path = `orders/${orderId}/products`
+  const loading = notify.loading('Обработка')
   try {
     const response = await patchData(path, { order_products: applyProducts })
-    orderProducts.value = response.data.order.products.map((product) => ({
+    orderProducts.value = response.data.order.order_products.map((product) => ({
       ...product,
       quantity: product.activation_keys.length,
     }))
-    status.value = response.data.status
-    console.log(orderProducts.value)
+    status.value = response.data.order.status
+    calcTotalAmount(orderProducts.value)
+    calcTotalPrice(orderProducts.value)
+    notify.success('Успешно')
   } catch (e) {
-    console.error('Ошибка при отправке данных:', e)
+    if (e.status == 500) {
+      notify.error('Недостаточно ключей активации')
+    } else {
+      notify.error('Ошибка')
+    }
+  } finally {
+    loading()
   }
 }
 
-const getOrderProducts = async (orderPath, orderId) => {
+const getOrder = async (orderId) => {
+  const path = `orders/${orderId}`
   try {
-    const response = await getData(orderPath, orderId)
+    let response = await getData(path)
+    response = response.data
     status.value = response.status
-    orderProducts.value = response.products.map((product) => ({
+    orderProducts.value = response.order_products.map((product) => ({
       ...product,
       quantity: product?.activation_keys ? product.activation_keys.length : product.quantity,
     }))
     user.value = response.user
-    if (status.value !== 'completed') {
-      totalPrice.value = calcTotalPrice(orderProducts.value)
-      totalAmount.value = calcTotalAmount(orderProducts.value)
-    }
+
+    calcTotalPrice(orderProducts.value)
+    calcTotalAmount(orderProducts.value)
+
+    emit('success')
   } catch (e) {
     console.error(e)
+  } finally {
+    console.log('final')
   }
 }
 
@@ -186,22 +200,20 @@ const removeFromOrder = (id) => {
 }
 
 const calcTotalPrice = (products) => {
-  let totalPrice = 0
+  let resultPrice = 0
   products.forEach((el) => {
-    totalPrice += el.price * el.activation_keys.length
+    resultPrice += el.price * el.activation_keys.length
   })
-  return totalPrice
+  totalPrice.value = resultPrice
 }
 
 const calcTotalAmount = (products) => {
-  let totalAmount = 0
+  let resultAmount = 0
   products.forEach((el) => {
-    totalAmount += el.activation_keys.length
+    resultAmount += el.activation_keys.length
   })
-  return totalAmount
+  totalAmount.value = resultAmount
 }
-
-getOrderProducts(orderPath, orderId)
 
 const addSelectedProducts = (selectedProducts) => {
   selectedProducts.forEach((selectedProduct) => {
@@ -214,6 +226,10 @@ const addSelectedProducts = (selectedProducts) => {
   })
   tab.value = 'orderProducts'
 }
+
+onMounted(() => {
+  getOrder(orderId)
+})
 </script>
 
 <style lang="css">
@@ -221,5 +237,6 @@ const addSelectedProducts = (selectedProducts) => {
   display: grid;
   grid-template-columns: 75px 1fr;
   align-items: center;
+  gap: 2px;
 }
 </style>

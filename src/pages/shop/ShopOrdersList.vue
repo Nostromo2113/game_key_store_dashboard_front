@@ -1,5 +1,5 @@
 <template lang="">
-  <div><OrderTable :userId="userId" /></div>
+  <div class="q-mt-md"><OrderTable v-if="userId" :userId="userId" :shopPage="true" /></div>
 </template>
 <script setup>
 import OrderTable from 'src/components/tables/OrderTable.vue'

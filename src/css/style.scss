@@ -1,3 +1,12 @@
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+body {
+  color: $blue-grey-9;
+}
+
 .gap-sm {
   gap: 10px;
 }
@@ -23,7 +32,7 @@
 }
 
 .custom-border {
-  border: 1px solid rgb(168, 168, 168) !important;
+  border: 1px solid rgb(201, 201, 201) !important;
 }
 
 .q-ripple {
@@ -42,7 +51,10 @@
   box-shadow: 0 0px 2px 0 rgba(0, 0, 0, 0.164) !important;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+.page-height {
+  min-height: calc(100vh - 66px);
+}
+
+.page-shop-height {
+  min-height: calc(100vh - 172px);
 }

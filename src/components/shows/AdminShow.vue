@@ -2,7 +2,7 @@
   <div class="bg-gradient" style="height: 100vh">
     <div class="container">
       <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
-        >Добро пожаловать {{ user.name }}!</q-toolbar
+        >Добро пожаловать, {{ user.name }}!</q-toolbar
       >
       <!-- Основной блок с аватаром и информацией о пользователе -->
       <div class="grid-container">
@@ -33,20 +33,27 @@
             <q-card-section class="q-pa-none q-mb-md">
               <div class="text-subtitle2 text-grey">Ваши данные:</div>
             </q-card-section>
-            <q-input v-model="user.surname" label="Фамилия" class="q-mb-sm" dense />
-            <q-input v-model="user.name" label="Имя" class="q-mb-sm" dense />
-            <q-input v-model="user.patronymic" label="Отчество" class="q-mb-sm" dense />
-            <q-input v-model="user.age" label="Возраст" type="number" class="q-mb-sm" dense />
-            <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense />
-            <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense />
+            <q-input v-model="user.surname" label="Фамилия" class="q-mb-sm" dense filled />
+            <q-input v-model="user.name" label="Имя" class="q-mb-sm" dense filled />
+            <q-input v-model="user.patronymic" label="Отчество" class="q-mb-sm" dense filled />
+            <q-input
+              v-model="user.age"
+              label="Возраст"
+              type="number"
+              class="q-mb-sm"
+              dense
+              filled
+            />
+            <q-input v-model="user.email" label="Email" type="email" class="q-mb-sm" dense filled />
+            <q-input v-model="user.address" label="Адрес" class="q-mb-sm" dense filled />
             <q-input
               v-model="user.phone_number"
               label="Телефон"
               mask="+7 (###) ###-##-##"
               class="q-mb-sm"
               dense
+              filled
             />
-            <q-input value="Админ" label="Роль" class="q-mb-sm" dense />
             <q-card-actions align="right" class="q-mt-md">
               <template v-if="edit">
                 <q-btn
@@ -65,7 +72,6 @@
                   class="q-mr-sm"
                   @click="edit = false"
                 />
-                <!-- <q-btn label="Удалить пользователя" color="negative" unelevated no-caps /> -->
               </template>
               <q-btn
                 v-else
@@ -162,7 +168,8 @@ import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import ResetPasswordForm from 'src/components/forms/ResetPasswordForm.vue'
 import { postData } from 'src/utils/http/post'
 import { patchData } from 'src/utils/http/patch'
-import { patchFormData } from 'src/utils/http/patchFormData'
+import notify from 'src/plugins/notify'
+
 const userStore = useUserStore()
 
 const edit = ref(false)
@@ -197,17 +204,22 @@ const onFileChange = (file) => {
 }
 
 const updateUser = async (userPath, userData, selectedFile, userId) => {
-  console.log(userPath, userData, selectedFile, userId)
+  const path = `${userPath}/${userId}`
+  const data = userData
+  const loading = notify.loading('Обработка')
+  if (selectedFile) {
+    data.file = selectedFile
+  }
   try {
-    const data = userData
-    if (selectedFile) {
-      data.file = selectedFile
-      await patchFormData(userPath, userId, data)
-    } else {
-      await patchData(userPath, userId, data)
-    }
+    await patchData(path, { user: data })
+    notify.success('Успешно')
+    loading()
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    userStore.fetchUser
+    selectedFile.value = null
   }
 }
 </script>
@@ -219,7 +231,6 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   margin: auto;
 }
 
-/* Основная сетка для аватара и информации о пользователе */
 .grid-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -232,7 +243,6 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   }
 }
 
-/* Стили для карточек */
 .q-card {
   width: 100%;
 }
@@ -241,13 +251,11 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   border-radius: 8px;
 }
 
-/* Аватар */
 .avatar-section {
   display: flex;
   flex-direction: column;
 }
 
-/* Информация о пользователе */
 .user-info-section {
   display: flex;
   flex-direction: column;

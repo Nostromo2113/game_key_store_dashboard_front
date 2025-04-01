@@ -1,6 +1,10 @@
 import { api } from 'src/boot/axios'
 
 export const deleteData = async (path) => {
-  const response = await api.delete(path)
-  return response
+  try {
+    const response = await api.delete(path)
+    return response
+  } catch (e) {
+    throw Error(e)
+  }
 }

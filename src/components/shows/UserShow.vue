@@ -13,7 +13,6 @@
           :imageLink="userData.avatar"
           @onFileChange="onFileChange"
           :showAlt="false"
-          :disabledUpload="!edit"
           class="full-width"
         />
       </q-card>
@@ -25,51 +24,41 @@
         <q-card-section class="user-data-grid">
           <!-- Левая колонка -->
           <div class="left-column">
-            <q-input v-model="userData.surname" label="Фамилия" />
-            <q-input v-model="userData.name" label="Имя" />
-            <q-input v-model="userData.patronymic" label="Отчество" />
-            <q-input v-model="userData.age" type="number" label="Возраст" />
+            <q-input v-model="userData.surname" label="Фамилия" filled />
+            <q-input v-model="userData.name" label="Имя" filled />
+            <q-input v-model="userData.patronymic" label="Отчество" filled />
+            <q-input v-model="userData.age" type="number" label="Возраст" filled />
           </div>
 
           <q-separator vertical class="separator" />
 
           <!-- Правая колонка -->
           <div class="right-column">
-            <q-input v-model="userData.email" type="email" label="Email" />
-            <q-input v-model="userData.address" label="Адрес" />
-            <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" />
-            <q-input label="Администратор"></q-input>
+            <q-input v-model="userData.email" type="email" label="Email" filled />
+            <q-input v-model="userData.address" label="Адрес" filled />
+            <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" filled />
+            <q-input label="Администратор" filled></q-input>
           </div>
         </q-card-section>
 
         <q-card-actions align="right" class="q-pb-md q-pr-md">
-          <template v-if="!readonly">
-            <q-btn
-              @click="updateUser(userData, selectedFile, userId)"
-              label="Применить"
-              color="primary"
-              unelevated
-              no-caps
-              class="q-mr-sm"
-            />
-            <q-btn
-              label="Отменить"
-              color="warning"
-              unelevated
-              no-caps
-              class="q-mr-sm"
-              @click="readonly = true"
-            />
-            <q-btn label="Удалить пользователя" color="negative" unelevated no-caps />
-          </template>
           <q-btn
-            v-else
-            label="Редактировать"
+            @click="updateUser(userData, selectedFile, userId)"
+            label="Применить"
             color="primary"
             unelevated
             no-caps
-            @click="readonly = false"
+            class="q-mr-sm"
           />
+          <q-btn
+            label="Отменить"
+            color="warning"
+            unelevated
+            no-caps
+            class="q-mr-sm"
+            @click="readonly = true"
+          />
+          <q-btn label="Удалить пользователя" color="negative" unelevated no-caps />
         </q-card-actions>
       </q-card>
     </div>
@@ -92,10 +81,10 @@
       </q-toolbar>
       <q-tab-panels v-model="tab" animated keep-alive>
         <q-tab-panel name="orders">
-          <OrderTable :rowsData="orderData" :userPage="true" />
+          <OrderTable :rowsData="orderData" :userPage="true" :userId="+userId" />
         </q-tab-panel>
         <q-tab-panel name="cart">
-          <CartProductsTable :userId="userId" />
+          <CartProductsTable :propsUserId="+userId" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -105,43 +94,31 @@
 import ImageUpload from 'src/components/blocks/ImageUpload.vue'
 import OrderTable from 'src/components/tables/OrderTable.vue'
 import CartProductsTable from 'src/components/tables/CartProductsTable.vue'
+import notify from 'src/plugins/notify'
 import { getData } from 'src/utils/http/get'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import { useRoute } from 'vue-router'
 import { patchData } from 'src/utils/http/patch'
-import { patchFormData } from 'src/utils/http/patchFormData'
 import { useCartStore } from 'src/stores/cartStore'
 
 const route = useRoute()
-const userId = route.params.userId
 const cartStore = useCartStore()
-const orderPath = 'orders'
+const userId = route.params.userId
+
+const emit = defineEmits(['success'])
 
 const tab = ref('orders')
-
 const userData = ref({})
 const selectedFile = ref()
-
 const orderData = ref([])
 
 const getUserData = async (userId) => {
+  const path = `users/${userId}`
   try {
-    const response = await getData('users', userId)
-    userData.value = response
-    cartStore.fetchCart(userId)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-const getOrderData = async (path, userId) => {
-  const queryParams = {
-    id: userId,
-  }
-  try {
-    const response = await getData(path, null, queryParams)
-    orderData.value = response
-    console.log(orderData.value)
+    const response = await getData(path)
+    userData.value = response.data
+    await cartStore.fetchCart(userId)
+    emit('success')
   } catch (e) {
     console.error(e)
   }
@@ -154,28 +131,28 @@ const onFileChange = (file) => {
 
 const updateUser = async (userData, selectedFile, userId) => {
   const path = `users/${userId}`
+  const loading = notify.loading('Обработка')
   try {
-    const data = userData
-    console.log(data)
-    if (selectedFile) {
-      data.file = selectedFile
-      await patchFormData(path, data)
-    } else {
-      await patchData(path, data)
+    const data = {
+      user: userData,
     }
+    if (selectedFile) {
+      data.user.file = selectedFile
+    }
+    await patchData(path, data)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
     getUserData(userId)
+    loading()
   }
 }
 
 onMounted(() => {
   getUserData(userId)
-  getOrderData(orderPath, userId)
 })
-
-const readonly = ref(true)
 </script>
 
 <style scoped>

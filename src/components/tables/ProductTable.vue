@@ -4,12 +4,21 @@
       :rows="rows"
       :columns="filteredColumns"
       :pagination="tablePagination"
+      hide-bottom
       row-key="title"
       class="q-pa-sm custom-rounded text-blue-grey-9 shadow-sm"
       flat
       dense
       ><template v-slot:top-left>
-        <search-form />
+        <q-btn-dropdown
+          icon="filter_list"
+          color="primary"
+          unelevated
+          class="custom-rounded"
+          label="Фильтры"
+        >
+          <FilterGroup @getQueryData="getQueryProducts" />
+        </q-btn-dropdown>
       </template>
       <template v-slot:top-right>
         <q-btn
@@ -86,16 +95,25 @@
         </q-tr>
       </template>
     </q-table>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getQueryProducts({ page: page })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
-import SearchForm from '../forms/SearchForm.vue'
 import { productsColumns } from 'src/constants/productsColumns'
-import { defineEmits } from 'vue'
 import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
+import FilterGroup from '../blocks/FilterGroup.vue'
 
 const router = useRouter()
 
@@ -117,20 +135,17 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  'getItem',
-  'storeItem',
-  'updateItem',
-  'destroyItem',
-  'addSelectedProducts',
-])
-
-const path = 'products'
+const emit = defineEmits(['addSelectedProducts', 'success'])
 
 const rows = ref([])
 
 const filteredColumns = ref([])
 const selectedProducts = ref([])
+
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
 
 const navigateToCreateProduct = () => {
   if (!props.checkboxes) {
@@ -138,20 +153,27 @@ const navigateToCreateProduct = () => {
   }
 }
 
-const getProducts = async (path) => {
+const getQueryProducts = async (queryParams = {}) => {
+  const path = 'products'
   try {
-    const response = await getData(path)
-    rows.value = response
-    console.log('products', rows.value)
+    const response = await getData(path, queryParams)
+    console.log(response)
+    rows.value = response.data
+
+    if (response.meta.current_page && response.meta.last_page) {
+      pagination.value.currentPage = response.meta.current_page
+      pagination.value.lastPage = response.meta.last_page
+    }
+    emit('success')
   } catch (e) {
     console.error(e)
   }
 }
 
 const addSelectedProducts = (products) => {
-  selectedProducts.value = []
   const preparedSelectedProducts = prepareSelectedProducts(products)
   emit('addSelectedProducts', preparedSelectedProducts)
+  selectedProducts.value = []
 }
 
 const prepareSelectedProducts = (products) => {
@@ -164,7 +186,7 @@ const prepareSelectedProducts = (products) => {
 }
 
 onMounted(() => {
-  getProducts(path)
+  getQueryProducts()
   defineColumnStructure(productsColumns, props.checkboxes)
 })
 
@@ -178,7 +200,7 @@ const defineColumnStructure = (productsColumns, checkboxes) => {
 
 const tablePagination = ref({
   page: 1,
-  rowsPerPage: 20,
+  rowsPerPage: 100,
 })
 </script>
 <style lang="css"></style>

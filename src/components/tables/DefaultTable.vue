@@ -16,7 +16,6 @@
           size="16px"
           color="primary"
           icon="add"
-          unelevated
           class="custom-rounded"
         ></q-btn>
       </template>
@@ -27,14 +26,14 @@
             {{ props.row.id }}
           </q-td>
           <q-td key="title" :props="props">
-            <q-badge color="accent text-subtitle2">
+            <q-badge color="blue-grey-10 text-subtitle2 shadow-1 custom-rounded">
               <q-input
                 :model-value="props.row.title"
                 @update:model-value="(val) => onUpdateTitle(val, props.row)"
-                @blur="updateItem('categories', props.row)"
+                @blur="updateItem(path, props.row)"
                 dense
                 borderless
-                input-style="text-align: center"
+                input-style="text-align: center; color: white"
               >
               </q-input>
             </q-badge>
@@ -47,7 +46,6 @@
               color="negative"
               round
               dense
-              unelevated
             ></q-btn>
           </q-td>
         </q-tr>
@@ -65,18 +63,21 @@
       />
     </q-dialog>
     <q-dialog v-model="addModal" persistent>
-      <default-form @storeItem="(item) => postItem(props.path, item)" />
+      <default-form @storeItem="(item) => postItem(path, item)" />
     </q-dialog>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import DefaultForm from 'src/components/forms/DefaultForm.vue'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
 import { patchData } from 'src/utils/http/patch'
+import notify from 'src/plugins/notify'
+
+const emit = defineEmits(['success'])
 
 const props = defineProps({
   title: {
@@ -88,9 +89,11 @@ const props = defineProps({
   },
   path: {
     type: String,
-    default: 'categories',
+    required: true,
   },
 })
+
+const path = props.path
 
 const addModal = ref(false)
 const modalRemove = ref(false)
@@ -99,30 +102,41 @@ const itemToRemove = ref({})
 const rows = ref([])
 
 const getItems = async (path) => {
-  const response = await getData(path)
-  rows.value = response
+  try {
+    const response = await getData(path)
+    rows.value = response
+    emit('success')
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const postItem = async (path, item) => {
+  const loading = notify.loading('Обработка')
   try {
-    console.log('path: ', path, 'item: ', item)
     const response = await postData(path, item)
-    console.log(response)
+    storeLocalData(response)
+    notify.success('Элемент добавлен')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка при добавлении')
   } finally {
-    getItems(path)
+    loading()
   }
 }
 
 const deleteItem = async (path, id) => {
+  const pathItem = `${path}/${id}`
+  const loading = notify.loading('Обработка')
   try {
-    const response = await deleteData(path, id)
-    console.log(response)
+    await deleteData(pathItem)
+    removeLocalData(id)
+    notify.success('Элемент удален')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка при удалении')
   } finally {
-    getItems(path)
+    loading()
   }
 }
 
@@ -131,20 +145,44 @@ const onUpdateTitle = (value, row) => {
 }
 
 const updateItem = async (path, row) => {
-  console.warn(row, path)
+  const pathItem = `${path}/${row.id}`
+  const loading = notify.loading('Обработка')
   try {
-    const response = patchData(path, row)
-    console.log(response)
+    const response = await patchData(pathItem, row)
+    updateLocalData(response)
+    notify.success('Данные обновлены')
   } catch (e) {
     console.error(e)
-  } finally {
+    notify.error('Ошибка при изменении')
     getData(path)
+  } finally {
+    loading()
   }
 }
 
 onMounted(() => {
   getItems(props.path)
 })
+
+const updateLocalData = (data) => {
+  const item = data.data?.id ? data.data : data.data?.data
+  const index = rows.value.findIndex((el) => el.id === item.id)
+  rows.value[index] = item
+}
+
+const removeLocalData = (id) => {
+  const index = rows.value.findIndex((el) => el.id === id)
+  rows.value.splice(index, 1)
+}
+
+const storeLocalData = (data) => {
+  const item = data.data.id ? data.data : data.data.data
+  if (item) {
+    rows.value.push(item)
+  } else {
+    return
+  }
+}
 
 const tablePagination = ref({
   page: 1,

@@ -9,9 +9,11 @@ export const useCartStore = defineStore('cart', () => {
   const cartDetails = ref([])
   const cartProducts = ref([])
 
-  const fetchCart = async (cartId) => {
+  const fetchCart = async (userId) => {
+    const path = `users/${userId}/cart`
+    console.log('UDAOIWHDUOI', path)
     try {
-      const response = await getData('cart', cartId)
+      const response = await getData(path)
       cartDetails.value = response
       cartProducts.value = response.products
       delete cartDetails.value.products
@@ -24,18 +26,20 @@ export const useCartStore = defineStore('cart', () => {
 
   const storeProductToCart = async (cartId, product) => {
     const data = {
-      product_id: product.id,
-      quantity: 1,
-      price: +product.price,
+      product: {
+        product_id: product.id,
+        quantity: 1,
+        price: +product.price,
+      },
     }
+    console.log('pc', data)
     const path = `cart/${cartId}/products`
     try {
-      const response = await postData(path, data)
-      console.log('ADD RES', response)
+      await postData(path, data)
     } catch (e) {
-      console.error('Продукт не добавлен в корзину', e)
+      throw new Error(e)
     } finally {
-      fetchCart(1)
+      fetchCart(cartDetails.value.user_id)
     }
   }
 
@@ -46,18 +50,23 @@ export const useCartStore = defineStore('cart', () => {
     } catch (error) {
       console.error(error)
     } finally {
-      fetchCart(cartId)
+      fetchCart(cartDetails.value.user_id)
     }
   }
 
   const updateProductFromCart = async (cartId, product) => {
     const path = `cart/${cartId}/products/${product.product_id}`
+    const data = {
+      product: {
+        ...product,
+      },
+    }
     try {
-      await patchData(path, product)
+      await patchData(path, data)
     } catch (e) {
       console.error(e)
     } finally {
-      fetchCart(cartId)
+      fetchCart(cartDetails.value.user_id)
     }
   }
 

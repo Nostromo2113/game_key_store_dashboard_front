@@ -42,7 +42,7 @@
             <q-img
               width="75px"
               height="75px"
-              :src="getAvatarUrl(props.row.avatar)"
+              :src="getImageUrl(props.row.avatar)"
               class="custom-rounded"
             ></q-img>
           </q-td>
@@ -107,11 +107,14 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import UserForm from '../forms/UserForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
+import { getImageUrl } from 'src/utils/getImageUrl'
+
+const emit = defineEmits('success')
 
 const createModal = ref(false)
 const modalRemove = ref(false)
@@ -137,18 +140,16 @@ const removeUser = async (userId) => {
 const getUsers = async (path) => {
   try {
     const response = await getData(path)
-    console.log('USERS', response)
-    rows.value = response
+    rows.value = response.data
+    emit('success')
   } catch (e) {
     console.error(e)
   }
 }
 
-getUsers('users')
-
-const getAvatarUrl = (url) => {
-  return `${import.meta.env.VITE_APP_API_URL}/storage/${url}`
-}
+onMounted(() => {
+  getUsers('users')
+})
 
 const tablePagination = ref({
   page: 1,

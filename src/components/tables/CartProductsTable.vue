@@ -54,7 +54,6 @@
               size="14px"
               color="negative"
               dense
-              unelevated
               round
             ></q-btn>
           </q-td>
@@ -79,44 +78,43 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, watch } from 'vue'
+import { ref, computed, watch, defineProps, onMounted } from 'vue'
 import { cartProductsColumns } from 'src/constants/cartProductsColumns'
 import { defineEmits } from 'vue'
 import QuantitySelector from '../ui/QuantitySelector.vue'
 import CardForm from '../forms/CardForm.vue'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useCartStore } from 'src/stores/cartStore'
-// import { postData } from 'src/utils/http/post'
+import { useUserStore } from 'src/stores/userStore'
 
 const emit = defineEmits(['cartReceived', 'updateQuantity'])
 
-const cartStore = useCartStore()
-
 const props = defineProps({
-  cartId: {
+  propsUserId: {
     type: Number,
-    required: true,
-  },
-  shop: {
-    type: Boolean,
-    default: false,
+    default: null,
   },
 })
 
+const cartStore = useCartStore()
+const userStore = useUserStore()
+
 const modalOrder = ref(false)
 
-const cartId = computed(() => props.cartId)
+const cartId = computed(() => cartStore.cartDetails?.id)
+const userId = computed(() => userStore.user?.id)
 
 const cartItems = computed(() => cartStore.cartProducts || [])
 const cartDetails = computed(() => cartStore.cartDetails || {})
 
-const fetchCart = async (path, id) => {
-  if (!id) {
+const fetchCart = async (userId) => {
+  if (!userId) {
     console.warn('Нет userId')
     return
   }
+
   try {
-    await cartStore.fetchCart(id)
+    await cartStore.fetchCart(userId)
     emit('cartReceived', cartItems.value)
   } catch (error) {
     console.error('Ошибка загрузки корзины:', error)
@@ -135,29 +133,22 @@ const removeProductFromCart = async (productId) => {
   cartStore.removeProductFromCart(cartDetails.value.id, productId)
 }
 
-// const createOrder = async () => {
-//   const data = {
-//     user_id: cartDetails.value.user_id,
-//     order_products: cartItems.value.map((product) => ({
-//       id: product.id,
-//       quantity: product.quantity_cart,
-//     })),
-//   }
-//   try {
-//     const response = await postData('orders', data)
-//     console.log(response)
-//   } catch (e) {
-//     console.error('При оформлении заказа произошла ошибка', e)
-//   }
-// }
-
 watch(
-  () => cartId.value,
+  () => userId.value,
   (newValue) => {
-    fetchCart('cart', newValue)
+    if (newValue && !props.propsUserId) {
+      fetchCart(newValue)
+    }
   },
   { immediate: true },
 )
+
+onMounted(() => {
+  if (props.propsUserId) {
+    console.log('props user', props.propsUserId)
+    fetchCart(props.propsUserId)
+  }
+})
 
 const pagination = ref({
   page: 1,
