@@ -164,11 +164,11 @@ const deleteItem = async (productId, keyId) => {
   try {
     await deleteData(path)
     notify.success('Успешно')
+    removeLocalData(keyId)
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')
   } finally {
-    removeLocalData(keyId)
     loading()
   }
 }

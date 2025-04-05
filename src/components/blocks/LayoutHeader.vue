@@ -34,6 +34,7 @@ const navigateToQueryOrder = async (query) => {
   if (query) {
     try {
       const response = await getData(path, { order_number: +query })
+      console.log('RES', response)
       const orderId = response[0].id
       const userId = response[0].user_id
       if (orderId) {

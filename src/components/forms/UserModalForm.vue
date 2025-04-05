@@ -48,7 +48,7 @@
             :rules="requiredRule"
           ></q-input>
           <q-input
-            v-model="formData.phone"
+            v-model="formData.phone_number"
             label="Телефон"
             mask="+7##########"
             filled
@@ -91,7 +91,7 @@ const path = 'users'
 
 const formData = ref({
   email: '',
-  phone: '',
+  phone_number: '',
   name: '',
   surname: '',
   patronymic: '',

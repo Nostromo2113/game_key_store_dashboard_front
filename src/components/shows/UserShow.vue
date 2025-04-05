@@ -126,7 +126,6 @@ const getUserData = async (userId) => {
 
 const onFileChange = (file) => {
   selectedFile.value = file
-  console.log('selected', file)
 }
 
 const updateUser = async (userData, selectedFile, userId) => {

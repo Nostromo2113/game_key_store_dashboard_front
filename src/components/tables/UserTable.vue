@@ -102,13 +102,13 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="createModal" persistent full-width>
-      <user-form title="Добавить пользователя"></user-form>
+      <user-modal-form title="Добавить пользователя"></user-modal-form>
     </q-dialog>
   </div>
 </template>
 <script setup>
 import { ref, defineEmits, onMounted } from 'vue'
-import UserForm from '../forms/UserForm.vue'
+import UserModalForm from '../forms/UserModalForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
