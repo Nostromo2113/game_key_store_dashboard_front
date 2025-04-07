@@ -95,15 +95,14 @@
 </template>
 <script setup>
 import { ref, defineProps, watch, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import { ordersColumns } from 'src/constants/ordersColumns'
 import { getData } from 'src/utils/http/get'
-import { useRouter } from 'vue-router'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
 
 const router = useRouter()
-
 const emit = defineEmits(['success'])
 
 const props = defineProps({
@@ -122,30 +121,32 @@ const props = defineProps({
 })
 
 const columns = ref([...ordersColumns])
+const addModal = ref(false)
+const modalRemove = ref(false)
+const itemToRemove = ref({})
+const rows = ref(props.rowsData ?? [])
 
 const navigateToOrder = (orderId, userId) => {
-  if (!props.shopPage) {
-    router.push({
-      name: props.userPage ? 'user.order.show' : 'order.show',
-      params: { orderId, userId },
-    })
-  } else {
-    router.push({
-      name: 'shop.order',
-      params: { orderId },
-    })
-  }
+  const routeName = props.shopPage
+    ? 'shop.order'
+    : props.userPage
+      ? 'user.order.show'
+      : 'order.show'
+
+  router.push({
+    name: routeName,
+    params: { orderId, ...(props.shopPage ? {} : { userId }) },
+  })
 }
 
 const createAnEmptyOrder = async (userId) => {
   const path = `/users/${userId}/orders`
   try {
-    const response = await postData(path, {
+    await postData(path, {
       order: {
         user_id: userId,
       },
     })
-    console.log(response)
   } catch (e) {
     console.error(e)
   } finally {
@@ -156,8 +157,7 @@ const createAnEmptyOrder = async (userId) => {
 const destroyOrder = async (orderId, userId) => {
   const path = `/users/${userId}/orders/${orderId}`
   try {
-    const response = await deleteData(path)
-    console.log(response)
+    await deleteData(path)
   } catch (e) {
     console.error(`Ошибка при удалении заказа: ${e}`)
   } finally {
@@ -165,15 +165,9 @@ const destroyOrder = async (orderId, userId) => {
   }
 }
 
-const addModal = ref(false)
-const modalRemove = ref(false)
-const itemToRemove = ref({})
-const rows = ref(props.rowsData ?? [])
-
 const getOrders = async (userId) => {
   try {
     const path = userId ? `/users/${userId}/orders` : 'orders'
-    console.log('path', path)
     const response = await getData(path)
     rows.value = response
     emit('success')
@@ -182,21 +176,23 @@ const getOrders = async (userId) => {
   }
 }
 
+const updateColumns = (userId) => {
+  columns.value = [...ordersColumns]
+  if (userId) {
+    columns.value.push({
+      name: 'destroy',
+      label: 'удалить',
+      align: 'right',
+      field: 'destroy',
+    })
+  }
+}
+
 watch(
   () => props.userId,
   (userId) => {
     getOrders(userId)
-
-    columns.value = [...ordersColumns]
-
-    if (userId) {
-      columns.value.push({
-        name: 'destroy',
-        label: 'удалить',
-        align: 'right',
-        field: 'destroy',
-      })
-    }
+    updateColumns(userId)
   },
   { immediate: true },
 )
