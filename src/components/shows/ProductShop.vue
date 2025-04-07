@@ -172,7 +172,7 @@ const getProduct = async (productId) => {
 
 const fillLocalProduct = (data) => {
   productData.value = data
-  productData.value.amount = data.activation_keys?.length || 0
+  productData.value.amount = data.amount
   technicalRequirements.value = data.technical_requirements || {}
   selectedCategory.value = data.category || {}
   selectedGenres.value = data.genres || []
