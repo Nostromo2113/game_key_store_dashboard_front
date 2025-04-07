@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getData } from 'src/utils/http/get'
 import { patchData } from 'src/utils/http/patch'
@@ -120,7 +120,9 @@ const executeOrder = async (orderId) => {
   }
 }
 
-getOrder(orderId)
+onMounted(() => {
+  getOrder(orderId)
+})
 </script>
 
 <style lang="scss" scoped></style>
