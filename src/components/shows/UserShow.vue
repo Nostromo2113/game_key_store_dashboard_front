@@ -37,7 +37,14 @@
             <q-input v-model="userData.email" type="email" label="Email" filled />
             <q-input v-model="userData.address" label="Адрес" filled />
             <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" filled />
-            <q-input v-model="userData.role" label="Администратор" filled></q-input>
+            <q-select
+              v-model="userData.role"
+              :options="roleOptions"
+              label="Роль"
+              filled
+              emit-value
+              map-options
+            />
           </div>
         </q-card-section>
 
@@ -51,12 +58,12 @@
             class="q-mr-sm"
           />
           <q-btn
+            @click="getUserData(userId)"
             label="Отменить"
             color="warning"
             unelevated
             no-caps
             class="q-mr-sm"
-            @click="readonly = true"
           />
           <q-btn label="Удалить пользователя" color="negative" unelevated no-caps />
         </q-card-actions>
@@ -111,6 +118,11 @@ const tab = ref('orders')
 const userData = ref({})
 const selectedFile = ref()
 const orderData = ref([])
+
+const roleOptions = ref([
+  { label: 'Администратор', value: 'admin' },
+  { label: 'Пользователь', value: 'user' },
+])
 
 const getUserData = async (userId) => {
   const path = `users/${userId}`
