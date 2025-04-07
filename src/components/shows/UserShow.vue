@@ -37,7 +37,7 @@
             <q-input v-model="userData.email" type="email" label="Email" filled />
             <q-input v-model="userData.address" label="Адрес" filled />
             <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" filled />
-            <q-input label="Администратор" filled></q-input>
+            <q-input v-model="userData.role" label="Администратор" filled></q-input>
           </div>
         </q-card-section>
 
@@ -138,13 +138,14 @@ const updateUser = async (userData, selectedFile, userId) => {
     if (selectedFile) {
       data.user.file = selectedFile
     }
-    await patchData(path, data)
+    const response = await patchData(path, data)
     notify.success('Успешно')
+    userData.value = response.data.data
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')
-  } finally {
     getUserData(userId)
+  } finally {
     loading()
   }
 }
