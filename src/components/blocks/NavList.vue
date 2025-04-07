@@ -21,14 +21,14 @@ const route = useRoute()
 
 const menuList = [
   {
-    icon: 'store',
-    label: 'Магазин',
-    path: { name: 'shop' },
-  },
-  {
     icon: 'home',
     label: 'Главная',
     path: { name: 'index' },
+  },
+  {
+    icon: 'store',
+    label: 'Магазин',
+    path: { name: 'shop' },
   },
   {
     icon: 'group',
