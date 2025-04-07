@@ -49,7 +49,7 @@
             <q-input
               v-model="user.phone_number"
               label="Телефон"
-              mask="+7 (###) ###-##-##"
+              mask="+7(###)#######"
               class="q-mb-sm"
               dense
               filled
@@ -210,6 +210,7 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   if (selectedFile) {
     data.file = selectedFile
   }
+  console.log('USER: ', data)
   try {
     await patchData(path, { user: data })
     notify.success('Успешно')
@@ -219,7 +220,9 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
     notify.error('Ошибка')
   } finally {
     userStore.fetchUser
-    selectedFile.value = null
+    if (selectedFile) {
+      selectedFile.value = null
+    }
   }
 }
 </script>
