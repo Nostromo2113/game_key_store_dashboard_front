@@ -4,7 +4,14 @@ export const deleteData = async (path) => {
   try {
     const response = await api.delete(path)
     return response
-  } catch (e) {
-    throw Error(e)
+  } catch (error) {
+    const errorInfo = {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      isAxiosError: error.isAxiosError,
+    }
+    console.error(error)
+    throw errorInfo
   }
 }
