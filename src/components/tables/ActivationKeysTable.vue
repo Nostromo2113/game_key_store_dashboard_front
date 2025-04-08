@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-table
-      :title="title"
+      title="Ключи активации"
       :rows="rows"
       :columns="activationKeysColumns"
       :pagination="tablePagination"
