@@ -1,8 +1,6 @@
 <template>
   <div class="q-pa-sm relative-position page-height">
-    <q-card v-show="!loading" flat class="custom-rounded">
-      <UserTable @success="loading = false" />
-    </q-card>
+    <UserTable v-show="!loading" @success="loading = false" />
     <InnerLoading :loading="loading" size="200px" />
   </div>
 </template>

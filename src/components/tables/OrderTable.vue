@@ -3,6 +3,8 @@
     <q-table
       :rows="rows"
       :columns="columns"
+      :pagination="tablePagination"
+      hide-bottom
       row-key="title"
       dense
       flat
@@ -91,6 +93,16 @@
         @confirm="createAnEmptyOrder(props.userId)"
       />
     </q-dialog>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getOrders(props.userId, { page: page })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -126,6 +138,11 @@ const modalRemove = ref(false)
 const itemToRemove = ref({})
 const rows = ref(props.rowsData ?? [])
 
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
+
 const navigateToOrder = (orderId, userId) => {
   const routeName = props.shopPage
     ? 'shop.order'
@@ -142,11 +159,12 @@ const navigateToOrder = (orderId, userId) => {
 const createAnEmptyOrder = async (userId) => {
   const path = `/users/${userId}/orders`
   try {
-    await postData(path, {
+    const response = await postData(path, {
       order: {
         user_id: userId,
       },
     })
+    console.log(response)
   } catch (e) {
     console.error(e)
   } finally {
@@ -165,11 +183,17 @@ const destroyOrder = async (orderId, userId) => {
   }
 }
 
-const getOrders = async (userId) => {
+const getOrders = async (userId, queryParams = {}) => {
   try {
     const path = userId ? `/users/${userId}/orders` : 'orders'
-    const response = await getData(path)
-    rows.value = response
+    const response = await getData(path, queryParams)
+    rows.value = response.data?.data || response.data
+
+    if (response.current_page && response.last_page) {
+      pagination.value.currentPage = response.current_page
+      pagination.value.lastPage = response.last_page
+    }
+
     emit('success')
   } catch (e) {
     console.error(e)
@@ -196,5 +220,10 @@ watch(
   },
   { immediate: true },
 )
+
+const tablePagination = ref({
+  page: 1,
+  rowsPerPage: 100,
+})
 </script>
 <style lang="css"></style>
