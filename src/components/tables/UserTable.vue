@@ -159,8 +159,7 @@ const postUser = async (data) => {
   const loading = notify.loading('Обработка')
   try {
     const response = await postData(path, userData)
-    const newUser = response.data?.data || response.data
-    rows.value.push(newUser)
+    storeLocalData(response)
     notify.success('Успешно')
   } catch (e) {
     console.error(e)
@@ -168,6 +167,11 @@ const postUser = async (data) => {
   } finally {
     loading()
   }
+}
+
+const storeLocalData = (response) => {
+  const newUser = response.data?.data || response.data
+  rows.value.push(newUser)
 }
 
 onMounted(() => {
