@@ -110,7 +110,9 @@ const executeOrder = async (orderId) => {
     const response = await patchData(path, {
       is_execute: true,
     })
+    console.log('THIS', response)
     order.value = response.data.data
+    console.log('THIS2', order.value)
     notify.success('Ключи отправлены на ваш email')
   } catch (e) {
     console.error(e)

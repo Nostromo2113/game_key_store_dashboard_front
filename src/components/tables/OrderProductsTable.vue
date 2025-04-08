@@ -61,7 +61,7 @@
             >
               {{ props.row.quantity }}
             </q-badge>
-            <div v-if="shop">{{ props.row.activation_keys.length }}</div>
+            <div v-if="shop">{{ props.row.activation_keys?.length }}</div>
             <q-popup-edit
               v-if="!shop && !completed"
               v-model="props.row.quantity"
