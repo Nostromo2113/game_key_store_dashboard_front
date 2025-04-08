@@ -44,6 +44,7 @@
               filled
               emit-value
               map-options
+              disable
             />
           </div>
         </q-card-section>

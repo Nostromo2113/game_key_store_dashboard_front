@@ -40,6 +40,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return axios(originalRequest)
       } catch (refreshError) {
+        localStorage.removeItem('user')
         console.error('Не удалось обновить токен, авторизуйтесь снова.')
         return Promise.reject(refreshError)
       }

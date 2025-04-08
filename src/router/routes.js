@@ -111,7 +111,7 @@ const routes = [
         name: 'product.show',
       },
       {
-        path: 'products/product/create',
+        path: 'products/create',
         component: ProductPage,
         name: 'product.create',
       },
