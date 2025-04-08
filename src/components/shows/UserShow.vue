@@ -65,7 +65,7 @@
             no-caps
             class="q-mr-sm"
           />
-          <q-btn label="Удалить пользователя" color="negative" unelevated no-caps />
+          <!-- <q-btn label="Удалить пользователя" color="negative" unelevated no-caps /> -->
         </q-card-actions>
       </q-card>
     </div>
@@ -152,7 +152,9 @@ const updateUser = async (userData, selectedFile, userId) => {
     }
     const response = await patchData(path, data)
     notify.success('Успешно')
+    console.log(response.data.data)
     userData.value = response.data.data
+    console.log(userData.value)
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')
