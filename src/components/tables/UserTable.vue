@@ -102,7 +102,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="createModal" persistent full-width>
-      <user-modal-form title="Добавить пользователя"></user-modal-form>
+      <user-modal-form @post="postUser" title="Добавить пользователя"></user-modal-form>
     </q-dialog>
   </div>
 </template>
@@ -112,7 +112,9 @@ import UserModalForm from '../forms/UserModalForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
+import { postData } from 'src/utils/http/post'
 import { getImageUrl } from 'src/utils/getImageUrl'
+import notify from 'src/plugins/notify'
 
 const emit = defineEmits(['success'])
 
@@ -128,12 +130,16 @@ const prepareForRemove = (item) => {
 
 const removeUser = async (userId) => {
   const path = `users/${userId}`
+  const loading = notify.loading('Обработка')
   try {
     await deleteData(path)
+    rows.value = rows.value.filter((user) => user.id !== userId)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
-    getUsers('users')
+    loading()
   }
 }
 
@@ -144,6 +150,23 @@ const getUsers = async (path) => {
     emit('success')
   } catch (e) {
     console.error(e)
+  }
+}
+
+const postUser = async (data) => {
+  const path = 'users'
+  const userData = { user: { ...data } }
+  const loading = notify.loading('Обработка')
+  try {
+    const response = await postData(path, userData)
+    const newUser = response.data?.data || response.data
+    rows.value.push(newUser)
+    notify.success('Успешно')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 
