@@ -182,7 +182,7 @@ const storeProductToCart = async (cartId, data) => {
   const loading = notify.loading('Обработка')
   try {
     await cartStore.storeProductToCart(cartId, data)
-    notify.success('Успешно')
+    notify.success('Добавлено в корзину')
   } catch (e) {
     notify.error('Ошибка')
     console.error(e)
@@ -195,7 +195,7 @@ const removeProductFromCart = async (productId, cartId) => {
   const loading = notify.loading('Обработка')
   try {
     await cartStore.removeProductFromCart(cartId, productId)
-    notify.success('Успешно')
+    notify.success('Удалено из корзины')
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')
@@ -258,7 +258,7 @@ onMounted(() => {
 }
 
 .info-block:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(63, 81, 181, 0.05);
 }
 
 .genre-tags {
@@ -273,7 +273,7 @@ onMounted(() => {
 }
 
 .description-card:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(63, 81, 181, 0.05);
 }
 
 .description-content {

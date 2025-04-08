@@ -98,14 +98,9 @@ watch(
 
 .requirement-item:hover {
   background: rgba(63, 81, 181, 0.05);
-  transform: translateX(4px);
 }
 
 .requirement-item + .requirement-item {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.text-accent {
-  color: #3f51b5;
 }
 </style>
