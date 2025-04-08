@@ -60,6 +60,14 @@ const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   data: {
     type: Object,
+    default: () => ({
+      platform: '',
+      os: '',
+      cpu: '',
+      gpu: '',
+      ram: '',
+      storage: '',
+    }),
   },
 })
 const technical_requirements = ref(props.data)
@@ -71,7 +79,7 @@ watch(
       technical_requirements.value = newVal
     }
   },
-  { deep: true },
+  { deep: true, immediate: true },
 )
 
 watch(technical_requirements.value, (newVal) => {
