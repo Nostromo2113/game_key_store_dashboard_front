@@ -4,6 +4,7 @@
       :rows="rows"
       :columns="columns"
       :pagination="tablePagination"
+      title="Заказы"
       hide-bottom
       row-key="title"
       dense

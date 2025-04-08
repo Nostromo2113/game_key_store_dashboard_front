@@ -1,9 +1,7 @@
 <template>
   <div class="q-pa-sm relative-position page-height">
-    <q-card v-show="!loading" flat class="custom-rounded shadow-sm">
-      <div class="text-h6 q-px-md q-pt-md">Все заказы</div>
-      <OrderTable @success="loading = false" />
-    </q-card>
+    <OrderTable v-show="!loading" @success="loading = false" />
+
     <InnerLoading :loading="loading" size="200px" />
   </div>
 </template>
