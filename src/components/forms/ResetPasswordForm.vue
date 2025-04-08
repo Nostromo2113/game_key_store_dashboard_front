@@ -19,6 +19,7 @@
 <script setup>
 import { defineProps, ref } from 'vue'
 import { postData } from 'src/utils/http/post'
+import notify from 'src/plugins/notify'
 
 const props = defineProps({
   userEmail: {
@@ -29,10 +30,15 @@ const props = defineProps({
 const email = ref(props.userEmail || '')
 
 const resetPassword = async (email) => {
+  const loading = notify.loading('Обработка')
   try {
-    await postData('password/reset', { email: email })
+    await postData('password/reset', { email: email.toLowerCase() })
+    notify.success('Пароль отправлен')
   } catch (e) {
+    notify.error('Ошибка')
     console.error(e)
+  } finally {
+    loading()
   }
 }
 </script>

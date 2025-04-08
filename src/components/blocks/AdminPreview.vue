@@ -39,7 +39,7 @@ const userStore = useUserStore()
 }
 
 .admin-preview:hover {
-  box-shadow: 0px 0px 1px 2px rgba(70, 70, 70, 0.753);
+  box-shadow: 0px 0px 1px 1px rgba(70, 70, 70, 0.753);
   background-color: rgba(255, 255, 255, 0.089);
 }
 </style>
