@@ -49,6 +49,7 @@ import { postData } from 'src/utils/http/post'
 import { ref } from 'vue'
 import { useUserStore } from 'src/stores/userStore'
 import { useRouter } from 'vue-router'
+import notify from 'src/plugins/notify'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -63,14 +64,18 @@ const path = 'auth/login'
 const modalRestore = ref(false)
 
 const performLogin = async (path, data) => {
+  const loading = notify.loading('Обработка')
   try {
     const response = await postData(path, data)
-    console.log(response)
     saveToken(response.data.access_token)
     await getMe()
-    router.push({ name: 'admin' })
+    notify.success('Добро пожаловать!')
+    router.push({ name: 'index' })
   } catch (e) {
+    notify.error('Ошибка авторизации')
     console.error(e)
+  } finally {
+    loading()
   }
 }
 

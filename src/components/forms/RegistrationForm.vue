@@ -85,6 +85,7 @@ import { ref, computed } from 'vue'
 import { postData } from 'src/utils/http/post'
 import { useRouter } from 'vue-router'
 import { useUserStore } from 'src/stores/userStore'
+import notify from 'src/plugins/notify'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -116,7 +117,6 @@ const nextStep = () => {
 }
 
 const createUser = async (path, data) => {
-  console.log(data)
   try {
     return await postData(path, data)
   } catch (e) {
@@ -131,14 +131,18 @@ const submitForm = async () => {
   }
 
   form.value.age = +form.value.age
-
+  const loading = notify.loading('Идет регистрация')
   try {
     const response = await createUser(path, form.value)
     localStorage.setItem('access_token', response.data.access_token)
     await userStore.fetchUser()
+    notify.success('Добро пожаловать!')
     router.push({ name: 'admin' })
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 </script>
