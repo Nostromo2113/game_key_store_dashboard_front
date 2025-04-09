@@ -32,30 +32,31 @@
         <q-input
           v-model="form.password"
           label="Пароль"
-          :type="isPwd ? 'password' : 'text'"
+          :type="showPassword ? 'text' : 'password'"
           required
         >
           <template v-slot:prepend><q-icon name="lock" /></template>
           <template v-slot:append>
             <q-icon
-              :name="!isPwd ? 'visibility_off' : 'visibility'"
+              :name="showPassword ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
-              @click="isPwd = !isPwd"
+              @click="showPassword = !showPassword"
             />
           </template>
         </q-input>
+
         <q-input
           v-model="form.password_confirmation"
           label="Подтверждение пароля"
-          type="password"
+          :type="showConfirmPassword ? 'text' : 'password'"
           required
         >
           <template v-slot:prepend><q-icon name="enhanced_encryption" /></template>
           <template v-slot:append>
             <q-icon
-              :name="!isPwd ? 'visibility_off' : 'visibility'"
+              :name="showConfirmPassword ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
-              @click="isPwd = !isPwd"
+              @click="showConfirmPassword = !showConfirmPassword"
             />
           </template>
         </q-input>
@@ -91,7 +92,9 @@ const userStore = useUserStore()
 const router = useRouter()
 const path = 'registration'
 const step = ref(1)
-const isPwd = ref(false)
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 const form = ref({
   name: '',

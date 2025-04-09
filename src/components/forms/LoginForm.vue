@@ -9,9 +9,24 @@
           </template>
         </q-input>
         <div class="row items-center">
-          <q-input class="col" v-model="form.password" label="Пароль" type="password" required>
-            <template v-slot:prepend> <q-icon name="lock" /> </template
-          ></q-input>
+          <q-input
+            class="col"
+            v-model="form.password"
+            label="Пароль"
+            :type="showPassword ? 'text' : 'password'"
+            required
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                :name="showPassword ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </q-input>
           <q-btn
             @click="modalRestore = true"
             flat
@@ -62,6 +77,8 @@ const form = ref({
 const path = 'auth/login'
 
 const modalRestore = ref(false)
+
+const showPassword = ref(false)
 
 const performLogin = async (path, data) => {
   const loading = notify.loading('Обработка')
