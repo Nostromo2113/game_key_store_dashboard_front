@@ -31,7 +31,8 @@ import KeysListPage from 'src/pages/lists/KeysListPage.vue' // Список кл
 import ProductPage from 'src/pages/shows/ProductShowPage.vue' // Детали товара
 import UserPage from 'src/pages/shows/UserShowPage.vue' // Профиль пользователя
 import OrderShowPage from 'src/pages/shows/OrderShowPage.vue' // Детали заказа
-import AdminShowPage from 'src/pages/shows/AdminShowPage.vue' // Админ-панель (детальный просмотр)
+import AdminShowPage from 'src/pages/shows/AdminShowPage.vue' // Страница администратора
+import ProductCreatePage from 'src/pages/shows/ProductCreatePage.vue' // Создание продукта
 
 const routes = [
   {
@@ -112,7 +113,7 @@ const routes = [
       },
       {
         path: 'products/create',
-        component: ProductPage,
+        component: ProductCreatePage,
         name: 'product.create',
       },
       {
