@@ -1,7 +1,6 @@
 <template>
   <q-card flat class="custom-rounded shadow-sm">
     <q-card-section class="row q-col-gutter-md">
-      <!-- Preview Section -->
       <div class="col-12 col-md-4">
         <q-card
           class="q-pa-md custom-rounded shadow-sm"

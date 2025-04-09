@@ -1,14 +1,29 @@
 <template>
   <q-card flat class="custom-rounded shadow-sm">
+    <q-toolbar class="justify-between">
+      <div class="text-h5 text-weight-medium text-accent q-pa-sm">Комментарии</div>
+      <q-btn
+        @click="addModal = !addModal"
+        size="14px"
+        color="positive"
+        icon="add"
+        class="custom-rounded"
+        label="Добавить"
+        no-caps
+      />
+    </q-toolbar>
     <q-card-section>
-      <div class="text-h5 text-weight-medium q-mb-md text-accent">Комментарии</div>
-
       <div class="q-gutter-y-md">
-        <q-card v-for="comment in comments" :key="comment.id" flat class="custom-rounded shadow-1">
+        <q-card v-for="comment in comments" :key="comment.id" flat class="custom-rounded shadow-sm">
           <q-card-section>
             <div class="row justify-between items-center no-wrap">
               <div class="col">
-                <div class="text-subtitle1 text-weight-medium">{{ comment.user_name }}</div>
+                <div
+                  class="text-subtitle1 text-weight-medium"
+                  :class="{ 'text-positive': userId == comment.user_id }"
+                >
+                  {{ comment.user_name }}
+                </div>
                 <div class="text-caption text-grey-7">{{ comment.product_title }}</div>
               </div>
               <div class="col-auto">
@@ -19,19 +34,74 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            <div class="text-body1 comment-content">
+            <div v-if="showTextArea !== comment.id" class="text-body1 comment-content">
               {{ comment.content }}
             </div>
+            <q-input
+              v-else
+              type="textarea"
+              v-model="comment.content"
+              outlined
+              dense
+              class="q-mt-sm"
+            />
           </q-card-section>
+
+          <q-card-actions v-if="userId == comment.user_id" align="right">
+            <q-btn
+              v-if="showTextArea !== comment.id"
+              @click="showTextArea = comment.id"
+              color="secondary"
+              icon="edit"
+              label="Редактировать"
+              size="sm"
+              class="q-mr-sm custom-rounded"
+              no-caps
+            />
+            <q-btn
+              v-else
+              @click="
+                () => {
+                  showTextArea = null
+                  updateComment(comment)
+                }
+              "
+              color="positive"
+              icon="check"
+              label="Применить"
+              size="sm"
+              class="q-mr-sm custom-rounded"
+              no-caps
+            />
+            <q-btn
+              @click="deleteComment(comment)"
+              color="negative"
+              icon="delete"
+              label="Удалить"
+              size="sm"
+              no-caps
+              class="custom-rounded"
+            />
+          </q-card-actions>
         </q-card>
       </div>
     </q-card-section>
+
+    <q-dialog v-model="addModal" persistent>
+      <default-form @storeItem="(item) => postComment(item)" />
+    </q-dialog>
   </q-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import DefaultForm from '../forms/DefaultForm.vue'
+import { ref, onMounted, computed } from 'vue'
 import { getData } from 'src/utils/http/get'
+import { postData } from 'src/utils/http/post'
+import { patchData } from 'src/utils/http/patch'
+import { deleteData } from 'src/utils/http/delete'
+import notify from 'src/plugins/notify'
+import { useUserStore } from 'src/stores/userStore'
 
 const props = defineProps({
   productId: {
@@ -41,6 +111,10 @@ const props = defineProps({
 })
 
 const comments = ref([])
+const showTextArea = ref(null)
+const addModal = ref(false)
+
+const userId = computed(() => useUserStore().user?.id)
 
 const getComments = async (productId) => {
   const path = `products/${productId}/comments`
@@ -49,6 +123,61 @@ const getComments = async (productId) => {
     comments.value = response.data || response
   } catch (e) {
     console.error('Ошибка загрузки комментариев:', e)
+  }
+}
+
+const postComment = async (comment) => {
+  const loading = notify.loading('Обработка')
+  const path = `products/${props.productId}/comments`
+  const data = {
+    content: comment.title,
+  }
+  try {
+    const response = await postData(path, data)
+    comments.value.push(response.data)
+    notify.success('Успешно')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
+  }
+}
+
+const updateComment = async (comment) => {
+  const path = `comments/${comment.id}`
+  const loading = notify.loading('Обновление...')
+  try {
+    const response = await patchData(path, { content: comment.content })
+    updateLocalComment(response.data)
+    notify.success('Комментарий обновлён')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка обновления')
+  } finally {
+    loading()
+  }
+}
+
+const deleteComment = async (comment) => {
+  const path = `comments/${comment.id}`
+  const loading = notify.loading('Удаление...')
+  try {
+    await deleteData(path)
+    comments.value = comments.value.filter((c) => c.id !== comment.id)
+    notify.success('Комментарий удалён')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка удаления')
+  } finally {
+    loading()
+  }
+}
+
+const updateLocalComment = (updatedComment) => {
+  const index = comments.value.findIndex((c) => c.id === updatedComment.id)
+  if (index !== -1) {
+    comments.value[index] = updatedComment
   }
 }
 
