@@ -126,6 +126,7 @@
           </q-card>
 
           <TechnicalRequirements class="q-mt-xl" :data="technicalRequirements" view-mode />
+          <ProductCommentsShop class="q-mt-xl" :productId="productId" />
         </q-card>
       </div>
     </q-card-section>
@@ -142,6 +143,7 @@ import { getData } from 'src/utils/http/get'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useCartStore } from 'src/stores/cartStore'
 import TechnicalRequirements from '../blocks/TechnicalRequirements.vue'
+import ProductCommentsShop from '../blocks/ProductCommentsShop.vue'
 import notify from 'src/plugins/notify'
 
 const cartStore = useCartStore()
