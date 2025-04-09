@@ -2,7 +2,9 @@
   <div class="q-pa-md relative-position page-height">
     <q-card v-show="!loading" class="custom-rounded shadow-sm q-pa-sm" flat>
       <q-toolbar>
-        <q-toolbar-title>{{ tab === 'product' ? 'Продукт' : 'Ключи' }}</q-toolbar-title>
+        <q-toolbar-title>
+          {{ tab === 'product' ? 'Продукт' : tab === 'comments' ? 'Комментарии' : 'Ключи' }}
+        </q-toolbar-title>
         <q-tabs
           v-model="tab"
           dense
@@ -13,6 +15,7 @@
         >
           <q-tab name="product" label="Продукт"></q-tab>
           <q-tab name="keys" label="Ключи"></q-tab>
+          <q-tab name="comments" label="Комментарии"></q-tab>
         </q-tabs>
       </q-toolbar>
       <q-separator></q-separator>
@@ -26,6 +29,9 @@
         <q-tab-panel name="keys">
           <ActivationKeysTable :productId="+productId" />
         </q-tab-panel>
+        <q-tab-panel name="comments">
+          <TheComments :productId="+productId" />
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
     <InnerLoading :loading="loading" size="200px" />
@@ -37,6 +43,7 @@ import ProductShow from 'src/components/shows/ProductShow.vue'
 import ActivationKeysTable from 'src/components/tables/ActivationKeysTable.vue'
 import { useRoute } from 'vue-router'
 import InnerLoading from 'src/components/ui/InnerLoading.vue'
+import TheComments from 'src/components/blocks/TheComments.vue'
 
 const route = useRoute()
 
