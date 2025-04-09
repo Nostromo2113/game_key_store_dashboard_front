@@ -1,9 +1,19 @@
 <template>
   <div>
-    <q-btn-dropdown icon="filter_list" unelevated class="custom-rounded q-mb-md" label="Фильтры">
-      <FilterGroup @getQueryData="getQueryProducts" />
-    </q-btn-dropdown>
-
+    <div class="flex">
+      <q-btn-dropdown icon="filter_alt" unelevated class="custom-rounded q-mb-md" label="Фильтры">
+        <FilterGroup @getQueryData="handleFilterChange" />
+      </q-btn-dropdown>
+      <SortPrice @sort="handleSortChange" />
+      <q-btn
+        @click="handleSortClear"
+        icon="clear"
+        label="сбросить"
+        flat
+        dense
+        class="q-ml-md q-mb-md custom-rounded"
+      ></q-btn>
+    </div>
     <div v-if="rows.length" class="product-grid">
       <ProductCard
         v-for="product in rows"
@@ -26,6 +36,7 @@
 <script setup>
 import ProductCard from './ProductCard.vue'
 import FilterGroup from './FilterGroup.vue'
+import SortPrice from '../ui/SortPrice.vue'
 import { onMounted, ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { getData } from 'src/utils/http/get'
@@ -43,23 +54,24 @@ const router = useRouter()
 
 const rows = ref([])
 
-const page = ref(1)
 const hasMore = ref(true)
+const queryParams = ref({
+  title: '',
+  category: null,
+  is_published: 1,
+  price_sort: null,
+  page: 1,
+})
 
-const getQueryProducts = async (queryParams = {}) => {
+const getQueryProducts = async () => {
   const path = 'products'
-  const params = {
-    ...queryParams,
-  }
-  if (queryParams.page) {
-    params.page = queryParams.page
-  }
+  console.warn(queryParams.value)
   try {
-    const response = await getData(path, params)
+    const response = await getData(path, queryParams.value)
     console.log(response)
     rows.value = response.data
 
-    page.value = response.meta.current_page
+    queryParams.value.page = response.meta.current_page
 
     existNextPage(response.meta.current_page, response.meta.last_page)
 
@@ -69,23 +81,45 @@ const getQueryProducts = async (queryParams = {}) => {
   }
 }
 
-const showMore = async () => {
-  const params = {
-    page: page.value + 1,
+const handleSortClear = () => {
+  queryParams.value = {
+    title: '',
+    category: null,
+    is_published: 1,
+    price_sort: null,
+    page: 1,
   }
+  getQueryProducts()
+}
+
+const handleFilterChange = (filterData) => {
+  queryParams.value = {
+    ...queryParams.value,
+    ...filterData,
+    page: 1,
+  }
+  getQueryProducts()
+}
+
+const handleSortChange = (direction) => {
+  queryParams.value.price_sort = direction
+  queryParams.value.page = 1
+  getQueryProducts()
+}
+
+const showMore = async () => {
+  queryParams.value.page += 1
   try {
-    const response = await getData('products', params)
+    const response = await getData('products', queryParams.value)
     if (response.data.length > 0) {
       rows.value.push(...response.data)
     }
     existNextPage(response.meta.current_page, response.meta.last_page)
-    page.value = response.meta.current_page
   } catch (e) {
     console.error('Ошибка при запросе новых продуктов', e)
-    page.value -= 1
+    queryParams.value.page -= 1
   }
 }
-
 const existNextPage = (currentPage, lastPage) => {
   if (currentPage >= lastPage) {
     hasMore.value = false
