@@ -129,7 +129,7 @@ const createUser = async (path, data) => {
 
 const submitForm = async () => {
   if (form.value.password !== form.value.password_confirmation) {
-    alert('Пароли не совпадают!')
+    notify.warning('Пароли не совпадают')
     return
   }
 
