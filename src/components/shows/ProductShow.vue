@@ -114,6 +114,7 @@
             no-caps
           ></q-btn>
           <q-btn
+            v-if="productId"
             @click="getProduct(productId)"
             label="Отменить"
             color="warning"
@@ -121,6 +122,7 @@
             no-caps
           ></q-btn>
           <q-btn
+            v-if="productId"
             @click="removeProduct(productId)"
             label="Удалить продукт"
             color="negative"
