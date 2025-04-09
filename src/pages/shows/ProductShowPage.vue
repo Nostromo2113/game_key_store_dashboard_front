@@ -30,7 +30,7 @@
           <ActivationKeysTable :productId="+productId" />
         </q-tab-panel>
         <q-tab-panel name="comments">
-          <TheComments :productId="+productId" />
+          <ProductComments :productId="+productId" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -43,7 +43,7 @@ import ProductShow from 'src/components/shows/ProductShow.vue'
 import ActivationKeysTable from 'src/components/tables/ActivationKeysTable.vue'
 import { useRoute } from 'vue-router'
 import InnerLoading from 'src/components/ui/InnerLoading.vue'
-import TheComments from 'src/components/blocks/TheComments.vue'
+import ProductComments from 'src/components/blocks/ProductComments.vue'
 
 const route = useRoute()
 
