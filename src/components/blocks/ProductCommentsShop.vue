@@ -34,7 +34,7 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            <div v-if="showTextArea !== comment.id" class="text-body1 comment-content">
+            <div v-if="showTextArea !== comment.id" class="text-subtitle2 comment-content">
               {{ comment.content }}
             </div>
             <q-input

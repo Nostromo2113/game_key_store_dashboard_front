@@ -5,7 +5,7 @@
       <q-item class="requirement-item" v-for="item in requirements" :key="item.key">
         <q-item-section>
           <q-item-label class="text-caption text-grey-7">{{ item.label }}</q-item-label>
-          <q-item-label class="text-h6 text-weight-medium">
+          <q-item-label class="text-subtitle2 text-weight-medium">
             <template v-if="item.value">
               {{ item.value }}
               <span v-if="item.unit">{{ item.unit }}</span>
