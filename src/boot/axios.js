@@ -8,6 +8,7 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
+  // baseURL: 'http://gamekeydashboard.ru/api/admin',
   baseURL: 'http://127.0.0.1:8000/api/admin',
 })
 

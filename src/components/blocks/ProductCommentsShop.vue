@@ -8,7 +8,6 @@
         color="positive"
         icon="add"
         class="custom-rounded"
-        label="Добавить"
         no-caps
       />
     </q-toolbar>
@@ -53,7 +52,6 @@
               @click="showTextArea = comment.id"
               color="secondary"
               icon="edit"
-              label="Редактировать"
               size="sm"
               class="q-mr-sm custom-rounded"
               no-caps
@@ -68,7 +66,6 @@
               "
               color="positive"
               icon="check"
-              label="Применить"
               size="sm"
               class="q-mr-sm custom-rounded"
               no-caps
@@ -77,7 +74,6 @@
               @click="deleteComment(comment)"
               color="negative"
               icon="delete"
-              label="Удалить"
               size="sm"
               no-caps
               class="custom-rounded"

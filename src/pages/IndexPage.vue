@@ -76,7 +76,7 @@
                   color="primary"
                   icon="add"
                   label="Добавить игру"
-                  class="full-width shadow-sm"
+                  class="full-width shadow-sm custom-rounded"
                   :to="{ name: 'product.create' }"
                   unelevated
                 />
@@ -86,7 +86,7 @@
                   color="accent"
                   icon="person_add"
                   label="Добавить пользователя"
-                  class="full-width shadow-sm"
+                  class="full-width shadow-sm custom-rounded"
                   :to="{ name: 'users' }"
                   unelevated
                 />
@@ -96,7 +96,7 @@
                   color="teal"
                   icon="store"
                   label="Перейти в магазин"
-                  class="full-width shadow-sm"
+                  class="full-width shadow-sm custom-rounded"
                   :to="{ name: 'shop' }"
                   unelevated
                 />
