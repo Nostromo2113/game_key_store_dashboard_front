@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="text-h6 text-weight-medium q-mb-md text-accent">Системные требования</div>
+    <div class="text-h5 text-weight-medium q-mb-md">Системные требования</div>
     <q-list bordered separator class="requirements-list glossy-card">
       <q-item class="requirement-item" v-for="item in requirements" :key="item.key">
         <q-item-section>
-          <q-item-label class="text-caption text-grey-7">{{ item.label }}</q-item-label>
+          <q-item-label class="text-caption text-grey-7">{{ item.label }}: </q-item-label>
           <q-item-label class="text-subtitle2 text-weight-medium">
             <template v-if="item.value">
               {{ item.value }}
@@ -14,7 +14,7 @@
           </q-item-label>
         </q-item-section>
         <q-item-section side>
-          <q-icon :name="item.icon" size="sm" color="accent" />
+          <q-icon :name="item.icon" size="sm" color="primary" />
         </q-item-section>
       </q-item>
     </q-list>
@@ -92,12 +92,7 @@ watch(
 }
 
 .requirement-item {
-  transition: all 0.3s ease;
   padding: 12px 16px;
-}
-
-.requirement-item:hover {
-  background: rgba(63, 81, 181, 0.05);
 }
 
 .requirement-item + .requirement-item {

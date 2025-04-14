@@ -1,7 +1,6 @@
 <template>
   <div class="flex items-center column gap-md q-pa-none">
     <q-img :height="height" :width="width" class="rounded-borders" :src="previewUrl"></q-img>
-
     <UploadInput
       :disabledUpload="disabledUpload"
       type="file"
@@ -14,6 +13,7 @@
 <script setup>
 import { ref, defineProps, watch, defineEmits } from 'vue'
 import UploadInput from '../ui/UploadInput.vue'
+import { getImageUrl } from 'src/utils/getImageUrl'
 
 const props = defineProps({
   imageLink: {
@@ -50,7 +50,7 @@ watch(
   () => props.imageLink,
   (newVal) => {
     console.log(newVal)
-    previewUrl.value = `${import.meta.env.VITE_APP_API_URL}/storage/${newVal}`
+    previewUrl.value = getImageUrl(newVal)
   },
   { immediate: true },
 )

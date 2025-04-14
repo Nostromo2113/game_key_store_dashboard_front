@@ -1,25 +1,32 @@
 <template>
   <q-card flat class="custom-rounded shadow-sm">
     <q-toolbar class="justify-between">
-      <div class="text-h5 text-weight-medium text-accent q-pa-sm">Комментарии</div>
+      <div class="text-h5 text-weight-medium text-primary q-pa-sm">Комментарии</div>
       <q-btn
         @click="addModal = !addModal"
-        size="14px"
-        color="positive"
-        icon="add"
+        size="20px"
+        color="primary"
+        icon="add_comment"
         class="custom-rounded"
         no-caps
+        flat
       />
     </q-toolbar>
     <q-card-section>
       <div class="q-gutter-y-md">
-        <q-card v-for="comment in comments" :key="comment.id" flat class="custom-rounded shadow-sm">
+        <q-card
+          v-for="comment in comments"
+          :key="comment.id"
+          flat
+          class="custom-rounded shadow-sm"
+          :class="{ 'custom-border': userId == comment.user_id }"
+        >
           <q-card-section>
             <div class="row justify-between items-center no-wrap">
               <div class="col">
                 <div
                   class="text-subtitle1 text-weight-medium"
-                  :class="{ 'text-positive': userId == comment.user_id }"
+                  :class="{ 'text-accent': userId == comment.user_id }"
                 >
                   {{ comment.user_name }}
                 </div>
@@ -50,11 +57,12 @@
             <q-btn
               v-if="showTextArea !== comment.id"
               @click="showTextArea = comment.id"
-              color="secondary"
+              color="primary"
               icon="edit"
               size="sm"
               class="q-mr-sm custom-rounded"
               no-caps
+              flat
             />
             <q-btn
               v-else
@@ -66,17 +74,19 @@
               "
               color="positive"
               icon="check"
-              size="sm"
+              size="md"
               class="q-mr-sm custom-rounded"
               no-caps
+              flat
             />
             <q-btn
               @click="deleteComment(comment)"
               color="negative"
               icon="delete"
-              size="sm"
+              size="md"
               no-caps
               class="custom-rounded"
+              flat
             />
           </q-card-actions>
         </q-card>
