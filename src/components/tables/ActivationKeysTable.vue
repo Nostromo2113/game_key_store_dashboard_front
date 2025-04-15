@@ -67,10 +67,7 @@
       aria-labelledby="remove-dialog-title"
       aria-describedby="remove-dialog-description"
     >
-      <ConfirmationCard
-        :itemTitle="itemToRemove.key"
-        @confirm="deleteItem(props.productId, itemToRemove.id)"
-      />
+      <ConfirmationCard :itemTitle="itemToRemove.key" @confirm="deleteItem(itemToRemove.id)" />
     </q-dialog>
     <q-dialog v-model="addModal" persistent>
       <default-form @storeItem="(item) => postItem(item, props.productId)" />
@@ -122,7 +119,8 @@ const pagination = ref({
 })
 
 const getItems = async (productId, page) => {
-  const path = !productId ? 'keys' : `products/${productId}/activation-keys`
+  const path = !productId ? 'activation_keys' : `products/${productId}/activation_keys`
+  console.warn(path)
   const params = {
     page: page,
   }
@@ -141,7 +139,7 @@ const getItems = async (productId, page) => {
 }
 
 const postItem = async (item, productId) => {
-  const path = `products/${productId}/activation-keys`
+  const path = `products/${productId}/activation_keys`
   const data = {
     activation_key: { product_id: productId, key: item.title },
   }
@@ -158,8 +156,8 @@ const postItem = async (item, productId) => {
   }
 }
 
-const deleteItem = async (productId, keyId) => {
-  const path = `products/${productId}/activation-keys/${keyId}`
+const deleteItem = async (keyId) => {
+  const path = `/activation_keys/${keyId}`
   const loading = notify.loading('Обработка')
   try {
     await deleteData(path)

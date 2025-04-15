@@ -108,10 +108,10 @@
       <div class="row q-mb-lg">
         <div class="col-12">
           <q-card class="custom-rounded shadow-sm" flat>
-            <q-card-section>
-              <div class="text-h6">Последние заказы</div>
+            <q-card-section class="bg-primary">
+              <div class="text-h6 text-white">Последние заказы</div>
             </q-card-section>
-            <q-card-section>
+            <q-card-section class="bg-blue-grey-2">
               <OrderTable />
             </q-card-section>
           </q-card>

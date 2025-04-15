@@ -89,7 +89,12 @@
           </div>
           <div class="text-subtitle1 q-mb-sm">Описание</div>
           <div class="q-gutter-md row">
-            <q-editor v-model="productData.description" class="col" min-height="7rem"></q-editor>
+            <q-editor
+              v-model="productData.description"
+              @paste="handlePaste"
+              class="col"
+              min-height="7rem"
+            ></q-editor>
           </div>
           <TechnicalForm class="q-mt-xl" :data="technicalRequirements" />
         </div>
@@ -163,12 +168,12 @@ const productData = ref({
 })
 
 const technicalRequirements = ref({
-  platform: '',
-  os: '',
-  cpu: '',
-  gpu: '',
-  ram: '',
-  storage: '',
+  platform: 'PC',
+  os: 'Windows 10',
+  cpu: 'Intel® Core™ 2 Q6600 | AMD Phenom 9850',
+  gpu: 'NVIDIA® 9800 GT / AMD HD 4870',
+  ram: '8',
+  storage: '40',
 })
 
 const selectedFile = ref()
@@ -286,6 +291,20 @@ onMounted(() => {
     getProduct(productId)
   }
 })
+
+const handlePaste = (e) => {
+  e.preventDefault()
+
+  const text = e.clipboardData.getData('text/plain')
+
+  const selection = window.getSelection()
+  if (!selection.rangeCount) return
+
+  selection.deleteFromDocument()
+  selection.getRangeAt(0).insertNode(document.createTextNode(text))
+
+  e.stopPropagation()
+}
 </script>
 
 <style scoped>
