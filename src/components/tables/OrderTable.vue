@@ -3,6 +3,9 @@
     <q-table
       :rows="rows"
       :columns="columns"
+      :pagination="tablePagination"
+      title="Заказы"
+      hide-bottom
       row-key="title"
       dense
       flat
@@ -91,19 +94,28 @@
         @confirm="createAnEmptyOrder(props.userId)"
       />
     </q-dialog>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getOrders(props.userId, { page: page })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, defineProps, watch, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 import ConfirmationCard from '../ui/ConfirmationCard.vue'
 import { ordersColumns } from 'src/constants/ordersColumns'
 import { getData } from 'src/utils/http/get'
-import { useRouter } from 'vue-router'
 import { deleteData } from 'src/utils/http/delete'
 import { postData } from 'src/utils/http/post'
 
 const router = useRouter()
-
 const emit = defineEmits(['success'])
 
 const props = defineProps({
@@ -122,19 +134,27 @@ const props = defineProps({
 })
 
 const columns = ref([...ordersColumns])
+const addModal = ref(false)
+const modalRemove = ref(false)
+const itemToRemove = ref({})
+const rows = ref(props.rowsData ?? [])
+
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
 
 const navigateToOrder = (orderId, userId) => {
-  if (!props.shopPage) {
-    router.push({
-      name: props.userPage ? 'user.order.show' : 'order.show',
-      params: { orderId, userId },
-    })
-  } else {
-    router.push({
-      name: 'shop.order',
-      params: { orderId },
-    })
-  }
+  const routeName = props.shopPage
+    ? 'shop.order'
+    : props.userPage
+      ? 'user.order.show'
+      : 'order.show'
+
+  router.push({
+    name: routeName,
+    params: { orderId, ...(props.shopPage ? {} : { userId }) },
+  })
 }
 
 const createAnEmptyOrder = async (userId) => {
@@ -156,8 +176,7 @@ const createAnEmptyOrder = async (userId) => {
 const destroyOrder = async (orderId, userId) => {
   const path = `/users/${userId}/orders/${orderId}`
   try {
-    const response = await deleteData(path)
-    console.log(response)
+    await deleteData(path)
   } catch (e) {
     console.error(`Ошибка при удалении заказа: ${e}`)
   } finally {
@@ -165,20 +184,32 @@ const destroyOrder = async (orderId, userId) => {
   }
 }
 
-const addModal = ref(false)
-const modalRemove = ref(false)
-const itemToRemove = ref({})
-const rows = ref(props.rowsData ?? [])
-
-const getOrders = async (userId) => {
+const getOrders = async (userId, queryParams = {}) => {
   try {
     const path = userId ? `/users/${userId}/orders` : 'orders'
-    console.log('path', path)
-    const response = await getData(path)
-    rows.value = response
+    const response = await getData(path, queryParams)
+    rows.value = response.data?.data || response.data
+
+    if (response.current_page && response.last_page) {
+      pagination.value.currentPage = response.current_page
+      pagination.value.lastPage = response.last_page
+    }
+
     emit('success')
   } catch (e) {
     console.error(e)
+  }
+}
+
+const updateColumns = (userId) => {
+  columns.value = [...ordersColumns]
+  if (userId) {
+    columns.value.push({
+      name: 'destroy',
+      label: 'удалить',
+      align: 'right',
+      field: 'destroy',
+    })
   }
 }
 
@@ -186,19 +217,14 @@ watch(
   () => props.userId,
   (userId) => {
     getOrders(userId)
-
-    columns.value = [...ordersColumns]
-
-    if (userId) {
-      columns.value.push({
-        name: 'destroy',
-        label: 'удалить',
-        align: 'right',
-        field: 'destroy',
-      })
-    }
+    updateColumns(userId)
   },
   { immediate: true },
 )
+
+const tablePagination = ref({
+  page: 1,
+  rowsPerPage: 100,
+})
 </script>
 <style lang="css"></style>

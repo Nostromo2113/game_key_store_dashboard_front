@@ -11,16 +11,11 @@ export const useCartStore = defineStore('cart', () => {
 
   const fetchCart = async (userId) => {
     const path = `users/${userId}/cart`
-    console.log('UDAOIWHDUOI', path)
     try {
       const response = await getData(path)
-      cartDetails.value = response
-      cartProducts.value = response.products
-      delete cartDetails.value.products
+      fillPiniaData(response)
     } catch (e) {
       console.error(e)
-    } finally {
-      console.log('Products In Cart: ', cartProducts.value)
     }
   }
 
@@ -32,29 +27,28 @@ export const useCartStore = defineStore('cart', () => {
         price: +product.price,
       },
     }
-    console.log('pc', data)
     const path = `cart/${cartId}/products`
     try {
-      await postData(path, data)
+      const response = await postData(path, data)
+      fillPiniaData(response)
     } catch (e) {
       throw new Error(e)
-    } finally {
-      fetchCart(cartDetails.value.user_id)
     }
   }
 
   const removeProductFromCart = async (cartId, productId) => {
     const path = `cart/${cartId}/products/${productId}`
     try {
-      await deleteData(path)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      fetchCart(cartDetails.value.user_id)
+      const response = await deleteData(path)
+      fillPiniaData(response)
+    } catch (e) {
+      console.error(e)
+      throw new Error(e)
     }
   }
 
   const updateProductFromCart = async (cartId, product) => {
+    console.warn('123123')
     const path = `cart/${cartId}/products/${product.product_id}`
     const data = {
       product: {
@@ -62,16 +56,35 @@ export const useCartStore = defineStore('cart', () => {
       },
     }
     try {
-      await patchData(path, data)
+      const response = await patchData(path, data)
+      fillPiniaData(response)
     } catch (e) {
       console.error(e)
-    } finally {
-      fetchCart(cartDetails.value.user_id)
+      throw new Error(e)
     }
   }
 
   const clearCart = () => (cartProducts.value = [])
 
+  /**   INTERNAL METHODS   */
+
+  const fillPiniaData = (response) => {
+    const responseData = response.data || response
+
+    const cartData = responseData.data || responseData
+
+    cartDetails.value = { ...cartData }
+
+    if (cartData.products) {
+      cartProducts.value = cartData.products
+
+      cartDetails.value = cartData
+      delete cartDetails.value.products
+    } else {
+      cartProducts.value = []
+    }
+  }
+  /////////////////////////////////////////////////////
   return {
     cartDetails,
     cartProducts,

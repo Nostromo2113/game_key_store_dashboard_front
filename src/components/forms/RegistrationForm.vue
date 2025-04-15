@@ -32,30 +32,31 @@
         <q-input
           v-model="form.password"
           label="Пароль"
-          :type="isPwd ? 'password' : 'text'"
+          :type="showPassword ? 'text' : 'password'"
           required
         >
           <template v-slot:prepend><q-icon name="lock" /></template>
           <template v-slot:append>
             <q-icon
-              :name="!isPwd ? 'visibility_off' : 'visibility'"
+              :name="showPassword ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
-              @click="isPwd = !isPwd"
+              @click="showPassword = !showPassword"
             />
           </template>
         </q-input>
+
         <q-input
           v-model="form.password_confirmation"
           label="Подтверждение пароля"
-          type="password"
+          :type="showConfirmPassword ? 'text' : 'password'"
           required
         >
           <template v-slot:prepend><q-icon name="enhanced_encryption" /></template>
           <template v-slot:append>
             <q-icon
-              :name="!isPwd ? 'visibility_off' : 'visibility'"
+              :name="showConfirmPassword ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
-              @click="isPwd = !isPwd"
+              @click="showConfirmPassword = !showConfirmPassword"
             />
           </template>
         </q-input>
@@ -85,12 +86,15 @@ import { ref, computed } from 'vue'
 import { postData } from 'src/utils/http/post'
 import { useRouter } from 'vue-router'
 import { useUserStore } from 'src/stores/userStore'
+import notify from 'src/plugins/notify'
 
 const userStore = useUserStore()
 const router = useRouter()
 const path = 'registration'
 const step = ref(1)
-const isPwd = ref(false)
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 const form = ref({
   name: '',
@@ -116,7 +120,6 @@ const nextStep = () => {
 }
 
 const createUser = async (path, data) => {
-  console.log(data)
   try {
     return await postData(path, data)
   } catch (e) {
@@ -126,19 +129,23 @@ const createUser = async (path, data) => {
 
 const submitForm = async () => {
   if (form.value.password !== form.value.password_confirmation) {
-    alert('Пароли не совпадают!')
+    notify.warning('Пароли не совпадают')
     return
   }
 
   form.value.age = +form.value.age
-
+  const loading = notify.loading('Идет регистрация')
   try {
     const response = await createUser(path, form.value)
     localStorage.setItem('access_token', response.data.access_token)
     await userStore.fetchUser()
+    notify.success('Добро пожаловать!')
     router.push({ name: 'admin' })
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
   }
 }
 </script>

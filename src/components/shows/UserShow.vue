@@ -37,7 +37,15 @@
             <q-input v-model="userData.email" type="email" label="Email" filled />
             <q-input v-model="userData.address" label="Адрес" filled />
             <q-input v-model="userData.phone_number" label="Телефон" mask="+7##########" filled />
-            <q-input label="Администратор" filled></q-input>
+            <q-select
+              v-model="userData.role"
+              :options="roleOptions"
+              label="Роль"
+              filled
+              emit-value
+              map-options
+              disable
+            />
           </div>
         </q-card-section>
 
@@ -51,14 +59,14 @@
             class="q-mr-sm"
           />
           <q-btn
+            @click="getUserData(userId)"
             label="Отменить"
             color="warning"
             unelevated
             no-caps
             class="q-mr-sm"
-            @click="readonly = true"
           />
-          <q-btn label="Удалить пользователя" color="negative" unelevated no-caps />
+          <!-- <q-btn label="Удалить пользователя" color="negative" unelevated no-caps /> -->
         </q-card-actions>
       </q-card>
     </div>
@@ -112,6 +120,11 @@ const userData = ref({})
 const selectedFile = ref()
 const orderData = ref([])
 
+const roleOptions = ref([
+  { label: 'Администратор', value: 'admin' },
+  { label: 'Пользователь', value: 'user' },
+])
+
 const getUserData = async (userId) => {
   const path = `users/${userId}`
   try {
@@ -126,7 +139,6 @@ const getUserData = async (userId) => {
 
 const onFileChange = (file) => {
   selectedFile.value = file
-  console.log('selected', file)
 }
 
 const updateUser = async (userData, selectedFile, userId) => {
@@ -139,13 +151,16 @@ const updateUser = async (userData, selectedFile, userId) => {
     if (selectedFile) {
       data.user.file = selectedFile
     }
-    await patchData(path, data)
+    const response = await patchData(path, data)
     notify.success('Успешно')
+    console.log(response.data.data)
+    userData.value = response.data.data
+    console.log(userData.value)
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')
-  } finally {
     getUserData(userId)
+  } finally {
     loading()
   }
 }

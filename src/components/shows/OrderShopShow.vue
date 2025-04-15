@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getData } from 'src/utils/http/get'
 import { patchData } from 'src/utils/http/patch'
@@ -110,7 +110,9 @@ const executeOrder = async (orderId) => {
     const response = await patchData(path, {
       is_execute: true,
     })
+    console.log('THIS', response)
     order.value = response.data.data
+    console.log('THIS2', order.value)
     notify.success('Ключи отправлены на ваш email')
   } catch (e) {
     console.error(e)
@@ -120,7 +122,9 @@ const executeOrder = async (orderId) => {
   }
 }
 
-getOrder(orderId)
+onMounted(() => {
+  getOrder(orderId)
+})
 </script>
 
 <style lang="scss" scoped></style>

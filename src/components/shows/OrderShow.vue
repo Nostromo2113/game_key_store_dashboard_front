@@ -165,6 +165,7 @@ const applyChanges = async (products) => {
       notify.error('Недостаточно ключей активации')
     } else {
       notify.error('Ошибка')
+      console.log(e)
     }
   } finally {
     loading()

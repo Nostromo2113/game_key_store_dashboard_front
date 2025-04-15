@@ -71,4 +71,10 @@ export const productsColumns = [
     align: 'center',
     filed: 'is_published',
   },
+  {
+    name: 'destroy',
+    label: 'удалить',
+    align: 'center',
+    field: 'destroy',
+  },
 ]

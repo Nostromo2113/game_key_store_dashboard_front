@@ -1,74 +1,29 @@
 <template>
   <div>
-    <q-btn-dropdown icon="filter_list" unelevated class="custom-rounded q-mb-md" label="Фильтры">
-      <FilterGroup @getQueryData="getQueryProducts" />
-    </q-btn-dropdown>
-
+    <div class="flex">
+      <q-btn-dropdown icon="filter_alt" unelevated class="custom-rounded q-mb-md" label="Фильтры">
+        <FilterGroup @getQueryData="handleFilterChange" />
+      </q-btn-dropdown>
+      <SortPrice @sort="handleSortChange" />
+      <q-btn
+        @click="handleSortClear"
+        icon="clear"
+        label="сбросить"
+        flat
+        dense
+        class="q-ml-md q-mb-md custom-rounded"
+      ></q-btn>
+    </div>
     <div v-if="rows.length" class="product-grid">
-      <q-card
+      <ProductCard
         v-for="product in rows"
         :key="product.id"
-        class="flex justify-between gap-sm custom-rounded shadow-sm"
-        style="width: 284px"
-        flat
-      >
-        <q-img
-          :src="getImageUrl(product.preview_image)"
-          width="100%"
-          height="200px"
-          class="rounded-borders"
-        />
-
-        <q-card-section class="q-py-sm q-px-md full-width">
-          <div class="text-h6">{{ product.title }}</div>
-
-          <div class="text-subtitle2">{{ product.publisher }}</div>
-
-          <div>
-            <div class="text-subtitle1">Цена: {{ product.price }} ₽</div>
-            <div class="text-subtitle2">Количество: {{ product.amount }}</div>
-          </div>
-        </q-card-section>
-        <q-card-section class="q-py-none">
-          <div class="q-px-sm bg-primary text-white custom-rounded text-caption">
-            {{ product.category.title }}
-          </div>
-        </q-card-section>
-        <q-card-actions align="center" class="full-width">
-          <div class="row justify-between full-width">
-            <q-btn
-              flat
-              rounded
-              icon="visibility"
-              @click="viewProduct(product.id)"
-              label="Посмотреть"
-              no-caps
-            />
-
-            <q-btn
-              v-if="!isInCart(product.id)"
-              @click="storeProductToCart(cartId, product)"
-              color="primary"
-              flat
-              rounded
-              icon="shopping_cart"
-              no-caps
-            >
-              <q-tooltip v-if="isInCart(product.id)">В корзине</q-tooltip>
-            </q-btn>
-            <q-btn
-              v-if="isInCart(product.id)"
-              @click="removeProductFromCart(product.id)"
-              color="negative"
-              icon="remove_shopping_cart"
-              flat
-              rounded
-              no-caps
-            >
-            </q-btn>
-          </div>
-        </q-card-actions>
-      </q-card>
+        :product="product"
+        :is-in-cart="isInCart(product.id)"
+        @view="viewProduct"
+        @add-to-cart="storeProductToCart(cartId, $event)"
+        @remove-from-cart="removeProductFromCart"
+      />
     </div>
     <div v-if="hasMore" class="full-width flex justify-center">
       <q-btn @click="showMore" class="q-my-xl custom-rounded" color="info" :disable="!hasMore">
@@ -79,11 +34,12 @@
 </template>
 
 <script setup>
+import ProductCard from './ProductCard.vue'
 import FilterGroup from './FilterGroup.vue'
+import SortPrice from '../ui/SortPrice.vue'
 import { onMounted, ref, computed, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { getData } from 'src/utils/http/get'
-import { getImageUrl } from 'src/utils/getImageUrl'
 import { useCartStore } from 'src/stores/cartStore'
 import notify from 'src/plugins/notify'
 
@@ -98,23 +54,24 @@ const router = useRouter()
 
 const rows = ref([])
 
-const page = ref(1)
 const hasMore = ref(true)
+const queryParams = ref({
+  title: '',
+  category: null,
+  is_published: 1,
+  price_sort: null,
+  page: 1,
+})
 
-const getQueryProducts = async (queryParams = {}) => {
+const getQueryProducts = async () => {
   const path = 'products'
-  const params = {
-    ...queryParams,
-  }
-  if (queryParams.page) {
-    params.page = queryParams.page
-  }
+  console.warn(queryParams.value)
   try {
-    const response = await getData(path, params)
+    const response = await getData(path, queryParams.value)
     console.log(response)
     rows.value = response.data
 
-    page.value = response.meta.current_page
+    queryParams.value.page = response.meta.current_page
 
     existNextPage(response.meta.current_page, response.meta.last_page)
 
@@ -124,23 +81,45 @@ const getQueryProducts = async (queryParams = {}) => {
   }
 }
 
-const showMore = async () => {
-  const params = {
-    page: page.value + 1,
+const handleSortClear = () => {
+  queryParams.value = {
+    title: '',
+    category: null,
+    is_published: 1,
+    price_sort: null,
+    page: 1,
   }
+  getQueryProducts()
+}
+
+const handleFilterChange = (filterData) => {
+  queryParams.value = {
+    ...queryParams.value,
+    ...filterData,
+    page: 1,
+  }
+  getQueryProducts()
+}
+
+const handleSortChange = (direction) => {
+  queryParams.value.price_sort = direction
+  queryParams.value.page = 1
+  getQueryProducts()
+}
+
+const showMore = async () => {
+  queryParams.value.page += 1
   try {
-    const response = await getData('products', params)
+    const response = await getData('products', queryParams.value)
     if (response.data.length > 0) {
       rows.value.push(...response.data)
     }
     existNextPage(response.meta.current_page, response.meta.last_page)
-    page.value = response.meta.current_page
   } catch (e) {
     console.error('Ошибка при запросе новых продуктов', e)
-    page.value -= 1
+    queryParams.value.page -= 1
   }
 }
-
 const existNextPage = (currentPage, lastPage) => {
   if (currentPage >= lastPage) {
     hasMore.value = false
@@ -193,8 +172,20 @@ onMounted(() => {
 <style lang="css" scoped>
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
+  gap: 16px;
+  grid-template-columns: repeat(1, 1fr);
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .custom-rounded {

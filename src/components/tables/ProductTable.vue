@@ -92,9 +92,40 @@
           <q-td key="is_published" :props="props">
             {{ props.row.is_published === 1 ? 'Да' : 'Нет' }}
           </q-td>
+          <q-td key="destroy" :props="props">
+            <q-btn
+              @click="prepareForRemove(props.row)"
+              icon="close"
+              size="12px"
+              color="negative"
+              round
+              dense
+              unelevated
+            ></q-btn>
+          </q-td>
         </q-tr>
       </template>
     </q-table>
+    <q-dialog v-model="modalRemove" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="text-h6"
+            >Удалить продукт: <strong>{{ itemToRemove.title }}</strong
+            >?</span
+          >
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Нет" color="primary" v-close-popup></q-btn>
+          <q-btn
+            @click="removeProduct(itemToRemove.id)"
+            flat
+            label="Да"
+            color="negative"
+            v-close-popup
+          ></q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="row justify-center q-mt-md">
       <q-pagination
         v-model="pagination.currentPage"
@@ -112,8 +143,10 @@ import { onMounted, ref, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 import { productsColumns } from 'src/constants/productsColumns'
 import { getData } from 'src/utils/http/get'
+import { deleteData } from 'src/utils/http/delete'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import FilterGroup from '../blocks/FilterGroup.vue'
+import notify from 'src/plugins/notify'
 
 const router = useRouter()
 
@@ -141,6 +174,9 @@ const rows = ref([])
 
 const filteredColumns = ref([])
 const selectedProducts = ref([])
+
+const modalRemove = ref(false)
+const itemToRemove = ref({})
 
 const pagination = ref({
   currentPage: 1,
@@ -170,6 +206,21 @@ const getQueryProducts = async (queryParams = {}) => {
   }
 }
 
+const removeProduct = async (productId) => {
+  const path = `products/${productId}`
+  const loading = notify.loading('Обработка')
+  try {
+    await deleteData(path)
+    rows.value = rows.value.filter((product) => product.id !== productId)
+    notify.success('Успешно')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
+  }
+}
+
 const addSelectedProducts = (products) => {
   const preparedSelectedProducts = prepareSelectedProducts(products)
   emit('addSelectedProducts', preparedSelectedProducts)
@@ -183,6 +234,11 @@ const prepareSelectedProducts = (products) => {
     return product
   })
   return preparedSelectedProducts
+}
+
+const prepareForRemove = (item) => {
+  itemToRemove.value = item
+  modalRemove.value = true
 }
 
 onMounted(() => {

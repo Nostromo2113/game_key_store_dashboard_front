@@ -86,6 +86,7 @@ import CardForm from '../forms/CardForm.vue'
 import { getImageUrl } from 'src/utils/getImageUrl'
 import { useCartStore } from 'src/stores/cartStore'
 import { useUserStore } from 'src/stores/userStore'
+import notify from 'src/plugins/notify'
 
 const emit = defineEmits(['cartReceived', 'updateQuantity'])
 
@@ -122,15 +123,33 @@ const fetchCart = async (userId) => {
   }
 }
 
-const updateProductQuantity = (productId, quantity) => {
-  cartStore.updateProductFromCart(cartId.value, {
-    product_id: productId,
-    quantity: quantity,
-  })
+const updateProductQuantity = async (productId, quantity) => {
+  const loading = notify.loading('Обработка')
+  try {
+    await cartStore.updateProductFromCart(cartId.value, {
+      product_id: productId,
+      quantity: quantity,
+    })
+    notify.success('Успешно')
+  } catch (e) {
+    notify.error('Ошибка')
+    console.error(e)
+  } finally {
+    loading()
+  }
 }
 
 const removeProductFromCart = async (productId) => {
-  cartStore.removeProductFromCart(cartDetails.value.id, productId)
+  const loading = notify.loading('Обработка')
+  try {
+    await cartStore.removeProductFromCart(cartDetails.value.id, productId)
+    notify.success('Успешно')
+  } catch (e) {
+    notify.error('Ошибка')
+    console.error(e)
+  } finally {
+    loading()
+  }
 }
 
 watch(
@@ -145,7 +164,6 @@ watch(
 
 onMounted(() => {
   if (props.propsUserId) {
-    console.log('props user', props.propsUserId)
     fetchCart(props.propsUserId)
   }
 })

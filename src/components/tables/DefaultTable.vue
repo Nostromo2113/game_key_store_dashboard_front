@@ -154,7 +154,7 @@ const updateItem = async (path, row) => {
   } catch (e) {
     console.error(e)
     notify.error('Ошибка при изменении')
-    getData(path)
+    getItems(path)
   } finally {
     loading()
   }

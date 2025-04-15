@@ -13,8 +13,14 @@ export const postData = async (path, data) => {
 
     return response
   } catch (error) {
+    const errorInfo = {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      isAxiosError: error.isAxiosError,
+    }
     console.error(error)
-    throw new Error(error)
+    throw errorInfo
   }
 }
 

@@ -5,6 +5,7 @@
       :rows="rows"
       :columns="usersColumns"
       :pagination="tablePagination"
+      hide-bottom
       row-key="title"
       flat
       class="custom-rounded q-pa-md text-blue-grey-9 shadow-sm"
@@ -102,24 +103,41 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="createModal" persistent full-width>
-      <user-form title="Добавить пользователя"></user-form>
+      <user-modal-form @post="postUser" title="Добавить пользователя"></user-modal-form>
     </q-dialog>
+    <div class="row justify-center q-mt-md">
+      <q-pagination
+        v-model="pagination.currentPage"
+        :max="pagination.lastPage"
+        :max-pages="5"
+        direction-links
+        boundary-links
+        @update:model-value="(page) => getUsers({ page: page })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, defineEmits, onMounted } from 'vue'
-import UserForm from '../forms/UserForm.vue'
+import UserModalForm from '../forms/UserModalForm.vue'
 import { usersColumns } from 'src/constants/usersColumns'
 import { getData } from 'src/utils/http/get'
 import { deleteData } from 'src/utils/http/delete'
+import { postData } from 'src/utils/http/post'
 import { getImageUrl } from 'src/utils/getImageUrl'
+import notify from 'src/plugins/notify'
 
-const emit = defineEmits('success')
+const emit = defineEmits(['success'])
 
 const createModal = ref(false)
 const modalRemove = ref(false)
 const itemToRemove = ref({})
 const rows = ref([])
+
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+})
 
 const prepareForRemove = (item) => {
   itemToRemove.value = item
@@ -128,32 +146,64 @@ const prepareForRemove = (item) => {
 
 const removeUser = async (userId) => {
   const path = `users/${userId}`
+  const loading = notify.loading('Обработка')
   try {
     await deleteData(path)
+    rows.value = rows.value.filter((user) => user.id !== userId)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
-    getUsers('users')
+    loading()
   }
 }
 
-const getUsers = async (path) => {
+const getUsers = async (queryParams = {}) => {
+  const path = 'users'
   try {
-    const response = await getData(path)
+    const response = await getData(path, queryParams)
+    console.log(response)
     rows.value = response.data
+
+    if (response.meta.current_page && response.meta.last_page) {
+      pagination.value.currentPage = response.meta.current_page
+      pagination.value.lastPage = response.meta.last_page
+    }
     emit('success')
   } catch (e) {
     console.error(e)
   }
 }
 
+const postUser = async (data) => {
+  const path = 'users'
+  const userData = { user: { ...data } }
+  const loading = notify.loading('Обработка')
+  try {
+    const response = await postData(path, userData)
+    storeLocalData(response)
+    notify.success('Успешно')
+  } catch (e) {
+    console.error(e)
+    notify.error('Ошибка')
+  } finally {
+    loading()
+  }
+}
+
+const storeLocalData = (response) => {
+  const newUser = response.data?.data || response.data
+  rows.value.push(newUser)
+}
+
 onMounted(() => {
-  getUsers('users')
+  getUsers()
 })
 
 const tablePagination = ref({
   page: 1,
-  rowsPerPage: 20,
+  rowsPerPage: 100,
 })
 </script>
 <style lang="css"></style>

@@ -4,9 +4,7 @@
       <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
         >Добро пожаловать, {{ user.name }}!</q-toolbar
       >
-      <!-- Основной блок с аватаром и информацией о пользователе -->
       <div class="grid-container">
-        <!-- Аватар -->
         <div class="avatar-section full-height">
           <q-card class="q-pa-md custom-rounded full-height shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
@@ -26,8 +24,6 @@
             </div>
           </q-card>
         </div>
-
-        <!-- Информация о пользователе -->
         <div class="user-info-section">
           <q-card class="q-pa-md custom-rounded shadow-sm" flat>
             <q-card-section class="q-pa-none q-mb-md">
@@ -49,7 +45,7 @@
             <q-input
               v-model="user.phone_number"
               label="Телефон"
-              mask="+7 (###) ###-##-##"
+              mask="+7(###)#######"
               class="q-mb-sm"
               dense
               filled
@@ -85,8 +81,6 @@
           </q-card>
         </div>
       </div>
-
-      <!-- Блок смены пароля -->
       <q-card class="q-mt-md q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-pa-none q-mb-md">
           <div class="text-subtitle2 text-grey">Сменить пароль:</div>
@@ -187,14 +181,18 @@ const password = ref({
 })
 
 const changePassword = async () => {
+  const loading = notify.loading('Обработка')
   try {
     await postData('password/change', password.value)
+    notify.success('Успешно')
   } catch (e) {
     console.error(e)
+    notify.error('Ошибка')
   } finally {
     for (let key in password.value) {
       password.value[key] = ''
     }
+    loading()
   }
 }
 
@@ -210,6 +208,7 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   if (selectedFile) {
     data.file = selectedFile
   }
+  console.log('USER: ', data)
   try {
     await patchData(path, { user: data })
     notify.success('Успешно')
@@ -219,7 +218,9 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
     notify.error('Ошибка')
   } finally {
     userStore.fetchUser
-    selectedFile.value = null
+    if (selectedFile) {
+      selectedFile.value = null
+    }
   }
 }
 </script>

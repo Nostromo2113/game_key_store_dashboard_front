@@ -48,7 +48,7 @@
             :rules="requiredRule"
           ></q-input>
           <q-input
-            v-model="formData.phone"
+            v-model="formData.phone_number"
             label="Телефон"
             mask="+7##########"
             filled
@@ -84,14 +84,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { postData } from 'src/utils/http/post'
+import { ref, defineEmits } from 'vue'
 
-const path = 'users'
+const emit = defineEmits(['post'])
 
 const formData = ref({
   email: '',
-  phone: '',
+  phone_number: '',
   name: '',
   surname: '',
   patronymic: '',
@@ -109,17 +108,11 @@ const submit = async () => {
     console.warn('Подтвердите добавление в БД')
     return
   }
-  await postUser(path, formData.value)
+  postUser(formData.value)
 }
 
-const postUser = async (path, data) => {
-  const userData = { user: { ...data } }
-  try {
-    const response = await postData(path, userData)
-    console.log(response)
-  } catch (e) {
-    console.error(e)
-  }
+const postUser = (data) => {
+  emit('post', data)
 }
 
 const resetData = () => {

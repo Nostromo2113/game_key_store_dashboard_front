@@ -9,9 +9,24 @@
           </template>
         </q-input>
         <div class="row items-center">
-          <q-input class="col" v-model="form.password" label="Пароль" type="password" required>
-            <template v-slot:prepend> <q-icon name="lock" /> </template
-          ></q-input>
+          <q-input
+            class="col"
+            v-model="form.password"
+            label="Пароль"
+            :type="showPassword ? 'text' : 'password'"
+            required
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                :name="showPassword ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </q-input>
           <q-btn
             @click="modalRestore = true"
             flat
@@ -49,6 +64,7 @@ import { postData } from 'src/utils/http/post'
 import { ref } from 'vue'
 import { useUserStore } from 'src/stores/userStore'
 import { useRouter } from 'vue-router'
+import notify from 'src/plugins/notify'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -62,15 +78,21 @@ const path = 'auth/login'
 
 const modalRestore = ref(false)
 
+const showPassword = ref(false)
+
 const performLogin = async (path, data) => {
+  const loading = notify.loading('Обработка')
   try {
     const response = await postData(path, data)
-    console.log(response)
     saveToken(response.data.access_token)
     await getMe()
-    router.push({ name: 'admin' })
+    notify.success('Добро пожаловать!')
+    router.push({ name: 'index' })
   } catch (e) {
+    notify.error('Ошибка авторизации')
     console.error(e)
+  } finally {
+    loading()
   }
 }
 
