@@ -39,6 +39,10 @@
               <div class="row">
                 <span class="bg-indigo-2 q-px-sm rounded-borders">{{ user.address }}</span>
               </div>
+              <div>Доступ:</div>
+              <div class="row">
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ user.role }}</span>
+              </div>
             </div>
           </q-card>
         </q-card-section>
@@ -47,6 +51,10 @@
           <q-card class="q-px-md q-py-sm custom-rounded" flat bordered>
             <div class="text-subtitle2 q-mb-sm">Данные о заказе:</div>
             <div class="grid-container">
+              <div>Заказ №:</div>
+              <div class="row">
+                <span class="bg-indigo-2 q-px-sm rounded-borders">{{ orderNumber }}</span>
+              </div>
               <div>Игры:</div>
               <div class="row">
                 <span class="bg-indigo-2 q-px-sm rounded-borders">{{ orderProducts.length }}</span>
@@ -140,6 +148,7 @@ const totalPrice = ref(0)
 const totalAmount = ref(0)
 
 const status = ref('')
+const orderNumber = ref('')
 
 const applyChanges = async (products) => {
   const applyProducts = products.map((product) => {
@@ -178,6 +187,7 @@ const getOrder = async (orderId) => {
     let response = await getData(path)
     response = response.data
     status.value = response.status
+    orderNumber.value = response.order_number
     orderProducts.value = response.order_products.map((product) => ({
       ...product,
       quantity: product?.activation_keys ? product.activation_keys.length : product.quantity,
