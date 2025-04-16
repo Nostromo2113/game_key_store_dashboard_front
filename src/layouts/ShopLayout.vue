@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 1200px; max-width: 100vw; margin: auto">
+  <div style="max-width: 100vw; margin: auto" class="q-px-md shop-page">
     <q-toolbar class="custom-rounded bg-white shadow-sm q-px-md q-mt-md">
       <q-toolbar-title class="fit text-grey-8"
         ><q-icon name="sports_esports" style="font-size: 30px"></q-icon> Shop for administrator
@@ -55,3 +55,13 @@ watch(
   { immediate: true },
 )
 </script>
+<style lang="css">
+.shop-page {
+  width: 1200px;
+}
+@media (max-width: 1480px) {
+  .shop-page {
+    width: auto;
+  }
+}
+</style>
