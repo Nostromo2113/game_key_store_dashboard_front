@@ -198,7 +198,6 @@ const changePassword = async () => {
 
 const onFileChange = (file) => {
   selectedFile.value = file
-  console.log('selected', file)
 }
 
 const updateUser = async (userPath, userData, selectedFile, userId) => {
@@ -208,7 +207,6 @@ const updateUser = async (userPath, userData, selectedFile, userId) => {
   if (selectedFile) {
     data.file = selectedFile
   }
-  console.log('USER: ', data)
   try {
     await patchData(path, { user: data })
     notify.success('Успешно')

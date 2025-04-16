@@ -200,8 +200,6 @@ const getOrder = async (orderId) => {
     emit('success')
   } catch (e) {
     console.error(e)
-  } finally {
-    console.log('final')
   }
 }
 

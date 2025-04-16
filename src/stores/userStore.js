@@ -10,7 +10,6 @@ export const useUserStore = defineStore('user', () => {
     try {
       const response = await api.post('/auth/me')
       user.value = response.data.data
-      console.log('fetch user', user.value)
       setUser(user.value)
     } catch (error) {
       console.error('Ошибка загрузки пользователя', error)

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <q-card
-      class="my-card custom-rounded shadow-sm q-mt-md"
-      flat
-      @click="console.log(cartDetails, cartItems)"
-    >
+    <q-card class="my-card custom-rounded shadow-sm q-mt-md" flat>
       <q-card-section>
         <div class="text-h6 text-grey">Вы можете оформить заказ:</div>
       </q-card-section>

@@ -42,8 +42,6 @@ const fetchCart = async (userId) => {
     await cartStore.fetchCart(userId)
   } catch (e) {
     console.error(e)
-  } finally {
-    console.log('ready', cartStore.cartProducts)
   }
 }
 

@@ -65,16 +65,11 @@ const queryParams = ref({
 
 const getQueryProducts = async () => {
   const path = 'products'
-  console.warn(queryParams.value)
   try {
     const response = await getData(path, queryParams.value)
-    console.log(response)
     rows.value = response.data
-
     queryParams.value.page = response.meta.current_page
-
     existNextPage(response.meta.current_page, response.meta.last_page)
-
     emit('success')
   } catch (e) {
     console.error(e)

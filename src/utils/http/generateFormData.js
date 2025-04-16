@@ -40,9 +40,9 @@ export const generateFormData = (data, patch = false) => {
 
     appendFormData(data)
     //средство для просмотра formData
-    showFormData(formData)
-    console.log(formData.get('file'))
-    console.log(formData.get('_method'))
+    // showFormData(formData)
+    // console.log(formData.get('file'))
+    // console.log(formData.get('_method'))
     return formData
   } catch (e) {
     console.error('Ошибка при генерации formData: ' + e)
@@ -69,7 +69,7 @@ export const shouldUseFormData = (data) => {
 const isObject = (el) =>
   el ? typeof el === 'object' && !Array.isArray(el) && el !== null && !(el instanceof File) : false
 
-// Функция для просмотра formData. Для использования необходимо раскомментировать функцию и ее вызов
+// Функция для просмотра formData
 export const showFormData = (formData) => {
   for (const [key, value] of formData.entries()) {
     console.log(`formData el: '${key}: ${value}`)

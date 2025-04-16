@@ -27,25 +27,21 @@
       </q-card-actions>
     </q-card>
 
-    <!-- Карточка с информацией о пользователе -->
     <q-card class="q-mb-md custom-rounded shadow-sm" flat>
       <q-item class="text-h6 q-px-md q-py-sm text-blue-grey-8">Информация о покупателе</q-item>
       <q-separator />
       <q-card-section>
         <div class="row q-col-gutter-md">
-          <!-- Имя -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle1">Имя:</div>
             <div class="text-h6 text-info">{{ order.user?.name }}</div>
           </div>
 
-          <!-- Электронная почта -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle1">Электронная почта:</div>
             <div class="text-h6 text-info">{{ order.user?.email }}</div>
           </div>
 
-          <!-- Телефон -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle1">Телефон:</div>
             <div class="text-h6 text-info">{{ order.user?.phone_number }}</div>
@@ -54,7 +50,6 @@
       </q-card-section>
     </q-card>
 
-    <!-- Карточка с товарами -->
     <q-card class="shadow-sm custom-rounded" flat @click="console.log(order)">
       <q-card-section>
         <div class="text-h6 q-mb-md">Товары в заказе ({{ order.order_products?.length }})</div>
@@ -85,7 +80,6 @@ const getOrder = async (orderId) => {
   const path = `orders/${orderId}`
   try {
     const response = await getData(path)
-    console.log('get order', response)
     order.value = response.data
     totalPrice.value = calculateTotalPrice(order.value.order_products)
     emit('success')
@@ -110,9 +104,7 @@ const executeOrder = async (orderId) => {
     const response = await patchData(path, {
       is_execute: true,
     })
-    console.log('THIS', response)
     order.value = response.data.data
-    console.log('THIS2', order.value)
     notify.success('Ключи отправлены на ваш email')
   } catch (e) {
     console.error(e)

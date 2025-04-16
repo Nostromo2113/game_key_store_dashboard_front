@@ -163,7 +163,6 @@ const getUsers = async (queryParams = {}) => {
   const path = 'users'
   try {
     const response = await getData(path, queryParams)
-    console.log(response)
     rows.value = response.data
 
     if (response.meta.current_page && response.meta.last_page) {

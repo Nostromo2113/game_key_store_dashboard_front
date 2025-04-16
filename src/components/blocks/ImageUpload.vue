@@ -49,7 +49,6 @@ const onFileChange = (file) => {
 watch(
   () => props.imageLink,
   (newVal) => {
-    console.log(newVal)
     previewUrl.value = getImageUrl(newVal)
   },
   { immediate: true },
