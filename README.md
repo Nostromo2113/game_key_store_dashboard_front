@@ -1,40 +1,34 @@
-# GameKey Dashboard (gamekey-store-dashboard)
+# GameKey Store Dashboard
 
-GameKey admin panel
+Интерфейс административной панели для управления магазином цифровых ключей активации игр.
 
-## Install the dependencies
+>  Фронтенд часть проекта [GameKey Store (Laravel REST API)](https://github.com/Nostromo2113/GameKey-store-laravel)
+
+
+## Технологии
+
+- **Vue 3** + Composition API  
+- **Quasar Framework**  
+- **Pinia** – управление состоянием  
+- **Axios** – запросы к API  
+- **SCSS**  
+- **JWT** – аутентификация через токены  
+
+## Установка и запуск
+
 ```bash
-yarn
-# or
+# Клонирование репозитория
+git clone https://github.com/Nostromo2113/game_key_store_dashboard_front.git
+cd game_key_store_dashboard_front
+
+# Установка зависимостей
 npm install
-```
+# или
+yarn install
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
+# Запуск проекта в режиме разработки
 quasar dev
-```
 
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
-
-
-### Build the app for production
-```bash
+# Сборка для продакшена
 quasar build
-```
 
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
