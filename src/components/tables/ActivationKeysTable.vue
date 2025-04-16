@@ -120,7 +120,6 @@ const pagination = ref({
 
 const getItems = async (productId, page) => {
   const path = !productId ? 'activation_keys' : `products/${productId}/activation_keys`
-  console.warn(path)
   const params = {
     page: page,
   }

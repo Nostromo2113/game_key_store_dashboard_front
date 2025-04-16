@@ -16,8 +16,8 @@
 
       <q-separator></q-separator>
 
-      <q-card-section horizontal>
-        <q-card-section class="col q-pa-md column">
+      <q-card-section class="row justify-between q-pa-sm">
+        <q-card-section class="col-xs-12 col-md-6 q-pa-md column">
           <q-card class="q-px-md q-py-sm custom-rounded" flat bordered>
             <div class="text-subtitle2 q-mb-sm">Данные о пользователе:</div>
             <div class="grid-container">
@@ -47,7 +47,7 @@
           </q-card>
         </q-card-section>
 
-        <q-card-section class="col q-pa-md column">
+        <q-card-section class="col-xs-12 col-md-6 q-pa-md column">
           <q-card class="q-px-md q-py-sm custom-rounded" flat bordered>
             <div class="text-subtitle2 q-mb-sm">Данные о заказе:</div>
             <div class="grid-container">
@@ -200,8 +200,6 @@ const getOrder = async (orderId) => {
     emit('success')
   } catch (e) {
     console.error(e)
-  } finally {
-    console.log('final')
   }
 }
 

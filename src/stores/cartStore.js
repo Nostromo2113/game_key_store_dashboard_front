@@ -48,7 +48,6 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   const updateProductFromCart = async (cartId, product) => {
-    console.warn('123123')
     const path = `cart/${cartId}/products/${product.product_id}`
     const data = {
       product: {

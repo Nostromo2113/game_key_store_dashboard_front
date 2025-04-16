@@ -84,8 +84,6 @@ function createBreadcrumbs() {
       }
     })
   }
-
-  console.log('BC2', breadcrumbs.value)
 }
 watchEffect(() => {
   createBreadcrumbs()

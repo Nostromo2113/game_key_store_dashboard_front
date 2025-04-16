@@ -4,7 +4,15 @@
       <q-btn flat dense round icon="menu" aria-label="Menu" @click="$emit('toggleLeftDrawer')" />
       <q-toolbar-title> Game Key Shop </q-toolbar-title>
       <SearchForm @getSearchItems="navigateToQueryOrder" placeholder="Номер заказа..." />
-      <q-btn flat rounded dense icon="dark_mode" class="q-ml-md" @click="toggleMode(darkMode)">
+      <q-btn
+        disabled
+        flat
+        rounded
+        dense
+        icon="dark_mode"
+        class="q-ml-md"
+        @click="toggleMode(darkMode)"
+      >
         <q-tooltip class="bg-red" :offset="[10, 10]"> Темная тема не настроена </q-tooltip></q-btn
       >
     </q-toolbar>

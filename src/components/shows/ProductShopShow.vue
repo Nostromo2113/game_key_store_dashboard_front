@@ -122,7 +122,7 @@
           </q-card>
 
           <TechnicalRequirements class="q-mt-xl" :data="technicalRequirements" view-mode />
-          <ProductCommentsShop class="q-mt-xl" :productId="productId" />
+          <ProductCommentsShop class="q-mt-xl" :productId="+productId" />
         </q-card>
       </div>
     </q-card-section>

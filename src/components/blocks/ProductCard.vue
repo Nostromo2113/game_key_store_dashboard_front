@@ -1,5 +1,5 @@
 <template>
-  <q-card class="flex justify-between gap-sm custom-rounded shadow-sm" style="width: 284px" flat>
+  <q-card class="flex justify-between gap-sm custom-rounded shadow-sm" flat>
     <q-img
       :src="getImageUrl(product.preview_image)"
       width="100%"

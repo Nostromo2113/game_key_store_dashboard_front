@@ -1,19 +1,27 @@
 <template>
   <div class="flex items-center column gap-md q-pa-none">
-    <q-img :height="height" :width="width" class="rounded-borders" :src="previewUrl"></q-img>
+    <q-img
+      :height="computedHeight"
+      :width="computedWidth"
+      class="rounded-borders"
+      :src="previewUrl"
+    ></q-img>
     <UploadInput
       :disabledUpload="disabledUpload"
       type="file"
       @change="onFileChange"
-      :style="{ width: width }"
+      :style="{ width: computedWidth }"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, watch, defineEmits } from 'vue'
+import { ref, defineProps, watch, defineEmits, computed } from 'vue'
+import { useQuasar } from 'quasar'
 import UploadInput from '../ui/UploadInput.vue'
 import { getImageUrl } from 'src/utils/getImageUrl'
+
+const $q = useQuasar()
 
 const props = defineProps({
   imageLink: {
@@ -32,11 +40,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  mobileBreakpoint: {
+    type: String,
+    default: 'sm',
+  },
 })
 
 const emit = defineEmits(['onFileChange'])
 const previewUrl = ref(props.imageLink)
 const selectedFile = ref()
+
+const computedWidth = computed(() => {
+  return $q.screen.lt[props.mobileBreakpoint] ? '100%' : props.width
+})
+
+const computedHeight = computed(() => {
+  if ($q.screen.lt[props.mobileBreakpoint]) {
+    return 'auto'
+  }
+  return props.height
+})
 
 const onFileChange = (file) => {
   selectedFile.value = file
@@ -49,7 +72,6 @@ const onFileChange = (file) => {
 watch(
   () => props.imageLink,
   (newVal) => {
-    console.log(newVal)
     previewUrl.value = getImageUrl(newVal)
   },
   { immediate: true },

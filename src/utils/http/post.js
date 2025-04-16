@@ -9,8 +9,6 @@ export const postData = async (path, data) => {
       ? await postFormData(path, data)
       : await api.post(path, data)
 
-    console.log(response)
-
     return response
   } catch (error) {
     const errorInfo = {

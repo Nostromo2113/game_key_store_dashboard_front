@@ -1,6 +1,5 @@
 <template>
   <div class="q-pa-md custom-rounded">
-    <!-- Блок с аватаром -->
     <div class="grid-container">
       <q-card class="avatar-section q-pa-md custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
@@ -16,13 +15,11 @@
           class="full-width"
         />
       </q-card>
-      <!-- Блок с Данными пользователя -->
       <q-card class="user-data-section q-pa-md full-height custom-rounded shadow-sm" flat>
         <q-card-section class="q-mb-md q-pa-none">
           <div class="text-subtitle2 text-grey">Данные пользователя</div>
         </q-card-section>
         <q-card-section class="user-data-grid">
-          <!-- Левая колонка -->
           <div class="left-column">
             <q-input v-model="userData.surname" label="Фамилия" filled />
             <q-input v-model="userData.name" label="Имя" filled />
@@ -32,7 +29,6 @@
 
           <q-separator vertical class="separator" />
 
-          <!-- Правая колонка -->
           <div class="right-column">
             <q-input v-model="userData.email" type="email" label="Email" filled />
             <q-input v-model="userData.address" label="Адрес" filled />
@@ -71,7 +67,6 @@
       </q-card>
     </div>
 
-    <!-- Панель с заказами и корзиной -->
     <q-card flat class="q-pa-sm custom-rounded q-mt-md shadow-sm">
       <q-toolbar>
         <q-toolbar-title>{{ tab === 'orders' ? 'Заказы' : 'Корзина' }}</q-toolbar-title>
@@ -153,9 +148,7 @@ const updateUser = async (userData, selectedFile, userId) => {
     }
     const response = await patchData(path, data)
     notify.success('Успешно')
-    console.log(response.data.data)
     userData.value = response.data.data
-    console.log(userData.value)
   } catch (e) {
     console.error(e)
     notify.error('Ошибка')

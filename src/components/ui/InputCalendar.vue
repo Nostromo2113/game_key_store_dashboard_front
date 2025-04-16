@@ -42,11 +42,8 @@ watch(
   },
 )
 
-// Обработчик изменения даты
 const onDateChange = (newDate) => {
   inputValue.value = newDate
-  console.log('123')
-  // Эмитим событие для обновления модели
   emit('update:modelValue', inputValue.value)
 }
 

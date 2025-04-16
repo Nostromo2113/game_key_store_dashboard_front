@@ -193,7 +193,6 @@ const getQueryProducts = async (queryParams = {}) => {
   const path = 'products'
   try {
     const response = await getData(path, queryParams)
-    console.log(response)
     rows.value = response.data
 
     if (response.meta.current_page && response.meta.last_page) {
