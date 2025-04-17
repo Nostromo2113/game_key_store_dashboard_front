@@ -70,8 +70,8 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const form = ref({
-  email: '',
-  password: '',
+  email: 'admin@mail.com',
+  password: '123456',
 })
 
 const path = 'auth/login'
