@@ -92,7 +92,7 @@ watchEffect(() => {
 <style scoped>
 .custom-breadcrumbs {
   padding: 4px 0;
-  background-color: #f8f9fa;
+  background-color: white;
   border-radius: 8px;
 }
 
