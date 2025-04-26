@@ -1,12 +1,3 @@
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-body {
-  color: $blue-grey-9;
-}
-
 .gap-sm {
   gap: 10px;
 }
@@ -23,10 +14,6 @@ body {
   border-radius: 12px !important;
 }
 
-.margin-none {
-  margin: 0;
-}
-
 .width-100 {
   width: 100%;
 }
@@ -35,16 +22,8 @@ body {
   border: 1px solid rgba(182, 193, 236, 0.459) !important;
 }
 
-.q-ripple {
-  display: none;
-}
-
 .bg-gradient {
   background: linear-gradient(135deg, #2851e4a4 0%, #6ee5c196 100%);
-}
-
-.width-fit {
-  width: fit-content !important;
 }
 
 .shadow-sm {
@@ -57,4 +36,8 @@ body {
 
 .page-shop-height {
   min-height: calc(100vh - 172px);
+}
+
+.img-cover {
+  object-fit: cover;
 }
