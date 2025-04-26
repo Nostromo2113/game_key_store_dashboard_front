@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gradient" style="height: 100vh">
+  <div class="bg-gradient">
     <div class="container">
       <q-toolbar class="custom-rounded q-pa-none q-px-md q-mb-md bg-white text-grey-9 shadow-sm"
         >Добро пожаловать, {{ user.name }}!</q-toolbar
