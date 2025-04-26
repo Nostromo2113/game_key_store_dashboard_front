@@ -58,3 +58,7 @@ body {
 .page-shop-height {
   min-height: calc(100vh - 172px);
 }
+
+.img-cover {
+  object-fit: cover;
+}

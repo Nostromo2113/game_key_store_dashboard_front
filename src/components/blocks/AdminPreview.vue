@@ -4,15 +4,12 @@
       class="admin-preview q-pa-sm custom-rounded cursor-pointer"
       @click="$router.push({ name: 'admin' })"
     >
-      <q-img
-        width="60px"
-        height="60px"
-        :src="getImageUrl(userStore.user?.avatar)"
-        class="custom-rounded"
-      ></q-img>
+      <q-avatar size="60px">
+        <img :src="getImageUrl(userStore.user?.avatar)" class="img-cover"
+      /></q-avatar>
 
       <div class="flex column">
-        <div class="text-subtitle1">{{ userStore.user?.name }}</div>
+        <div class="text-subtitle2">{{ userStore.user?.name }}</div>
       </div>
     </div>
   </div>

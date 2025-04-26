@@ -40,12 +40,9 @@
             {{ props.row.id }}
           </q-td>
           <q-td key="avatar" :props="props">
-            <q-img
-              width="75px"
-              height="75px"
-              :src="getImageUrl(props.row.avatar)"
-              class="custom-rounded"
-            ></q-img>
+            <q-avatar size="60px">
+              <img :src="getImageUrl(props.row.avatar)" class="img-cover" />
+            </q-avatar>
           </q-td>
           <q-td key="email" :props="props">
             {{ props.row.email }}
