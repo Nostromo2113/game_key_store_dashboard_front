@@ -1,0 +1,12 @@
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+body {
+  color: $blue-grey-9;
+}
+
+.q-ripple {
+  display: none;
+} //переопределение поведеня ui компонентов
