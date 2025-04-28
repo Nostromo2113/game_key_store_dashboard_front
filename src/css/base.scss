@@ -1,10 +1,16 @@
 a {
   text-decoration: none;
   color: inherit;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
 }
 
 body {
   color: $blue-grey-9;
+  font-family: 'OpenSans', sans-serif;
+  background-color: #f1f5f9;
 }
 
 .q-ripple {

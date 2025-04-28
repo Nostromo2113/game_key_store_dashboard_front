@@ -1,20 +1,9 @@
+@import './style.scss';
+@import './base.scss';
+
 @font-face {
   font-family: 'OpenSans';
   src: url('/fonts/OpenSans-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
-body {
-  font-family: 'OpenSans', sans-serif;
-  background-color: #f1f5f9;
-}
-
-.routerlink-unset {
-  text-decoration: none;
-  color: inherit;
-  background: none;
-  border: none;
-}
-
-@import './style.scss';
-@import './base.scss';
